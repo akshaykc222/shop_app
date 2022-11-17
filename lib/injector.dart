@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/variant_bloc/variant_bloc.dart';
 
@@ -17,4 +18,5 @@ Future<void> init() async {
       () => BottomNavigationCubit());
   sl.registerLazySingleton<ProductBloc>(() => ProductBloc());
   sl.registerLazySingleton<VariantBloc>(() => VariantBloc());
+  sl.registerLazySingleton<OrderBloc>(() => OrderBloc());
 }
