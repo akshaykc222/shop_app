@@ -41,33 +41,51 @@ class OrderScreen extends StatelessWidget {
                         )
                       ]),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Spacer(),
-                          Text(
-                            AppStrings.orders,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                ?.copyWith(
-                                    fontSize: 25, fontWeight: FontWeight.w600),
-                          ),
-                          const Spacer(),
-                          GestureDetector(
-                              onTap: () {},
-                              child: Image.asset(
-                                AppAssets.search,
+                          // const Spacer(),
+                          Row(
+                            children: const [
+                              SizedBox(
                                 width: 24.05,
                                 height: 23.96,
-                              )),
-                          const SizedBox(
-                            width: 28.75,
+                              ),
+                              SizedBox(
+                                width: 28.75,
+                              )
+                            ],
+                          ),
+                          Expanded(
+                            child: Text(
+                              AppStrings.orders,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
+                          // const Spacer(),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                    AppAssets.search,
+                                    width: 24.05,
+                                    height: 23.96,
+                                  )),
+                              const SizedBox(
+                                width: 28.75,
+                              )
+                            ],
                           )
                         ],
                       ),
+                      const SizedBox(
+                        height: 18,
+                      )
                     ],
                   ),
                 ),
@@ -81,7 +99,7 @@ class OrderScreen extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                spacer26,
+                spacer20,
                 BlocBuilder<OrderBloc, OrderState>(
                   builder: (context, state) {
                     return SizedBox(
@@ -115,7 +133,7 @@ class OrderScreen extends StatelessWidget {
                                   child: Text(
                                     controller.statusList[index],
                                     style: TextStyle(
-                                        fontSize: 17,
+                                        fontSize: 15,
                                         fontWeight: FontWeight.w600,
                                         color: controller.selectedFilter ==
                                                 controller.statusList[index]
@@ -127,10 +145,10 @@ class OrderScreen extends StatelessWidget {
                     );
                   },
                 ),
-                spacer24,
+                spacer20,
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30.0, vertical: 0),
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -297,11 +315,11 @@ class OrderSmallCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 30),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: AppColors.offWhite1,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
@@ -334,33 +352,63 @@ class OrderSmallCard extends StatelessWidget {
               const SizedBox(
                 width: 20,
               ),
-              Container(
-                width: 82,
-                height: 82,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: const TextSpan(
+                      text: 'Total Items :',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: '3',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  spacer10,
+                  RichText(
+                    text: const TextSpan(
+                      text: 'Total Items :',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: '15 AED',
+                            style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryColor)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
                 width: 20,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "1 ITEM",
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  spacer10,
-                  const Text(
-                    "₹15",
-                    style: TextStyle(color: Colors.blue),
-                  )
-                ],
-              ),
+              // Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     const Text(
+              //       "1 ITEM",
+              //       style: TextStyle(
+              //           fontSize: 15,
+              //           color: AppColors.black,
+              //           fontWeight: FontWeight.w600),
+              //     ),
+              //     spacer10,
+              //     const Text(
+              //       "₹15",
+              //       style: TextStyle(color: Colors.blue),
+              //     )
+              //   ],
+              // ),
               const Spacer(),
               Container(
                   padding:
@@ -429,11 +477,17 @@ class OrderSmallCard extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               color: AppColors.black.withOpacity(0.6)),
                         ),
-                        Image.asset(
-                          AppAssets.rightArrow,
-                          width: 22,
-                          height: 22,
-                          fit: BoxFit.cover,
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Image.asset(
+                            AppAssets.rightArrow,
+                            width: 6,
+                            height: 10,
+                            fit: BoxFit.fill,
+                          ),
                         )
                       ],
                     ),

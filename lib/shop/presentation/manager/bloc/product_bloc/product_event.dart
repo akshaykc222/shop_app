@@ -28,3 +28,9 @@ class ImageFilesRemovedEvent extends ProductEvent {
   @override
   List<Object?> get props => [];
 }
+// class ContextMenuTapedCategory extends ProductEvent{
+//
+//   @override
+//   List<Object?> get props =>[];
+//
+// }

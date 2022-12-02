@@ -4,6 +4,7 @@ import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.da
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
+import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
 import '../../../../../utils/app_constants.dart';
 
@@ -14,119 +15,167 @@ class EditOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = OrderBloc.get(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(AppStrings.editOrder),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text(
-                AppStrings.close,
-                style: TextStyle(color: AppColors.white, fontSize: 16),
-              ))
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-              context: context, builder: (context) => AddProduct());
-        },
-        child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 70,
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Divider(
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: 45,
-              child: ElevatedButton(
+      backgroundColor: AppColors.white,
+      appBar: getAppBar(
+          context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text(AppStrings.requestConfirm)),
-            )
-          ],
-        ),
-      ),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.black,
+                    size: 25,
+                  )),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  AppStrings.editOrder,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.copyWith(fontSize: 25, fontWeight: FontWeight.w600),
+                ),
+              ),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.done))
+            ],
+          )),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     showModalBottomSheet(
+      //         context: context, builder: (context) => AddProduct());
+      //   },
+      //   child: const Icon(Icons.add),
+      // ),
+      // bottomNavigationBar: SizedBox(
+      //   height: 70,
+      //   child: Column(
+      //     children: [
+      //       const Padding(
+      //         padding: EdgeInsets.symmetric(horizontal: 10.0),
+      //         child: Divider(
+      //           color: Colors.grey,
+      //         ),
+      //       ),
+      //       SizedBox(
+      //         width: MediaQuery.of(context).size.width * 0.95,
+      //         height: 45,
+      //         child: ElevatedButton(
+      //             onPressed: () {
+      //               Navigator.pop(context);
+      //             },
+      //             child: const Text(AppStrings.requestConfirm)),
+      //       )
+      //     ],
+      //   ),
+      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            TextButton(
-                onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
-            spacer10,
+            spacer30,
+            // TextButton(
+            //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
+            // spacer10,
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "1 ITEM",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400, color: Colors.grey),
-                  ),
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: 'Items : ',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.black.withOpacity(0.43)),
+                      children: const <TextSpan>[
+                        TextSpan(
+                            text: '2',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.black)),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
+            spacer30,
             Wrap(
               children: [
                 BlocBuilder<OrderBloc, OrderState>(
                   builder: (context, state) {
                     return ListView.builder(
+                        padding: EdgeInsets.zero,
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: controller.orderProductCount,
-                        itemBuilder: (context, index) => const OrderProducts());
+                        itemBuilder: (context, index) => const OrderProducts(
+                              showEdit: true,
+                            ));
                   },
                 ),
               ],
             ),
             spacer20,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Divider(
+                thickness: 0.5,
+                color: Colors.grey,
+              ),
+            ),
+            spacer26,
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  Text(AppStrings.itemTotal),
                   Text(
-                    '₹15',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    AppStrings.itemTotal,
+                    style: TextStyle(
+                        color: AppColors.offWhiteTextColor, fontSize: 15),
+                  ),
+                  Text(
+                    '15 AED',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.offWhiteTextColor),
                   )
                 ],
               ),
             ),
-            spacer5,
+            spacer18,
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const Text(AppStrings.delivery),
-                      const SizedBox(
+                    children: const [
+                      Text(
+                        AppStrings.delivery,
+                        style: TextStyle(
+                            color: AppColors.offWhiteTextColor, fontSize: 15),
+                      ),
+                      SizedBox(
                         width: 10,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) => const EditDeliveryCharge());
-                        },
-                        child: const Text(
-                          AppStrings.editFee,
-                          style: TextStyle(
-                              color: Colors.orangeAccent,
-                              decoration: TextDecoration.underline),
-                        ),
-                      )
+                      // Container(
+                      //   width: 50,
+                      //   height: 23,
+                      //   decoration: BoxDecoration(
+                      //       color: AppColors.white,
+                      //       border: Border.all(
+                      //           color: AppColors.offWhite1, width: 2),
+                      //       borderRadius: BorderRadius.circular(6)),
+                      //   child: const Center(
+                      //     child: Text("0"),
+                      //   ),
+                      // )
                     ],
                   ),
                   const Text(
@@ -137,19 +186,22 @@ class EditOrder extends StatelessWidget {
                 ],
               ),
             ),
-            spacer10,
+            spacer14,
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   Text(
                     AppStrings.grandTotal,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   Text(
-                    '₹15',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    '15 AED',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: AppColors.primaryColor),
                   )
                 ],
               ),
@@ -309,149 +361,250 @@ class EditDeliveryCharge extends StatelessWidget {
 }
 
 class OrderProducts extends StatelessWidget {
-  const OrderProducts({Key? key}) : super(key: key);
+  final bool? showEdit;
+  const OrderProducts({Key? key, this.showEdit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8), color: Colors.grey),
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+      padding: const EdgeInsets.only(left: 30.0, right: 30, bottom: 9),
+      child: Container(
+        decoration: const BoxDecoration(
+            color: AppColors.offWhite1,
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(
+                    width: 16,
+                  ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "p",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w400),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 17.0),
+                        child: Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.grey),
+                        ),
                       ),
-                      spacer5,
-                      const Text("Size: xl"),
-                      Row(
-                        children: [
-                          const Text("Colour:"),
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(2)),
-                          )
-                        ],
-                      ),
-                      Row(
-                        // mainAxisAlignment: MainAxisAlignment.spa,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Container(
+                      spacer10,
+                      showEdit == true
+                          ? Row(
+                              children: [
+                                Container(
                                   width: 23,
                                   height: 23,
-                                  padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2),
-                                      border: Border.all(
-                                          color: Colors.blue.withOpacity(0.6)),
-                                      color: Colors.blue.withOpacity(0.2)),
-                                  child: const Center(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Center(
                                     child: Text(
-                                      "1",
-                                      style: TextStyle(color: Colors.blue),
+                                      "-",
+                                      style: TextStyle(
+                                          color: AppColors.black
+                                              .withOpacity(0.52)),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 2,
-                              ),
-                              const Text(
-                                "X",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              const Text(
-                                "₹15",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          GestureDetector(
-                            onTap: () => showModalBottomSheet(
-                                context: context,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(15))),
-                                builder: (context) => const EditQty()),
-                            child: const Text(
-                              AppStrings.editQty,
-                              style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  color: Colors.orangeAccent,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 75,
-                          ),
-                          const Text(
-                            '₹15',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Divider(
-                          thickness: 1,
-                        ),
-                      )
+                                const SizedBox(
+                                  width: 7,
+                                ),
+                                Container(
+                                  width: 23,
+                                  height: 23,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: const Center(
+                                    child: Text(
+                                      "1",
+                                      style: TextStyle(color: AppColors.black),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 7,
+                                ),
+                                Container(
+                                  width: 23,
+                                  height: 23,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Center(
+                                    child: Text(
+                                      "+",
+                                      style: TextStyle(
+                                          color: AppColors.black
+                                              .withOpacity(0.52)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container()
                     ],
                   ),
-                  IconButton(
-                      onPressed: () {
-                        final controller = OrderBloc.get(context);
-                        controller.changeOrderProductCount(
-                            controller.orderProductCount - 1);
-                        controller.add(AddOrderProduct());
-                      },
-                      icon: const Icon(Icons.delete_outline))
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Product name",
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                spacer10,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        text: 'Size : ',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.black
+                                                .withOpacity(0.52)),
+                                        children: const <TextSpan>[
+                                          TextSpan(
+                                              text: 'Xl',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: 'Size : ',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.black
+                                                .withOpacity(0.52)),
+                                        children: const <TextSpan>[
+                                          TextSpan(
+                                              text: 'Xl',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                spacer10,
+                                Row(
+                                  children: [
+                                    Text("Colour : ",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.black
+                                                .withOpacity(0.52))),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Container(
+                                      width: 18,
+                                      height: 18,
+                                      decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(2)),
+                                    )
+                                  ],
+                                ),
+                                spacer10,
+                                Row(
+                                  // mainAxisAlignment:
+                                  //     MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      height: 20,
+                                      width: 20,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryColor
+                                            .withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "1",
+                                          style:
+                                              TextStyle(color: AppColors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: ' X ',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.black
+                                                .withOpacity(0.52)),
+                                        children: const <TextSpan>[
+                                          TextSpan(
+                                              text: '500 AED',
+                                              style: TextStyle(
+                                                  fontSize: 19,
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      AppColors.primaryColor)),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    showEdit == true
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              final controller =
+                                                  OrderBloc.get(context);
+                                              controller.changeOrderProductCount(
+                                                  controller.orderProductCount -
+                                                      1);
+                                              controller.add(AddOrderProduct());
+                                            },
+                                            child: const Icon(
+                                                Icons.delete_outline))
+                                        : Container()
+                                  ],
+                                ),
+                                spacer20
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: Divider(
-            thickness: 1,
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -478,7 +631,7 @@ class AddProduct extends StatelessWidget {
                         .titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.close))
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.close))
                 ],
               ),
               spacer10,

@@ -1,57 +1,264 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shop_app/shop/presentation/pages/home/components/products/product_form.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
-import 'package:shop_app/shop/presentation/widgets/shining_button.dart';
+
+import '../../../../themes/app_colors.dart';
+import '../../../../utils/app_constants.dart';
+import '../../../../widgets/custom_switch.dart';
 
 class ProductList extends StatelessWidget {
   const ProductList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    emptyList() {
+      return Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          const Spacer(),
           SizedBox(
-            height: 120,
+            width: 143,
+            height: 130,
             child: Image.asset(
               AppAssets.productImg,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
+          spacer18,
+          const Text(
             AppStrings.addProductDesc,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w600,
+                color: AppColors.black),
           ),
-          const SizedBox(
-            height: 2,
-          ),
+          spacer18,
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 50.0),
             child: Text(
               AppStrings.addProductDescSub,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
+              style:
+                  Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14),
             ),
           ),
-          const Spacer(),
-          ShiningButton(
-            title: AppStrings.addNewProduct,
-            onTap: () => {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ProductForm()))
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          )
+          // ShiningButton(
+          //   title: AppStrings.addNewProduct,
+          //   onTap: () => {
+          //     Navigator.of(context).push(
+          //         MaterialPageRoute(builder: (context) => const ProductForm()))
+          //   },
+          // ),
+          // const SizedBox(
+          //   height: 10,
+          // )
         ],
-      ),
-    );
+      );
+    }
+
+    Widget productListTile() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.5),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.offWhite1,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  spacer18,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 20),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: CachedNetworkImage(
+                              imageUrl: "",
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 25,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "entity.name",
+                                style: TextStyle(
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              spacer10,
+                              const Text(
+                                "1 KG",
+                                style: TextStyle(
+                                    color: AppColors.offWhiteTextColor,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15),
+                              ),
+                              spacer9,
+                              const Text(
+                                "In stock",
+                                style: TextStyle(
+                                    color: AppColors.green,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            spacer18,
+                            PopupMenuButton(
+                                icon: Image.asset(
+                                  AppAssets.menu,
+                                  width: 20,
+                                  height: 20,
+                                ),
+                                itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              AppAssets.edit,
+                                              width: 15,
+                                              height: 15,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            const Text(
+                                              AppStrings.edit,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15,
+                                                  color: AppColors.black),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              AppAssets.moveTop,
+                                              width: 15,
+                                              height: 15,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            const Text(
+                                              AppStrings.moveTop,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15,
+                                                  color: AppColors.black),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              AppAssets.delete,
+                                              width: 15,
+                                              height: 15,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            const Text(
+                                              AppStrings.deleteCategory,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15,
+                                                  color: AppColors.pink),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ]),
+                            spacer37,
+                            // const Spacer(),
+                            CustomSwitch(
+                              value: false,
+                              enableColor: AppColors.green,
+                              disableColor: AppColors.brown,
+                              onChanged: (value) {},
+                              height: 27,
+                              width: 51,
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  // spacer10,
+                  // const Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  //   child: Divider(),
+                  // ),
+                  // spacer10,
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Image.asset(
+                  //       AppAssets.sharedFilled,
+                  //       width: 20,
+                  //       height: 20,
+                  //     ),
+                  //     SizedBox(
+                  //       width: 8,
+                  //     ),
+                  //     const Text(
+                  //       AppStrings.share,
+                  //       style: TextStyle(
+                  //           fontSize: 15,
+                  //           fontWeight: FontWeight.w500,
+                  //           color: AppColors.skyBlue),
+                  //     ),
+                  //   ],
+                  // ),
+                  spacer18,
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            GoRouter.of(context).pushNamed(AppPages.addProduct);
+          },
+          child: const Center(
+            child: Icon(Icons.add),
+          ),
+        ),
+        body: emptyList());
   }
 }

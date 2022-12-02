@@ -1,5 +1,15 @@
 import 'package:get_it/get_it.dart';
+import 'package:shop_app/shop/data/data_sources/remote/auth_data_source.dart';
+import 'package:shop_app/shop/data/data_sources/remote/product_remote_data_source.dart';
+import 'package:shop_app/shop/data/repositories/auth_remote_data_rempository_impl.dart';
+import 'package:shop_app/shop/data/repositories/product_repository_impl.dart';
+import 'package:shop_app/shop/domain/repositories/auth_remote_data_repository.dart';
+import 'package:shop_app/shop/domain/repositories/product_repository.dart';
+import 'package:shop_app/shop/domain/use_cases/category_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/login_usecase.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/variant_bloc/variant_bloc.dart';
@@ -12,11 +22,25 @@ Future<void> init() async {
   //core
   sl.registerLazySingleton<ApiProvider>(() => ApiProvider());
   sl.registerLazySingleton<HiveService>(() => HiveService());
+  //data source
+  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSourceImpl(sl()));
+  sl.registerLazySingleton<ProductRemoteDataSource>(
+      () => ProductRemoteDataSourceImpl(sl()));
 
+  //repository'
+  sl.registerLazySingleton<AuthRemoteDataRepository>(
+      () => AuthRemoteDataRepositoryImpl(sl()));
+  sl.registerLazySingleton<ProductRepository>(
+      () => ProductRepositoryImpl(sl()));
+  //use case
+  sl.registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()));
+  sl.registerLazySingleton<CategoryUseCase>(() => CategoryUseCase(sl()));
   //bloc providers
   sl.registerLazySingleton<BottomNavigationCubit>(
       () => BottomNavigationCubit());
   sl.registerLazySingleton<ProductBloc>(() => ProductBloc());
   sl.registerLazySingleton<VariantBloc>(() => VariantBloc());
+  sl.registerLazySingleton<CategoryBloc>(() => CategoryBloc(sl()));
   sl.registerLazySingleton<OrderBloc>(() => OrderBloc());
+  sl.registerLazySingleton<LoginBloc>(() => LoginBloc(sl()));
 }

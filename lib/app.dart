@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/variant_bloc/variant_bloc.dart';
@@ -27,6 +29,12 @@ class ShopApp extends StatelessWidget {
           create: (context) => sl(),
         ),
         BlocProvider<OrderBloc>(
+          create: (context) => sl(),
+        ),
+        BlocProvider<LoginBloc>(
+          create: (context) => sl(),
+        ),
+        BlocProvider<CategoryBloc>(
           create: (context) => sl(),
         ),
       ],

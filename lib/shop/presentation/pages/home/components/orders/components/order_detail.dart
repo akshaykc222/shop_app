@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
+import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 import 'package:shop_app/shop/presentation/widgets/ripple_round.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../manager/bloc/order_bloc/order_bloc.dart';
 import 'edit_order.dart';
 
 class OrderDetails extends StatelessWidget {
@@ -14,6 +17,7 @@ class OrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = OrderBloc.get(context);
     _makingPhoneCall() async {
       var url = Uri.parse("tel:9776765434");
       if (await canLaunchUrl(url)) {
@@ -24,60 +28,93 @@ class OrderDetails extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.green,
-        title: const Text("Order # 56454"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12),
-            child: ElevatedButton(
-                style:
-                    ElevatedButton.styleFrom(backgroundColor: AppColors.white),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const EditOrder()));
-                },
-                child: const Text(
-                  AppStrings.editOrder,
-                  style: TextStyle(color: Colors.black),
-                )),
-          )
-        ],
-      ),
+      appBar: getAppBar(
+          context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.black,
+                    size: 25,
+                  )),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Oder #154484",
+                  maxLines: 1,
+                  textWidthBasis: null,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditOrder()));
+                  },
+                  icon: Image.asset(
+                    AppAssets.edit,
+                    width: 20,
+                    height: 20,
+                  ))
+            ],
+          )),
       bottomNavigationBar: Container(
         height: 70,
-        decoration: const BoxDecoration(
-            color: Colors.white70,
-            border: Border(top: BorderSide(color: Colors.grey, width: 0.4))),
+        decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                  blurRadius: 4,
+                  color: Colors.grey.shade300,
+                  offset: const Offset(0, -1))
+            ]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            TextButton(
-                onPressed: () => {
+            Expanded(
+              child: TextButton(
+                  onPressed: () => {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) => const RejectOrder())
+                      },
+                  child: const Text(
+                    AppStrings.rejectOrder,
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600),
+                  )),
+            ),
+            Expanded(
+              child: SizedBox(
+                height: 70,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20)))),
+                    onPressed: () {
                       showModalBottomSheet(
                           context: context,
-                          builder: (context) => const RejectOrder())
+                          builder: (context) => const AcceptOrder());
                     },
-                child: const Text(
-                  AppStrings.rejectOrder,
-                  style: TextStyle(color: Colors.red),
-                )),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.4,
-              height: 45,
-              child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) => const AcceptOrder());
-                  },
-                  child: const Text(
-                    AppStrings.acceptOrder,
-                    style: TextStyle(fontSize: 16),
-                  )),
+                    child: const Text(
+                      AppStrings.acceptOrder,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    )),
+              ),
             )
           ],
         ),
@@ -89,7 +126,7 @@ class OrderDetails extends StatelessWidget {
             children: [
               spacer10,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -113,157 +150,99 @@ class OrderDetails extends StatelessWidget {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: Divider(),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "1 ITEM",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400, color: Colors.grey),
-                    ),
-                    Row(
-                      children: const [
-                        Icon(
-                          Icons.receipt_long_rounded,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          "RECEIPT",
-                          style: TextStyle(color: Colors.blue),
-                        )
-                      ],
+                    RichText(
+                      text: TextSpan(
+                        text: 'Items : ',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.black.withOpacity(0.43)),
+                        children: const <TextSpan>[
+                          TextSpan(
+                              text: '2',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.black)),
+                        ],
+                      ),
                     )
                   ],
                 ),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              spacer30,
+              Wrap(
                 children: [
-                  const SizedBox(
-                    width: 10,
+                  BlocBuilder<OrderBloc, OrderState>(
+                    builder: (context, state) {
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.orderProductCount,
+                          itemBuilder: (context, index) =>
+                              const OrderProducts());
+                    },
                   ),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "p",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w400),
-                      ),
-                      spacer5,
-                      const Text("Size: xl"),
-                      Row(
-                        children: [
-                          const Text("Colour:"),
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(2)),
-                          )
-                        ],
-                      ),
-                      Row(
-                        // mainAxisAlignment: MainAxisAlignment.spa,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Container(
-                                  width: 23,
-                                  height: 23,
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2),
-                                      border: Border.all(
-                                          color: Colors.blue.withOpacity(0.6)),
-                                      color: Colors.blue.withOpacity(0.2)),
-                                  child: const Center(
-                                    child: Text(
-                                      "1",
-                                      style: TextStyle(color: Colors.blue),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 2,
-                              ),
-                              const Text(
-                                "X",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              const Text(
-                                "₹15",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 100,
-                          ),
-                          const Text(
-                            '₹15',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Divider(
-                          thickness: 1,
-                        ),
-                      )
-                    ],
-                  )
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Divider(
-                  thickness: 1,
-                ),
-              ),
+              spacer26,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text(AppStrings.itemTotal),
                     Text(
-                      '₹15',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      AppStrings.itemTotal,
+                      style: TextStyle(
+                          color: AppColors.offWhiteTextColor, fontSize: 15),
+                    ),
+                    Text(
+                      '15 AED',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.offWhiteTextColor),
                     )
                   ],
                 ),
               ),
-              spacer5,
+              spacer18,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(AppStrings.delivery),
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          AppStrings.delivery,
+                          style: TextStyle(
+                              color: AppColors.offWhiteTextColor, fontSize: 15),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          width: 50,
+                          height: 23,
+                          decoration: BoxDecoration(
+                              color: AppColors.white,
+                              border: Border.all(
+                                  color: AppColors.offWhite1, width: 2),
+                              borderRadius: BorderRadius.circular(6)),
+                          child: const Center(
+                            child: Text("0"),
+                          ),
+                        )
+                      ],
+                    ),
                     const Text(
                       'Free',
                       style: TextStyle(
@@ -272,42 +251,44 @@ class OrderDetails extends StatelessWidget {
                   ],
                 ),
               ),
-              spacer10,
+              spacer14,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
                     Text(
                       AppStrings.grandTotal,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Text(
-                      '₹15',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      '15 AED',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: AppColors.primaryColor),
                     )
                   ],
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: 30),
                 child: Divider(
                   thickness: 1,
                 ),
               ),
               spacer10,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       AppStrings.customerDetails,
                       style: TextStyle(
-                          color: Colors.black38,
-                          fontSize: 18,
+                          color: AppColors.black,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold),
                     ),
                     GestureDetector(
@@ -319,6 +300,7 @@ class OrderDetails extends StatelessWidget {
                           const Icon(
                             Icons.share,
                             color: Colors.blue,
+                            size: 20,
                           ),
                           const SizedBox(
                             width: 5,
@@ -326,7 +308,8 @@ class OrderDetails extends StatelessWidget {
                           Text(
                             AppStrings.share.toUpperCase(),
                             style: const TextStyle(
-                                color: Colors.blue,
+                                color: AppColors.skyBlue,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold),
                           )
                         ],
@@ -337,13 +320,28 @@ class OrderDetails extends StatelessWidget {
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [Text("sdfsdf"), Text("+91-7907017542")],
+                      children: const [
+                        Text(
+                          "sdfsdf",
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          "+91-7907017542",
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w600),
+                        )
+                      ],
                     ),
                     Row(
                       children: [
@@ -386,7 +384,7 @@ class OrderDetails extends StatelessWidget {
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   children: [
                     Column(
@@ -395,9 +393,15 @@ class OrderDetails extends StatelessWidget {
                         Text(
                           AppStrings.address,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppColors.offWhiteTextColor),
                         ),
-                        Text("fsdfdsfdf")
+                        Text("fsdfdsfdf",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: AppColors.black))
                       ],
                     ),
                   ],
@@ -405,7 +409,7 @@ class OrderDetails extends StatelessWidget {
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: const [
@@ -419,7 +423,7 @@ class OrderDetails extends StatelessWidget {
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: const [
@@ -433,16 +437,16 @@ class OrderDetails extends StatelessWidget {
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
-                  children: [
+                  children: const [
                     ItemCard(title: AppStrings.state, value: "Kerala"),
                   ],
                 ),
               ),
               spacer20,
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -462,6 +466,7 @@ class OrderDetails extends StatelessWidget {
                   ],
                 ),
               ),
+              spacer20
             ],
           ),
         ],
@@ -483,12 +488,18 @@ class ItemCard extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.offWhiteTextColor,
+              fontSize: 15),
         ),
         spacer5,
         Text(
           value,
-          style: const TextStyle(),
+          style: const TextStyle(
+              color: AppColors.black,
+              fontSize: 15,
+              fontWeight: FontWeight.w600),
         )
       ],
     );
@@ -532,10 +543,13 @@ class AcceptOrder extends StatelessWidget {
               ],
             ),
             spacer20,
-            const Text(AppStrings.acceptDesc),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Text(AppStrings.acceptDesc),
+            ),
             spacer20,
             SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+                width: MediaQuery.of(context).size.width * 0.6,
                 height: 45,
                 child: ElevatedButton(
                     onPressed: () {
@@ -591,10 +605,13 @@ class RejectOrder extends StatelessWidget {
               ],
             ),
             spacer20,
-            const Text(AppStrings.rejectDesc),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Text(AppStrings.rejectDesc),
+            ),
             spacer20,
             SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+                width: MediaQuery.of(context).size.width * 0.6,
                 height: 45,
                 child: ElevatedButton(
                     onPressed: () {

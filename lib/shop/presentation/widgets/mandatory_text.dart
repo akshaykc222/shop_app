@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../themes/app_colors.dart';
+
 class MandatoryText extends StatelessWidget {
   final String title;
 
@@ -10,7 +12,13 @@ class MandatoryText extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(title),
+        Text(
+          title,
+          style: const TextStyle(
+              color: AppColors.offWhiteTextColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w600),
+        ),
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: const [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 
 import '../../../../../themes/app_strings.dart';
+import '../../../../../widgets/custom_app_bar.dart';
 
 class CategoryAddForm extends StatelessWidget {
   const CategoryAddForm({Key? key}) : super(key: key);
@@ -10,18 +11,18 @@ class CategoryAddForm extends StatelessWidget {
   Widget build(BuildContext context) {
     buildImageWidget() {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(
-            height: 10,
+            height: 38,
           ),
           Container(
-            width: 120,
-            height: 120,
+            width: 138,
+            height: 138,
             decoration: BoxDecoration(
                 // color: AppColors.lightGrey,
                 border: Border.all(color: AppColors.lightGrey),
-                borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(19)),
             child: const Center(
               child: Icon(
                 Icons.camera_alt_outlined,
@@ -30,54 +31,95 @@ class CategoryAddForm extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            height: 5,
+          const SizedBox(
+            height: 12,
           ),
-          Text(
-            AppStrings.addCategoryImage,
-            style: Theme.of(context).textTheme.bodySmall,
+          const Text(
+            AppStrings.addImage,
+            style: TextStyle(
+                color: AppColors.skyBlue, fontWeight: FontWeight.w600),
           )
         ],
       );
     }
 
     buildTextField() {
-      return TextFormField(
-        decoration: const InputDecoration(label: Text(AppStrings.categoryName)),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              AppStrings.categoryName,
+              style: TextStyle(
+                  color: AppColors.offWhiteTextColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          TextFormField(
+            decoration:
+                const InputDecoration(label: Text(AppStrings.categoryName)),
+          ),
+        ],
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(AppStrings.addCategory),
+      appBar: getAppBar(
+          context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.black,
+                    size: 25,
+                  )),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  AppStrings.editOrder,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.copyWith(fontSize: 25, fontWeight: FontWeight.w600),
+                ),
+              ),
+              IconButton(onPressed: () {}, icon: const Text(""))
+            ],
+          )),
+      bottomNavigationBar: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 70,
+        child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)))),
+            child: const Text(
+              AppStrings.addCategory,
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            )),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             buildImageWidget(),
             const SizedBox(
               height: 20,
             ),
             buildTextField(),
-            const Spacer(),
-            const Divider(
-              color: Colors.grey,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 50,
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(AppStrings.addCategory)),
-            ),
-            const SizedBox(
-              height: 10,
-            )
           ],
         ),
       ),

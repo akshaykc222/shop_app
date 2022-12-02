@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class RippleButton extends StatefulWidget {
-  const RippleButton({super.key});
+  final Color? color;
+  const RippleButton({super.key, this.color});
 
   @override
   _RippleButtonState createState() => _RippleButtonState();
@@ -48,7 +49,7 @@ class _RippleButtonState extends State<RippleButton>
     return Scaffold(
       body: Center(
         child: CustomPaint(
-          painter: MyCustomPainter(_animation.value),
+          painter: MyCustomPainter(_animation.value, color: widget.color),
           child: Container(),
         ),
       ),
@@ -58,21 +59,22 @@ class _RippleButtonState extends State<RippleButton>
 
 class MyCustomPainter extends CustomPainter {
   final double animationValue;
-
-  MyCustomPainter(this.animationValue);
+  final Color? color;
+  MyCustomPainter(this.animationValue, {this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     for (int value = 1; value >= 0; value--) {
       circle(canvas, Rect.fromLTRB(0, 0, size.width, size.height),
-          value + animationValue);
+          value + animationValue,
+          color: color);
     }
   }
 
-  void circle(Canvas canvas, Rect rect, double value) {
+  void circle(Canvas canvas, Rect rect, double value, {Color? color}) {
     Paint paint = Paint()
-      ..color =
-          const Color(0xffffa500).withOpacity((1 - (value / 4)).clamp(.0, 1));
+      ..color = (color ?? const Color(0xffffa500))
+          .withOpacity((1 - (value / 4)).clamp(.0, 1));
 
     canvas.drawCircle(rect.center,
         sqrt((rect.width * .5 * rect.width * .5) * value / 4), paint);

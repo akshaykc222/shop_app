@@ -52,7 +52,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     ChangeQtyEvent();
   }
 
-  int orderProductCount = 1;
+  int orderProductCount = 2;
   changeOrderProductCount(int count) {
     orderProductCount = count;
   }

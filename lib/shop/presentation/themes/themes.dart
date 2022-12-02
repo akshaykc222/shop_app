@@ -8,6 +8,9 @@ class AppTheme {
         // bottomSheetTheme: BottomSheetThemeData(
         //   elevation: 0,
         // ),
+        scaffoldBackgroundColor: AppColors.white,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: AppColors.primaryColor),
         fontFamily: GoogleFonts.poppins().fontFamily,
         elevatedButtonTheme: const ElevatedButtonThemeData(
             style: ButtonStyle(
@@ -19,14 +22,28 @@ class AppTheme {
         appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.primaryColor,
             foregroundColor: AppColors.white),
-        inputDecorationTheme: const InputDecorationTheme(
-          focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.lightGrey)),
-          enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.lightGrey)),
+        inputDecorationTheme: InputDecorationTheme(
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          labelStyle: const TextStyle(
+              color: AppColors.black, fontWeight: FontWeight.bold),
+          hintStyle: const TextStyle(
+              color: AppColors.black, fontWeight: FontWeight.bold),
+          focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: AppColors.lightGrey),
+              borderRadius: BorderRadius.circular(10)),
+          disabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: AppColors.lightGrey),
+              borderRadius: BorderRadius.circular(10)),
+          enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: AppColors.lightGrey),
+              borderRadius: BorderRadius.circular(10)),
         ),
         primarySwatch: Colors.blue,
         textTheme: TextTheme(
+          bodyLarge: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 23,
+              color: AppColors.black),
           // headline5: const TextStyle(
           //     color: AppColors.black,
           //     fontWeight: FontWeight.w600,

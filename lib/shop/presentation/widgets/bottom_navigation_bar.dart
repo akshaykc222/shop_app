@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 
 import '../manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
+import '../routes/route_manager.dart';
 import '../themes/app_assets.dart';
 
 class CustomBottomAppBar extends StatelessWidget {
@@ -13,10 +16,10 @@ class CustomBottomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 60,
-      decoration: BoxDecoration(color: Colors.white70, boxShadow: [
+      height: 77,
+      decoration: BoxDecoration(color: AppColors.white, boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.5),
+          color: AppColors.lightGrey.withOpacity(0.6),
           spreadRadius: 4,
           blurRadius: 5,
           offset: const Offset(0, -1),
@@ -39,7 +42,12 @@ class CustomBottomAppBar extends StatelessWidget {
                           radius: 30,
                           splashColor: Colors.black12,
                           highlightColor: Colors.transparent,
-                          onTap: () => cubit.changeBottomNav(menu.index),
+                          onTap: () {
+                            cubit.changeBottomNav(menu.index);
+                            GoRouter.of(context).go(AppRouteManager.home(
+                                CustomBottomNavigationItems
+                                    .values[menu.index]));
+                          },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -47,20 +55,22 @@ class CustomBottomAppBar extends StatelessWidget {
                                 getHomeIcon(menu),
                                 color: cubit.currentIndex != menu.index
                                     ? Colors.grey
-                                    : Colors.blue.withOpacity(0.7),
+                                    : AppColors.primaryColor,
+                                width: 30,
+                                height: 30,
                               ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                "${menu.name[0].toUpperCase()}${menu.name.substring(1)}",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: cubit.currentIndex != menu.index
-                                      ? Colors.grey
-                                      : Colors.blue.withOpacity(0.7),
-                                ),
-                              )
+                              // const SizedBox(
+                              //   height: 3,
+                              // ),
+                              // Text(
+                              //   "${menu.name[0].toUpperCase()}${menu.name.substring(1)}",
+                              //   style: TextStyle(
+                              //     fontSize: 12,
+                              //     color: cubit.currentIndex != menu.index
+                              //         ? Colors.grey
+                              //         : Colors.blue.withOpacity(0.7),
+                              //   ),
+                              // )
                             ],
                           ),
                         ),

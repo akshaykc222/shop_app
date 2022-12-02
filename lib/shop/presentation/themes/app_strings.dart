@@ -1,17 +1,30 @@
 class AppStrings {
   static const products = "Products";
+  static const password = "Password";
+  static const revenue = "Revenue";
   static const share = "Share";
+  static const customerList = "Customer List";
   static const address = "Address";
   static const add = "Add";
+  static const totalOrdersSaved = "Total Orders Saved";
+  static const addImage = "Add Image";
+  static const topDeliveryMan = "Top delivery man";
+  static const profile = "Profile";
   static const loginToYourStore = "Login in to your store";
+  static const login = "Login";
   static const editQty = "Edit qty";
   static const mobileNumber = "Mobile Number";
+  static const manageStore = "Manage Store";
   static const yesAcceptOrder = "Yes, Accept Order";
   static const yesRejecttOrder = "Yes, Reject Order";
   static const orders = "Orders";
   static const payment = "Payment";
   static const acceptOrder = "Accept Orders";
   static const details = "Details";
+  static const changePassword = "Change Password";
+  static const contactUs = "Contact us";
+  static const logOut = "Logout";
+  static const deleteAccount = "Delete account";
   static const catalogue = "Catalogue";
   static const shareYourStore = "Share your store";
   static const categories = "Categories";
@@ -26,6 +39,8 @@ class AppStrings {
   static const addNewProduct = "Add new product";
   static const requestConfirm = "Request confirmation";
   static const editOrder = "Edit order";
+  static const edit = "Edit";
+  static const moveTop = "Move to top";
   static const editFee = "Edit Fee";
   static const editQuantity = "Edit Quantity";
   static const editDeliveryCharge = "Edit delivery charge";
@@ -35,10 +50,13 @@ class AppStrings {
   static const rejectOrder = "Reject Order";
   static const itemTotal = "Item Total";
   static const delivery = "Delivery";
+  static const deliveryMan = "Delivery men";
   static const grandTotal = "Grand Total";
   static const addAnotherSize = "Add another size";
   static const delete = "Delete";
+  static const deleteCategory = "Delete Category";
   static const productUnit = "Product Unit";
+  static const myCustomer = "My Customers";
 
   static const piece = "Piece";
   static const unit = "Unit";
@@ -82,13 +100,26 @@ class AppStrings {
   static const String state = "State";
 
   static const String close = "Close";
+  static const String storeTiming = "Store Timings";
 
   static const String change = "Change";
+  static const String hours = "Hours";
+  static const String yourStoreWillAutoDesc =
+      "Your store will be automatically switched online/ Offline based on the hours you choose.";
+  static const String saveAndContinue = "Save & continue";
   static const String country = "Country";
   static const String or = "or";
+  static const String twentyFourHrs = "24 Hours";
   static const String continueStr = "Continue";
   static const String acceptDesc = "Do you want to accept this new order?";
   static const String rejectDesc =
       "Once you reject the order,you can't accept it anymore.";
   static const String email = "Email";
+  static const String lowestPriceDesc =
+      "st size will be first shown to the buyer as it’s the cheapest";
+  static const String overview = "Overview";
+  static const String confirmed = "Confirmed";
+  static const String processing = "Processing";
+  static const String readyToDeliver = "Ready to deliver";
+  static const String onTheWay = "On the way";
 }

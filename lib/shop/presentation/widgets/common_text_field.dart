@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/mandatory_text.dart';
 
 class CommonTextField extends StatefulWidget {
@@ -22,8 +23,7 @@ class CommonTextField extends StatefulWidget {
       this.enable,
       this.showSuffixIcon,
       this.controller,
-        this.validator
-      })
+      this.validator})
       : super(key: key);
 
   @override
@@ -31,37 +31,49 @@ class CommonTextField extends StatefulWidget {
 }
 
 class _CommonTextFieldState extends State<CommonTextField> {
-  late bool showSuffixIcon;
+  late bool showPrefixIcon;
   @override
   void initState() {
-    showSuffixIcon = widget.showSuffixIcon ?? false;
+    showPrefixIcon = widget.showSuffixIcon ?? false;
     super.initState();
   }
 
   final _focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      onTap: () {
-        setState(() {
-          if (!_focusNode.hasFocus) {
-            showSuffixIcon = true;
-          } else {
-            showSuffixIcon = true;
-          }
-        });
-      },
-      controller: widget.controller,
-      validator:widget.validator==null?null: (val)=>widget.validator!(val??""),
-      focusNode: _focusNode,
-      decoration: InputDecoration(
-          prefix: showSuffixIcon ? widget.prefix : null,
-          suffix: widget.suffix,
-          label: widget.widgetLabel ??
-              (widget.required == true
-                  ? MandatoryText(title: widget.title)
-                  : Text(widget.title)),
-          enabled: widget.enable ?? true),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: MandatoryText(title: widget.title),
+          ),
+        ),
+        spacer10,
+        TextFormField(
+          onTap: () {
+            setState(() {
+              if (!_focusNode.hasFocus) {
+                showPrefixIcon = true;
+              } else {
+                showPrefixIcon = true;
+              }
+            });
+          },
+          controller: widget.controller,
+          validator: widget.validator == null
+              ? null
+              : (val) => widget.validator!(val ?? ""),
+          focusNode: _focusNode,
+          decoration: InputDecoration(
+              prefixIcon: showPrefixIcon ? widget.prefix : null,
+              suffix: widget.suffix,
+              label: widget.widgetLabel ?? Text(widget.title),
+              enabled: widget.enable ?? true),
+        ),
+      ],
     );
   }
 }

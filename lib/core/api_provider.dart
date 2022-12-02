@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
 
 import '../shop/data/routes/app_remote_routes.dart';
 import 'custom_exception.dart';
@@ -38,13 +40,18 @@ class ApiProvider {
       };
     }
   }
+  addToken() async {
+    GetStorage storage = GetStorage();
+    String? token = storage.read(
+      LocalStorageNames.token,
+    );
+    _dio.options.headers.addAll({'Authorization': 'Bearer $token'});
+  }
 
   Future<Map<String, dynamic>> get(String endPoint) async {
     try {
-      // GetStorage sr = GetStorage();
-      // String? token = sr.read('token');
-      // print(token);
-      // _dio.options.headers.addAll({'Authorization': 'Token $token'});
+      addToken();
+      prettyPrint(_dio.options.headers.toString());
       final Response response = await _dio.get(
         endPoint,
       );
@@ -63,12 +70,8 @@ class ApiProvider {
     try {
       prettyPrint("starting dio");
 
-      // String? token = sr.read('token');
-      // prettyPrint(msg: token ?? "");
-      // if (token != null) {
-      //   _dio.options.headers.addAll({'Authorization': 'Token $token'});
-      // }
-
+      addToken();
+      // prettyPrint(_dio.options.)
       final Response response = await _dio.post(
         endPoint,
         data: body,
@@ -88,11 +91,7 @@ class ApiProvider {
       String endPoint, Map<String, dynamic> body) async {
     prettyPrint("on post call");
     try {
-      // GetStorage sr = GetStorage();
-      // String? token = sr.read('token');
-      // prettyPrint(msg: token ?? "");
-      // _dio.options.headers.addAll({'Authorization': 'Token $token'});
-      // prettyPrint(msg: "starting dio");
+      addToken();
       final Response response = await _dio.put(
         endPoint,
         data: body,
@@ -126,6 +125,8 @@ class ApiProvider {
         throw BadRequestException(responseData.toString());
       case 401:
         throw UnauthorisedException(responseData.toString());
+      case 403:
+        throw BadRequestException(responseData.toString());
       case 500:
       default:
         throw FetchDataException(

@@ -54,6 +54,9 @@ dependencies:
   share_plus: ^6.2.0
   url_launcher: ^6.1.6
   google_fonts: ^3.0.1
+  get_storage: ^2.0.3
+  cached_network_image: ^3.2.2
+  graphic: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

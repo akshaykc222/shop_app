@@ -9,4 +9,9 @@ class AppPages {
   static const itemList = "itemList";
   static const wallet = "wallet";
   static const addCategory = "add_category";
+  static const addProduct = "add_product";
+  static const addVariant = "add_variant";
+  static const storeTiming = "store_timing";
+  static const deliveryman = "delivery_man";
+  static const customerList = "customer_list";
 }

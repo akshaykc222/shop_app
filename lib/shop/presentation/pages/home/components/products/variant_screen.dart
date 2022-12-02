@@ -7,7 +7,9 @@ import 'package:shop_app/shop/presentation/manager/bloc/variant_bloc/variant_blo
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
+import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
+import '../../../../themes/app_assets.dart';
 import '../../../../themes/app_strings.dart';
 
 class VariantScreen extends StatelessWidget {
@@ -17,9 +19,48 @@ class VariantScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = VariantBloc.get(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(AppStrings.addVariant),
+      appBar: getAppBar(
+          context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.black,
+                    size: 25,
+                  )),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  AppStrings.addVariant,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.copyWith(fontSize: 25, fontWeight: FontWeight.w600),
+                ),
+              ),
+              IconButton(onPressed: () {}, icon: const Text(""))
+            ],
+          )),
+      bottomNavigationBar: SizedBox(
+        height: 55,
+        width: MediaQuery.of(context).size.width,
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)))),
+          child: const Text(
+            AppStrings.saveAndContinue,
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -48,14 +89,26 @@ class VariantScreen extends StatelessWidget {
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.lightGrey),
                                   ),
-                                  const Icon(
-                                    Icons.keyboard_arrow_down,
-                                    size: 30,
-                                  )
+                                  const Icon(Icons.keyboard_arrow_down,
+                                      size: 30, color: AppColors.lightGrey)
                                 ],
                               ),
+                              Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                    color: AppColors.offWhite1,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Text(
+                                  AppStrings.lowestPriceDesc,
+                                  style: TextStyle(
+                                      fontSize: 15, color: AppColors.greyText),
+                                ),
+                              ),
+                              spacer9,
                               Wrap(
                                 children: [
                                   BlocConsumer<VariantBloc, VariantState>(
@@ -72,17 +125,22 @@ class VariantScreen extends StatelessWidget {
                                   )
                                 ],
                               ),
+                              spacer22,
                               GestureDetector(
                                 onTap: () => controller.add(VariantAdd()),
                                 child: Container(
-                                  width: 150,
-                                  height: 45,
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 55,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: AppColors.lightGrey)),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border:
+                                          Border.all(color: AppColors.skyBlue)),
                                   child: const Center(
-                                    child: Text(AppStrings.addAnotherSize),
+                                    child: Text(
+                                      AppStrings.addAnotherSize,
+                                      style:
+                                          TextStyle(color: AppColors.skyBlue),
+                                    ),
                                   ),
                                 ),
                               )
@@ -91,7 +149,7 @@ class VariantScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    spacer30,
+                    spacer22,
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Card(
@@ -112,14 +170,15 @@ class VariantScreen extends StatelessWidget {
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.greyText),
                                   ),
-                                  const Icon(
-                                    Icons.keyboard_arrow_down,
-                                    size: 30,
-                                  )
+                                  const Icon(Icons.keyboard_arrow_down,
+                                      size: 30, color: AppColors.greyText)
                                 ],
                               ),
+                              spacer14,
                               Wrap(
                                 children: [
                                   BlocConsumer<VariantBloc, VariantState>(
@@ -195,14 +254,18 @@ class VariantScreen extends StatelessWidget {
                                   ),
                                 ),
                                 child: Container(
-                                  width: 150,
-                                  height: 45,
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 55,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: AppColors.lightGrey)),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border:
+                                          Border.all(color: AppColors.skyBlue)),
                                   child: const Center(
-                                    child: Text(AppStrings.addColor),
+                                    child: Text(
+                                      AppStrings.addColor,
+                                      style:
+                                          TextStyle(color: AppColors.skyBlue),
+                                    ),
                                   ),
                                 ),
                               )
@@ -284,39 +347,37 @@ class SizeProduct extends StatelessWidget {
           title: "${AppStrings.size} ${index + 1}",
           required: true,
         ),
+        spacer10,
         Row(
-          children: const [
-            Expanded(
+          children: [
+            const Expanded(
                 child: CommonTextField(
               title: AppStrings.price,
               required: true,
             )),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
-            Expanded(
+            const Expanded(
                 child: CommonTextField(
               title: AppStrings.sellingPrice,
               required: false,
             )),
-          ],
-        ),
-        spacer5,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
             GestureDetector(
               onTap: () => controller.add(VariantDecrement()),
-              child: Text(
-                AppStrings.delete,
-                style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 30),
+                child: Image.asset(
+                  AppAssets.delete,
+                  width: 22,
+                  height: 25,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
           ],
-        )
+        ),
+        spacer5,
       ],
     );
   }
