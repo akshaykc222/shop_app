@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/core/pretty_printer.dart';
@@ -44,4 +45,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       return null;
     }
   }
+
+  final categoryNameController = TextEditingController();
 }

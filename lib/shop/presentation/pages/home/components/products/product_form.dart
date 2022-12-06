@@ -328,10 +328,14 @@ class ProductForm extends StatelessWidget {
               child: CommonTextField(
             required: true,
             title: AppStrings.price,
-            prefix: Text(
-              "₹",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            textInputType: TextInputType.numberWithOptions(decimal: true),
+            prefix: Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 4),
+              child: Text(
+                "AED",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
             ),
           )),
           SizedBox(
@@ -341,10 +345,14 @@ class ProductForm extends StatelessWidget {
               child: CommonTextField(
             required: true,
             title: AppStrings.discountPrice,
-            prefix: Text(
-              "₹",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            textInputType: TextInputType.numberWithOptions(decimal: true),
+            prefix: Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 4),
+              child: Text(
+                "AED",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
             ),
           ))
         ],

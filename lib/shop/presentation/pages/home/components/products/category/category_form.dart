@@ -1,14 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/shop/domain/entities/category_entity.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 
 import '../../../../../themes/app_strings.dart';
 import '../../../../../widgets/custom_app_bar.dart';
 
 class CategoryAddForm extends StatelessWidget {
-  const CategoryAddForm({Key? key}) : super(key: key);
+  final CategoryEntity? entity;
+  const CategoryAddForm({Key? key, this.entity}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final controller = CategoryBloc.get(context);
     buildImageWidget() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,13 +28,18 @@ class CategoryAddForm extends StatelessWidget {
                 // color: AppColors.lightGrey,
                 border: Border.all(color: AppColors.lightGrey),
                 borderRadius: BorderRadius.circular(19)),
-            child: const Center(
-              child: Icon(
-                Icons.camera_alt_outlined,
-                size: 30,
-                color: AppColors.lightGrey,
-              ),
-            ),
+            child: entity == null
+                ? const Center(
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      size: 30,
+                      color: AppColors.lightGrey,
+                    ),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: entity?.image ?? "",
+                    fit: BoxFit.contain,
+                  ),
           ),
           const SizedBox(
             height: 12,
@@ -58,6 +68,7 @@ class CategoryAddForm extends StatelessWidget {
             ),
           ),
           TextFormField(
+            controller: controller.categoryNameController,
             decoration:
                 const InputDecoration(label: Text(AppStrings.categoryName)),
           ),

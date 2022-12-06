@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
@@ -82,7 +83,9 @@ class DashBoardScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: AppColors.white,
                     image: DecorationImage(
-                        image: AssetImage(AppAssets.productImg))),
+                        fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(
+                            "https://goodmenproject.com/wp-content/uploads/2013/07/Robert2.jpg"))),
               ),
               spacer10,
               Text(
@@ -157,7 +160,11 @@ class DashBoardScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(10)),
-                    child: Image.asset(image)),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0011%2F2341%2F8172%2Fproducts%2FTM838-Tasti-Lee-single_1024x1024.jpg%3Fv%3D1523418370&f=1&nofb=1&ipt=20741e525ea5dc66296e7caf5ab6d4da82d312b0f7edda3311dbc6af3374f5ad&ipo=images",
+                      fit: BoxFit.fill,
+                    )),
                 Expanded(
                   child: Column(
                     children: [
@@ -356,7 +363,7 @@ class DashBoardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    AppStrings.topDeliveryMan,
+                    AppStrings.overview,
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,
@@ -381,7 +388,7 @@ class DashBoardScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: overViewCard(
-                        title: AppStrings.confirmed,
+                        title: "Pending",
                         image: AppAssets.confirmed,
                         content: "0"),
                   ),
@@ -390,9 +397,9 @@ class DashBoardScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: overViewCard(
-                        title: AppStrings.processing,
+                        title: "Accepted",
                         image: AppAssets.processing,
-                        content: "12 AED"),
+                        content: "1"),
                   ),
                 ],
               ),
@@ -401,7 +408,7 @@ class DashBoardScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: overViewCard(
-                        title: "Pending",
+                        title: "Shipped",
                         image: AppAssets.readyToDeliver,
                         content: "0"),
                   ),
@@ -410,9 +417,9 @@ class DashBoardScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: overViewCard(
-                        title: AppStrings.processing,
+                        title: "Cancelled",
                         image: AppAssets.onTheWay,
-                        content: "12 AED"),
+                        content: "12 "),
                   ),
                 ],
               ),
@@ -430,19 +437,23 @@ class DashBoardScreen extends StatelessWidget {
                 ],
               ),
               spacer20,
-              Row(
-                children: [
-                  deliveryBoyCard(
-                      title: "akshay",
-                      image: AppAssets.changePassword,
-                      orders: "5")
-                ],
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: 5,
+                    itemBuilder: (context, index) => deliveryBoyCard(
+                        title: "akshay",
+                        image: AppAssets.changePassword,
+                        orders: "5")),
               ),
               spacer20,
               Row(
                 children: const [
                   Text(
-                    AppStrings.overview,
+                    "Top selling items",
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,
@@ -451,13 +462,18 @@ class DashBoardScreen extends StatelessWidget {
                 ],
               ),
               spacer20,
-              Row(
-                children: [
-                  topSellingItems(
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: ListView.builder(
+                  itemCount: 4,
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => topSellingItems(
                       title: "tester",
                       image: AppAssets.changePassword,
                       sold: "5"),
-                ],
+                ),
               ),
               spacer24,
               Row(

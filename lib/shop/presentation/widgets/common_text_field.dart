@@ -9,6 +9,7 @@ class CommonTextField extends StatefulWidget {
   final Widget? prefix;
   final Widget? suffix;
   final Widget? widgetLabel;
+  final TextInputType? textInputType;
   final bool? enable;
   final bool? showSuffixIcon;
   final Function(String)? validator;
@@ -25,6 +26,7 @@ class CommonTextField extends StatefulWidget {
       this.showSuffixIcon,
       this.controller,
       this.validator,
+      this.textInputType,
       this.passwordField})
       : super(key: key);
 
@@ -71,6 +73,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
               : (val) => widget.validator!(val ?? ""),
           focusNode: _focusNode,
           obscureText: showPassword,
+          keyboardType: widget.textInputType ?? TextInputType.text,
           decoration: InputDecoration(
               prefixIcon: showPrefixIcon ? widget.prefix : null,
               suffixIcon: widget.passwordField == true
