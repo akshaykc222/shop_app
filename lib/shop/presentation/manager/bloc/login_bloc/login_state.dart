@@ -23,7 +23,6 @@ class LoginDataFetchedState extends LoginState {
   List<Object?> get props => [data];
 }
 
-
 class LoginErrorState extends LoginState {
   final String error;
 
@@ -33,13 +32,11 @@ class LoginErrorState extends LoginState {
   List<Object?> get props => [error];
 }
 
-
 class PasswordEyeState extends LoginState {
   final bool shown;
 
-
- const PasswordEyeState(this.shown);
+  const PasswordEyeState(this.shown);
 
   @override
-  List<Object?> get props => [shown];
+  List<Object?> get props => [];
 }

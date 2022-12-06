@@ -10,4 +10,6 @@ class ContextCategoryTaped extends CategoryEvent {
   const ContextCategoryTaped(this.isOpen);
 }
 
-class GetCategoryEvent extends CategoryEvent {}
+class GetCategoryEvent extends CategoryEvent {
+  GetCategoryEvent();
+}

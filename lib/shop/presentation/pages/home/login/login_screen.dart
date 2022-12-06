@@ -112,6 +112,7 @@ class LoginScreen extends StatelessWidget {
                     },
                   ),
                   spacer10,
+
                   CommonTextField(
                     title: AppStrings.password,
                     controller: controller.passwordController,
@@ -128,21 +129,22 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    suffix: BlocBuilder<LoginBloc, LoginState>(
-                      builder: (context, state) {
-                        if (state is PasswordEyeState) {
-                          return IconButton(
-                            onPressed: () {
-                              controller.add(ShowPasswordEvent(!state.shown));
-                            },
-                            icon: state.shown
-                                ? const Icon(Icons.remove_red_eye_outlined)
-                                : const Icon(Icons.password),
-                          );
-                        }
-                        return Container();
-                      },
-                    ),
+                    passwordField: true,
+                    // suffix: BlocBuilder<LoginBloc, LoginState>(
+                    //   builder: (context, state) {
+                    //     if (state is PasswordEyeState) {
+                    //       return IconButton(
+                    //         onPressed: () {
+                    //           controller.add(ShowPasswordEvent(!state.shown));
+                    //         },
+                    //         icon: controller.showPassWord
+                    //             ? const Icon(Icons.remove_red_eye_outlined)
+                    //             : const Icon(Icons.password),
+                    //       );
+                    //     }
+                    //     return Container();
+                    //   },
+                    // ),
                     showSuffixIcon: true,
                     validator: (val) {
                       if (val.isEmpty) {

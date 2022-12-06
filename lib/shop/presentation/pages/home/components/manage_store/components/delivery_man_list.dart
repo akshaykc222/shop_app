@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -16,17 +18,41 @@ class DeliveryManList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(
-                Icons.arrow_back,
-                size: 30,
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      GoRouter.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                  ),
+                ),
               ),
-              Text(
-                AppStrings.deliveryMan,
-                style: Theme.of(context).textTheme.bodyLarge,
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    AppStrings.deliveryMan,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
               ),
-              const SizedBox()
+              const Expanded(flex: 1, child: SizedBox())
             ],
           )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          GoRouter.of(context).pushNamed(AppPages.deliverymanAdd);
+        },
+        child: const Center(
+          child: Icon(Icons.add),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
@@ -47,7 +73,8 @@ class DeliveryManList extends StatelessWidget {
                       children: const [
                         Text(
                           AppStrings.lyfTym,
-                          style: TextStyle(fontSize: 15),
+                          style: TextStyle(
+                              fontSize: 15, color: AppColors.greyText),
                         ),
                         Icon(Icons.keyboard_arrow_down_rounded)
                       ],
@@ -67,50 +94,57 @@ class DeliveryManList extends StatelessWidget {
                   Row(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.only(
+                            top: 20.0, bottom: 5, left: 20, right: 20),
                         child: Container(
                           width: 80,
                           height: 80,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               color: Colors.white, shape: BoxShape.circle),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "suresh kanann",
-                            style: TextStyle(
-                                color: AppColors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          spacer10,
-                          const Text(
-                            "mail@gmail.com",
-                            style:
-                                TextStyle(fontSize: 13, color: AppColors.black),
-                          ),
-                          spacer5,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "+9715 23 678 989",
-                                style: TextStyle(
-                                    fontSize: 13, color: AppColors.black),
-                              ),
-                              SizedBox(
-                                width: 40,
-                              ),
-                              Image.asset(
-                                AppAssets.edit,
-                                width: 20,
-                                height: 20,
-                              )
-                            ],
-                          ),
-                        ],
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "suresh kanann",
+                              style: TextStyle(
+                                  color: AppColors.black,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            spacer10,
+                            const Text(
+                              "mail@gmail.com",
+                              style: TextStyle(
+                                  fontSize: 13, color: AppColors.black),
+                            ),
+                            spacer5,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "+9715 23 678 989",
+                                  style: TextStyle(
+                                      fontSize: 13, color: AppColors.black),
+                                ),
+                                const SizedBox(
+                                  width: 40,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 15.0),
+                                  child: Image.asset(
+                                    AppAssets.edit,
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -120,9 +154,8 @@ class DeliveryManList extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                  spacer10,
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
+                    padding: const EdgeInsets.only(left: 10.0, bottom: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: const [

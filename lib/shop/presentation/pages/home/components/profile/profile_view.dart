@@ -163,7 +163,7 @@ class ProfileView extends StatelessWidget {
                   Row(
                     children: [
                       Image.asset(
-                        AppAssets.orders,
+                        AppAssets.orderProfile,
                         width: 33,
                         height: 40,
                         color: AppColors.skyBlue,

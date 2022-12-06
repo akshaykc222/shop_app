@@ -62,224 +62,211 @@ class VariantScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          SingleChildScrollView(
-            child: Column(
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Card(
-                        // margin: const EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        elevation: 0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Card(
+                    // margin: const EdgeInsets.all(8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    elevation: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    AppStrings.size,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.lightGrey),
-                                  ),
-                                  const Icon(Icons.keyboard_arrow_down,
-                                      size: 30, color: AppColors.lightGrey)
-                                ],
+                              Text(
+                                AppStrings.size,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.lightGrey),
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                    color: AppColors.offWhite1,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: const Text(
-                                  AppStrings.lowestPriceDesc,
-                                  style: TextStyle(
-                                      fontSize: 15, color: AppColors.greyText),
-                                ),
-                              ),
-                              spacer9,
-                              Wrap(
-                                children: [
-                                  BlocConsumer<VariantBloc, VariantState>(
-                                    listener: (context, state) {},
-                                    builder: (context, state) {
-                                      return ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount: state.count,
-                                          itemBuilder: (context, index) =>
-                                              SizeProduct(index: index));
-                                    },
-                                  )
-                                ],
-                              ),
-                              spacer22,
-                              GestureDetector(
-                                onTap: () => controller.add(VariantAdd()),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border:
-                                          Border.all(color: AppColors.skyBlue)),
-                                  child: const Center(
-                                    child: Text(
-                                      AppStrings.addAnotherSize,
-                                      style:
-                                          TextStyle(color: AppColors.skyBlue),
-                                    ),
-                                  ),
-                                ),
+                              const Icon(Icons.keyboard_arrow_down,
+                                  size: 30, color: AppColors.lightGrey)
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                                color: AppColors.offWhite1,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Text(
+                              AppStrings.lowestPriceDesc,
+                              style: TextStyle(
+                                  fontSize: 15, color: AppColors.greyText),
+                            ),
+                          ),
+                          spacer9,
+                          Wrap(
+                            children: [
+                              BlocConsumer<VariantBloc, VariantState>(
+                                listener: (context, state) {},
+                                builder: (context, state) {
+                                  return ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: state.count,
+                                      itemBuilder: (context, index) =>
+                                          SizeProduct(index: index));
+                                },
                               )
                             ],
                           ),
-                        ),
+                          spacer22,
+                          GestureDetector(
+                            onTap: () => controller.add(VariantAdd()),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: AppColors.skyBlue)),
+                              child: const Center(
+                                child: Text(
+                                  AppStrings.addAnotherSize,
+                                  style: TextStyle(color: AppColors.skyBlue),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    spacer22,
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Card(
-                        // margin: const EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        elevation: 0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
+                  ),
+                ),
+                spacer22,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Card(
+                    // margin: const EdgeInsets.all(8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    elevation: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    AppStrings.color,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.greyText),
-                                  ),
-                                  const Icon(Icons.keyboard_arrow_down,
-                                      size: 30, color: AppColors.greyText)
-                                ],
+                              Text(
+                                AppStrings.color,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.greyText),
                               ),
-                              spacer14,
-                              Wrap(
-                                children: [
-                                  BlocConsumer<VariantBloc, VariantState>(
-                                    listener: (context, state) {},
-                                    builder: (context, state) {
-                                      return ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount:
-                                              controller.colorsList.length,
-                                          itemBuilder: (context, index) =>
-                                              ColorProduct(
-                                                index: index,
-                                                color: controller
-                                                    .colorsList[index],
-                                                delete: () {
-                                                  try {
-                                                    controller.removeColor(
-                                                        controller
-                                                            .colorsList[index]);
+                              const Icon(Icons.keyboard_arrow_down,
+                                  size: 30, color: AppColors.greyText)
+                            ],
+                          ),
+                          spacer14,
+                          Wrap(
+                            children: [
+                              BlocConsumer<VariantBloc, VariantState>(
+                                listener: (context, state) {},
+                                builder: (context, state) {
+                                  return ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: controller.colorsList.length,
+                                      itemBuilder: (context, index) =>
+                                          ColorProduct(
+                                            index: index,
+                                            color: controller.colorsList[index],
+                                            delete: () {
+                                              try {
+                                                controller.removeColor(
                                                     controller
-                                                        .add(DeleteColor());
-                                                  } catch (e) {
-                                                    prettyPrint(e.toString());
-                                                  }
-                                                },
-                                              ));
-                                    },
-                                  )
-                                ],
-                              ),
-                              GestureDetector(
-                                onTap: () => showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Pick a color!'),
-                                    content: SingleChildScrollView(
-                                      // child: ColorPicker(
-                                      //
-                                      // ),
-                                      // Use Material color picker:
-                                      //
-                                      // child: MaterialPicker(
-                                      //   pickerColor: controller.pickerColor,
-                                      //   onColorChanged: controller.changeColor,
-                                      // ),
-                                      //
-                                      // Use Block color picker:
-                                      //
-                                      child: BlockPicker(
-                                        pickerColor: controller.pickerColor,
-                                        onColorChanged: controller.changeColor,
-                                      ),
-                                      //
-                                      // child: MultipleChoiceBlockPicker(
-                                      //   pickerColors: currentColors,
-                                      //   onColorsChanged: changeColors,
-                                      // ),
-                                    ),
-                                    actions: <Widget>[
-                                      ElevatedButton(
-                                        child: const Text('Select'),
-                                        onPressed: () {
-                                          controller.addColor(
-                                              controller.currentColor);
-                                          controller
-                                              .add(VariantColorSelected());
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border:
-                                          Border.all(color: AppColors.skyBlue)),
-                                  child: const Center(
-                                    child: Text(
-                                      AppStrings.addColor,
-                                      style:
-                                          TextStyle(color: AppColors.skyBlue),
-                                    ),
-                                  ),
-                                ),
+                                                        .colorsList[index]);
+                                                controller.add(DeleteColor());
+                                              } catch (e) {
+                                                prettyPrint(e.toString());
+                                              }
+                                            },
+                                          ));
+                                },
                               )
                             ],
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Pick a color!'),
+                                content: SingleChildScrollView(
+                                  // child: ColorPicker(
+                                  //
+                                  // ),
+                                  // Use Material color picker:
+                                  //
+                                  // child: MaterialPicker(
+                                  //   pickerColor: controller.pickerColor,
+                                  //   onColorChanged: controller.changeColor,
+                                  // ),
+                                  //
+                                  // Use Block color picker:
+                                  //
+                                  child: BlockPicker(
+                                    pickerColor: controller.pickerColor,
+                                    onColorChanged: controller.changeColor,
+                                  ),
+                                  //
+                                  // child: MultipleChoiceBlockPicker(
+                                  //   pickerColors: currentColors,
+                                  //   onColorsChanged: changeColors,
+                                  // ),
+                                ),
+                                actions: <Widget>[
+                                  ElevatedButton(
+                                    child: const Text('Select'),
+                                    onPressed: () {
+                                      controller
+                                          .addColor(controller.currentColor);
+                                      controller.add(VariantColorSelected());
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: AppColors.skyBlue)),
+                              child: const Center(
+                                child: Text(
+                                  AppStrings.addColor,
+                                  style: TextStyle(color: AppColors.skyBlue),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

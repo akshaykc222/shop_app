@@ -10,6 +10,7 @@ import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
+import 'package:shop_app/shop/presentation/widgets/custom_switch.dart';
 
 import '../../../../themes/app_colors.dart';
 
@@ -390,6 +391,45 @@ class ProductForm extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'Product Status : ',
+                            style: TextStyle(
+                                color: AppColors.greyText,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          CustomSwitch(
+                            value: true,
+                            onChanged: (val) {},
+                            enableColor: AppColors.green,
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text(
+                            'In Stock : ',
+                            style: TextStyle(
+                                color: AppColors.greyText,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          CustomSwitch(
+                            value: true,
+                            onChanged: (val) {},
+                            enableColor: AppColors.green,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                spacer30,
                 buildTextFieldName(),
                 spacer10,
                 TextField(

@@ -5,8 +5,11 @@ class AppAssets {
   static const readyToDeliver = "assets/icons/ready_to_deliver.png";
   static const onTheWay = "assets/icons/on_the_way.png";
   static const shop = "assets/icons/estore.png";
+  static const uae = "assets/icons/uae.png";
+  static const receipt = "assets/icons/reciept.png";
 
   static const orderIcon = "assets/svg/orders.svg";
+  static const orderProfile = "assets/icons/orders_profile.png";
   static const productIcon = "assets/svg/package.svg";
   static const manageIcon = "assets/svg/layers.svg";
   static const userIcon = "assets/svg/user.svg";
@@ -40,6 +43,6 @@ class AppAssets {
   static const contactUs = "assets/icons/contact us.png";
   static const logout = "assets/icons/logout.png";
   static const changePassword = "assets/icons/change_password.png";
-
+  static const ordering = "assets/icons/order.png";
   // static const search = "assets/icons/search.png";
 }

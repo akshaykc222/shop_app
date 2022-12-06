@@ -42,3 +42,9 @@ class ProductImagesRemove extends ProductState {
 
   ProductImagesRemove(this.files);
 }
+
+class TabIndexState extends ProductState {
+  final int index;
+
+  TabIndexState(this.index);
+}

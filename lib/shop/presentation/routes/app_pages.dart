@@ -13,5 +13,8 @@ class AppPages {
   static const addVariant = "add_variant";
   static const storeTiming = "store_timing";
   static const deliveryman = "delivery_man";
+  static const deliverymanAdd = "delivery_man_add";
   static const customerList = "customer_list";
+  static const reOrder = "reOrder";
+  static const addNewOrderProduct = "addNewProduct";
 }

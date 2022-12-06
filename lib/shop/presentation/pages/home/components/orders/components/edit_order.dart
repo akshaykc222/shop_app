@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
+import 'package:shop_app/shop/presentation/routes/app_pages.dart';
+import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
@@ -16,6 +19,14 @@ class EditOrder extends StatelessWidget {
     final controller = OrderBloc.get(context);
     return Scaffold(
       backgroundColor: AppColors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          GoRouter.of(context).pushNamed(AppPages.addNewOrderProduct);
+        },
+        child: const Center(
+          child: Icon(Icons.add),
+        ),
+      ),
       appBar: getAppBar(
           context,
           Row(
@@ -367,7 +378,7 @@ class OrderProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30.0, right: 30, bottom: 9),
+      padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 18),
       child: Container(
         decoration: const BoxDecoration(
             color: AppColors.offWhite1,
@@ -465,11 +476,33 @@ class OrderProducts extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "Product name",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Product name",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    showEdit == true
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              final controller =
+                                                  OrderBloc.get(context);
+                                              controller.changeOrderProductCount(
+                                                  controller.orderProductCount -
+                                                      1);
+                                              controller.add(AddOrderProduct());
+                                            },
+                                            child: Image.asset(
+                                              AppAssets.delete,
+                                              width: 16,
+                                              height: 21,
+                                            ))
+                                        : Container()
+                                  ],
                                 ),
                                 spacer10,
                                 Row(
@@ -494,9 +527,37 @@ class OrderProducts extends StatelessWidget {
                                         ],
                                       ),
                                     ),
+                                    Row(
+                                      children: [
+                                        Text("Colour : ",
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.black
+                                                    .withOpacity(0.52))),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Container(
+                                          width: 18,
+                                          height: 18,
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(2)),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                spacer10,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
                                     RichText(
                                       text: TextSpan(
-                                        text: 'Size : ',
+                                        text: 'Qty : ',
                                         style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -504,7 +565,24 @@ class OrderProducts extends StatelessWidget {
                                                 .withOpacity(0.52)),
                                         children: const <TextSpan>[
                                           TextSpan(
-                                              text: 'Xl',
+                                              text: '3',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: 'Price : ',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.black
+                                                .withOpacity(0.52)),
+                                        children: const <TextSpan>[
+                                          TextSpan(
+                                              text: '3',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: AppColors.black)),
@@ -515,50 +593,12 @@ class OrderProducts extends StatelessWidget {
                                 ),
                                 spacer10,
                                 Row(
-                                  children: [
-                                    Text("Colour : ",
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black
-                                                .withOpacity(0.52))),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(2)),
-                                    )
-                                  ],
-                                ),
-                                spacer10,
-                                Row(
                                   // mainAxisAlignment:
                                   //     MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      height: 20,
-                                      width: 20,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryColor
-                                            .withOpacity(0.4),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          "1",
-                                          style:
-                                              TextStyle(color: AppColors.white),
-                                        ),
-                                      ),
-                                    ),
                                     RichText(
                                       text: TextSpan(
-                                        text: ' X ',
+                                        text: ' Total Price : ',
                                         style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -575,20 +615,6 @@ class OrderProducts extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    const Spacer(),
-                                    showEdit == true
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              final controller =
-                                                  OrderBloc.get(context);
-                                              controller.changeOrderProductCount(
-                                                  controller.orderProductCount -
-                                                      1);
-                                              controller.add(AddOrderProduct());
-                                            },
-                                            child: const Icon(
-                                                Icons.delete_outline))
-                                        : Container()
                                   ],
                                 ),
                                 spacer20

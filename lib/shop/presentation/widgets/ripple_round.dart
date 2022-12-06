@@ -47,6 +47,7 @@ class _RippleButtonState extends State<RippleButton>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Center(
         child: CustomPaint(
           painter: MyCustomPainter(_animation.value, color: widget.color),

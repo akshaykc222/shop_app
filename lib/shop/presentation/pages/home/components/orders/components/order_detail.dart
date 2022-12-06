@@ -133,7 +133,7 @@ class OrderDetails extends StatelessWidget {
                     const Text(
                       "Order # 5670125",
                       style: TextStyle(
-                          color: Colors.black,
+                          color: AppColors.greyText,
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
@@ -150,7 +150,7 @@ class OrderDetails extends StatelessWidget {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                 child: Divider(),
               ),
               Padding(
@@ -173,11 +173,28 @@ class OrderDetails extends StatelessWidget {
                                   color: AppColors.black)),
                         ],
                       ),
+                    ),
+                    Row(
+                      children: [
+                        Image.asset(
+                          AppAssets.receipt,
+                          width: 18,
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: const Text(
+                            AppStrings.receipt,
+                            style: TextStyle(
+                                color: AppColors.skyBlue, fontSize: 15),
+                          ),
+                        )
+                      ],
                     )
                   ],
                 ),
               ),
-              spacer30,
+              spacer20,
               Wrap(
                 children: [
                   BlocBuilder<OrderBloc, OrderState>(
@@ -267,7 +284,7 @@ class OrderDetails extends StatelessWidget {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: AppColors.primaryColor),
+                          color: AppColors.skyBlue),
                     )
                   ],
                 ),

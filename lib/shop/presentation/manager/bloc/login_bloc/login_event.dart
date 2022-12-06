@@ -19,12 +19,10 @@ class LoginWithPassword extends LoginEvent {
   @override
   List<Object?> get props => [email, password, onSuccess, onError];
 }
-class ShowPasswordEvent extends LoginEvent{
-  final bool shown;
 
- const ShowPasswordEvent(this.shown);
+class ShowPasswordEvent extends LoginEvent {
+  const ShowPasswordEvent();
 
   @override
-
-  List<Object?> get props => [shown];
+  List<Object?> get props => [];
 }

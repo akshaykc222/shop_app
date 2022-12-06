@@ -34,3 +34,12 @@ class ImageFilesRemovedEvent extends ProductEvent {
 //   List<Object?> get props =>[];
 //
 // }
+
+class TabIndexChangingEvent extends ProductEvent {
+  final int index;
+
+  const TabIndexChangingEvent(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}

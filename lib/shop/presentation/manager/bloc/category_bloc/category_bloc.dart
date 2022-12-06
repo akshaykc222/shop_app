@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
@@ -37,6 +38,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       final data = await categoryUseCase.get();
       return data;
+    } on UnauthorisedException {
     } catch (e) {
       prettyPrint(e.toString());
       return null;

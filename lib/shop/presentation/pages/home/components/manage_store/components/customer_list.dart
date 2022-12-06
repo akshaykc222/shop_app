@@ -62,13 +62,19 @@ class CustomerList extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "15 AED",
-                      style: TextStyle(color: AppColors.skyBlue, fontSize: 19),
+                      style: TextStyle(
+                          color: AppColors.skyBlue,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   Expanded(
                     child: Text(
                       "108 AED",
-                      style: TextStyle(color: AppColors.skyBlue, fontSize: 19),
+                      style: TextStyle(
+                          color: AppColors.skyBlue,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w600),
                     ),
                   )
                 ],
@@ -85,20 +91,26 @@ class CustomerList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () {
-                  GoRouter.of(context).pop();
-                },
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 30,
+              Expanded(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).pop();
+                  },
+                  child: const Icon(
+                    Icons.arrow_back,
+                    size: 30,
+                  ),
                 ),
               ),
-              Text(
-                AppStrings.customerList,
-                style: Theme.of(context).textTheme.bodyLarge,
+              Expanded(
+                flex: 3,
+                child: Text(
+                  AppStrings.customerList,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-              const SizedBox()
+              const Expanded(flex: 1, child: SizedBox())
             ],
           )),
       body: Padding(

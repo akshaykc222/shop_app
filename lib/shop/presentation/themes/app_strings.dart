@@ -2,8 +2,13 @@ class AppStrings {
   static const products = "Products";
   static const password = "Password";
   static const revenue = "Revenue";
+  static const revenueGraph = "Revenue Graph";
   static const share = "Share";
   static const customerList = "Customer List";
+  static const phoneNumber = "Phone number";
+  static const idType = "ID Type";
+  static const idNo = "ID No";
+
   static const address = "Address";
   static const add = "Add";
   static const totalOrdersSaved = "Total Orders Saved";
@@ -37,6 +42,7 @@ class AppStrings {
       "Showcase your products or service to the customers by creating beautiful categories";
 
   static const addNewProduct = "Add new product";
+  static const addProduct = "Add product";
   static const requestConfirm = "Request confirmation";
   static const editOrder = "Edit order";
   static const edit = "Edit";
@@ -51,6 +57,7 @@ class AppStrings {
   static const itemTotal = "Item Total";
   static const delivery = "Delivery";
   static const deliveryMan = "Delivery men";
+  static const newDeliveryMan = "New delivery men";
   static const grandTotal = "Grand Total";
   static const addAnotherSize = "Add another size";
   static const delete = "Delete";
@@ -76,6 +83,8 @@ class AppStrings {
   static const productCategory = "Product Category";
 
   static const productName = "Product Name";
+  static const firstName = "First Name";
+  static const secondName = "Second Name";
   static const save = "Save";
   static const chooseProductUnit = "Choose Product Unit";
   static const customerDetails = "Customer details";
@@ -92,6 +101,7 @@ class AppStrings {
 
   static const String camara = "Camara";
   static const String gallery = "Gallery";
+  static const String goOnlineAfter = "Go online after";
   static const String allOrders = "All orders";
   static const String lyfTym = "Life time";
 
@@ -122,4 +132,5 @@ class AppStrings {
   static const String processing = "Processing";
   static const String readyToDeliver = "Ready to deliver";
   static const String onTheWay = "On the way";
+  static const String receipt = "Receipt";
 }

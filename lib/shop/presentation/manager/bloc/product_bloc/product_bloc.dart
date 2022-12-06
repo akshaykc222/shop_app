@@ -34,6 +34,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
       emit(ProductImagesAddedState(productImages));
     });
+    on<TabIndexChangingEvent>((event, emit) {
+      emit(TabIndexState(event.index));
+    });
   }
   bool search = false;
   static ProductBloc get(context) => BlocProvider.of(context);
@@ -61,4 +64,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   final productTagController = TextEditingController();
+
+  int currentTabIndex = 0;
+  changeTabIndex(int tab) {
+    currentTabIndex = tab;
+    add(TabIndexChangingEvent(tab));
+  }
 }

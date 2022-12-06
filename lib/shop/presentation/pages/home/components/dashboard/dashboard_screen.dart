@@ -252,8 +252,88 @@ class DashBoardScreen extends StatelessWidget {
                           width: 9,
                         ),
                         CustomSwitch(
-                          value: false,
-                          onChanged: (val) {},
+                          value: true,
+                          onChanged: (val) {
+                            showModalBottomSheet(
+                                context: context,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                builder: (context) => Wrap(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text(
+                                              AppStrings.goOnlineAfter,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                  Icons.close,
+                                                  size: 30,
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+                                      Column(
+                                        children: [
+                                          "1 hour",
+                                          "2 Hour",
+                                          "4 Hour",
+                                          "Tomorrow ,at same time",
+                                        ]
+                                            .map((e) => Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 15),
+                                                  child: Row(
+                                                    children: [
+                                                      Radio(
+                                                          value: false,
+                                                          groupValue: 1,
+                                                          onChanged: (val) {}),
+                                                      Text(
+                                                        e,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontSize: 18,
+                                                            color: AppColors
+                                                                .black),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ))
+                                            .toList(),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                            topRight: Radius
+                                                                .circular(20),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    20)))),
+                                            onPressed: () {},
+                                            child: const Text(
+                                              AppStrings.save,
+                                              style: TextStyle(fontSize: 20),
+                                            )),
+                                      )
+                                    ]));
+                          },
+                          enableColor: AppColors.green,
                           disableColor: AppColors.red,
                         ),
                       ],
@@ -276,7 +356,7 @@ class DashBoardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    AppStrings.overview,
+                    AppStrings.topDeliveryMan,
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,
@@ -384,7 +464,7 @@ class DashBoardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   Text(
-                    AppStrings.topDeliveryMan,
+                    AppStrings.revenueGraph,
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,

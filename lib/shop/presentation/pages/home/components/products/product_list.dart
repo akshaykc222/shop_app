@@ -59,197 +59,6 @@ class ProductList extends StatelessWidget {
       );
     }
 
-    Widget productListTile() {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.5),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.offWhite1,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  spacer18,
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0, right: 20),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 82,
-                          height: 82,
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: CachedNetworkImage(
-                              imageUrl: "",
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 25,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "entity.name",
-                                style: TextStyle(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              spacer10,
-                              const Text(
-                                "1 KG",
-                                style: TextStyle(
-                                    color: AppColors.offWhiteTextColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15),
-                              ),
-                              spacer9,
-                              const Text(
-                                "In stock",
-                                style: TextStyle(
-                                    color: AppColors.green,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600),
-                              )
-                            ],
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            spacer18,
-                            PopupMenuButton(
-                                icon: Image.asset(
-                                  AppAssets.menu,
-                                  width: 20,
-                                  height: 20,
-                                ),
-                                itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        child: Row(
-                                          children: [
-                                            Image.asset(
-                                              AppAssets.edit,
-                                              width: 15,
-                                              height: 15,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(
-                                              width: 12,
-                                            ),
-                                            const Text(
-                                              AppStrings.edit,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 15,
-                                                  color: AppColors.black),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        child: Row(
-                                          children: [
-                                            Image.asset(
-                                              AppAssets.moveTop,
-                                              width: 15,
-                                              height: 15,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(
-                                              width: 12,
-                                            ),
-                                            const Text(
-                                              AppStrings.moveTop,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 15,
-                                                  color: AppColors.black),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        child: Row(
-                                          children: [
-                                            Image.asset(
-                                              AppAssets.delete,
-                                              width: 15,
-                                              height: 15,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(
-                                              width: 12,
-                                            ),
-                                            const Text(
-                                              AppStrings.deleteCategory,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 15,
-                                                  color: AppColors.pink),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                            spacer37,
-                            // const Spacer(),
-                            CustomSwitch(
-                              value: false,
-                              enableColor: AppColors.green,
-                              disableColor: AppColors.brown,
-                              onChanged: (value) {},
-                              height: 27,
-                              width: 51,
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  // spacer10,
-                  // const Padding(
-                  //   padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  //   child: Divider(),
-                  // ),
-                  // spacer10,
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Image.asset(
-                  //       AppAssets.sharedFilled,
-                  //       width: 20,
-                  //       height: 20,
-                  //     ),
-                  //     SizedBox(
-                  //       width: 8,
-                  //     ),
-                  //     const Text(
-                  //       AppStrings.share,
-                  //       style: TextStyle(
-                  //           fontSize: 15,
-                  //           fontWeight: FontWeight.w500,
-                  //           color: AppColors.skyBlue),
-                  //     ),
-                  //   ],
-                  // ),
-                  spacer18,
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -259,6 +68,225 @@ class ProductList extends StatelessWidget {
             child: Icon(Icons.add),
           ),
         ),
-        body: emptyList());
+        body: Column(
+          children: [
+            productListTile(),
+          ],
+        ));
   }
+}
+
+Widget productListTile({bool? changePosistion, bool? adding}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.5),
+    child: Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.offWhite1,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              spacer18,
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 82,
+                      height: 82,
+                      decoration: BoxDecoration(
+                          // color: Colors.grey,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.iconsdb.com%2Ficons%2Fdownload%2Fred%2Ferror-7-512.gif&f=1&nofb=1&ipt=a2584b59b5e10bcd96745480341a6e608298cf3ebca99184af10da11f91a6f6d&ipo=images",
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 25,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "entity.name",
+                            style: TextStyle(
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          spacer10,
+                          const Text(
+                            "1 KG",
+                            style: TextStyle(
+                                color: AppColors.offWhiteTextColor,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15),
+                          ),
+                          spacer9,
+                          const Text(
+                            "In stock",
+                            style: TextStyle(
+                                color: AppColors.green,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                    ),
+                    adding == true
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              spacer20,
+                              spacer30,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 25, vertical: 2),
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.skyBlue),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Center(
+                                    child: Text(
+                                  AppStrings.add,
+                                  style: TextStyle(
+                                    color: AppColors.skyBlue,
+                                  ),
+                                )),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              spacer18,
+                              PopupMenuButton(
+                                  icon: Image.asset(
+                                    AppAssets.menu,
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                  itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          child: Row(
+                                            children: [
+                                              Image.asset(
+                                                AppAssets.edit,
+                                                width: 15,
+                                                height: 15,
+                                                fit: BoxFit.cover,
+                                              ),
+                                              const SizedBox(
+                                                width: 12,
+                                              ),
+                                              const Text(
+                                                AppStrings.edit,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 15,
+                                                    color: AppColors.black),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: Row(
+                                            children: [
+                                              Image.asset(
+                                                AppAssets.moveTop,
+                                                width: 15,
+                                                height: 15,
+                                                fit: BoxFit.cover,
+                                              ),
+                                              const SizedBox(
+                                                width: 12,
+                                              ),
+                                              const Text(
+                                                AppStrings.moveTop,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 15,
+                                                    color: AppColors.black),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: Row(
+                                            children: [
+                                              Image.asset(
+                                                AppAssets.delete,
+                                                width: 15,
+                                                height: 15,
+                                                fit: BoxFit.cover,
+                                              ),
+                                              const SizedBox(
+                                                width: 12,
+                                              ),
+                                              const Text(
+                                                AppStrings.deleteCategory,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 15,
+                                                    color: AppColors.pink),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ]),
+                              spacer37,
+                              // const Spacer(),
+                              CustomSwitch(
+                                value: false,
+                                enableColor: AppColors.green,
+                                disableColor: AppColors.brown,
+                                onChanged: (value) {},
+                                height: 27,
+                                width: 51,
+                              )
+                            ],
+                          )
+                  ],
+                ),
+              ),
+              // spacer10,
+              // const Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 10.0),
+              //   child: Divider(),
+              // ),
+              // spacer10,
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Image.asset(
+              //       AppAssets.sharedFilled,
+              //       width: 20,
+              //       height: 20,
+              //     ),
+              //     SizedBox(
+              //       width: 8,
+              //     ),
+              //     const Text(
+              //       AppStrings.share,
+              //       style: TextStyle(
+              //           fontSize: 15,
+              //           fontWeight: FontWeight.w500,
+              //           color: AppColors.skyBlue),
+              //     ),
+              //   ],
+              // ),
+              spacer18,
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

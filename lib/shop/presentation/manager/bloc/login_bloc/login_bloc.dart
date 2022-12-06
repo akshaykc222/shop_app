@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shop_app/core/custom_exception.dart';
+import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/core/response_classify.dart';
 import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
@@ -43,12 +44,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
     });
     on<ShowPasswordEvent>((event, emit) {
-      emit(PasswordEyeState(event.shown));
+      prettyPrint("emitting state");
+      emit(PasswordEyeState(showPassWord));
     });
   }
   static LoginBloc get(context) => BlocProvider.of(context);
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  bool showPassWord = false;
 }

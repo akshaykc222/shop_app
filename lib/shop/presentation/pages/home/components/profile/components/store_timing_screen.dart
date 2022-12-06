@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -19,11 +20,14 @@ class StoreTimingScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Expanded(
+              Expanded(
                   flex: 1,
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 24,
+                  child: GestureDetector(
+                    onTap: () => GoRouter.of(context).pop(),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 24,
+                    ),
                   )),
               Expanded(
                 flex: 3,
