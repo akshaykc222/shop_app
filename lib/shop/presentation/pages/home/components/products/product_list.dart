@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -14,6 +17,9 @@ class ProductList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = ProductBloc.get(context);
+    controller.add(ProductFetchEvent(
+        () {}, (p0) => () {}, () => handleUnAuthorizedError(context)));
     emptyList() {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -68,15 +74,31 @@ class ProductList extends StatelessWidget {
             child: Icon(Icons.add),
           ),
         ),
-        body: Column(
-          children: [
-            productListTile(),
-          ],
+        body: BlocBuilder<ProductBloc, ProductState>(
+          builder: (context, state) {
+            if (state is ProductFetching) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is ProductFetchError) {
+              return Center(
+                child: Text(state.error),
+              );
+            } else {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: controller.productList.length,
+                  itemBuilder: (context, index) =>
+                      productListTile(entity: controller.productList[index]));
+            }
+          },
         ));
   }
 }
 
-Widget productListTile({bool? changePosistion, bool? adding}) {
+Widget productListTile(
+    {bool? changePosition, bool? adding, required ProductModel entity}) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.5),
     child: Stack(
@@ -103,8 +125,7 @@ Widget productListTile({bool? changePosistion, bool? adding}) {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
                         child: CachedNetworkImage(
-                          imageUrl:
-                              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.iconsdb.com%2Ficons%2Fdownload%2Fred%2Ferror-7-512.gif&f=1&nofb=1&ipt=a2584b59b5e10bcd96745480341a6e608298cf3ebca99184af10da11f91a6f6d&ipo=images",
+                          imageUrl: entity.image,
                         ),
                       ),
                     ),
@@ -115,15 +136,15 @@ Widget productListTile({bool? changePosistion, bool? adding}) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "entity.name",
-                            style: TextStyle(
+                          Text(
+                            entity.name,
+                            style: const TextStyle(
                                 color: AppColors.black,
                                 fontWeight: FontWeight.w600),
                           ),
                           spacer10,
-                          const Text(
-                            "1 KG",
+                          Text(
+                            "${(entity.stock ?? "")}${(entity.unit?.unit ?? "")}",
                             style: TextStyle(
                                 color: AppColors.offWhiteTextColor,
                                 fontWeight: FontWeight.w600,

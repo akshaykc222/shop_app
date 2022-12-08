@@ -27,4 +27,16 @@ class CategoryEntity extends Equatable {
 
   @override
   List<Object?> get props => [id, name];
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "image": image,
+        "parent_id": parentId,
+        "position": position,
+        "status": status,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "priority": priority,
+        "module_id": moduleId,
+      };
 }

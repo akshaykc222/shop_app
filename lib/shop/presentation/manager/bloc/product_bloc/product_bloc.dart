@@ -4,16 +4,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 
+import '../../../../../core/custom_exception.dart';
+import '../../../../data/models/product_listing_response.dart';
+import '../../../../domain/use_cases/product_use_case.dart';
+
 part 'product_event.dart';
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  ProductBloc() : super(const ProductInitial()) {
+  final ProductUseCase productUseCase;
+  ProductBloc(this.productUseCase) : super(const ProductInitial()) {
     on<ProductEvent>((event, emit) {});
+    on((event, emit) => emit(const ProductInitial()));
     on<SearchProductTapEvent>((event, emit) {
       search = !search;
       prettyPrint("changing value");
-      emit(SearchProductTap(!search));
+      emit(SearchProductTap(!search, event.index));
     });
     on<AddTagsFilterEvent>((event, emit) {
       prettyPrint("adding");
@@ -37,8 +43,42 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<TabIndexChangingEvent>((event, emit) {
       emit(TabIndexState(event.index));
     });
+    on<ProductFetchEvent>((event, emit) async {
+      emit(ProductFetching());
+      try {
+        final data = await productUseCase.get();
+        productList.addAll(data.products.products);
+
+        emit(ProductFetched(data.products.products, data.tags));
+      } on UnauthorisedException {
+        event.onUnAuthorized();
+        emit(ProductFetchError("UnAuthorized"));
+      } catch (e) {
+        prettyPrint(e.toString());
+
+        emit(ProductFetchError(e.toString()));
+      }
+    });
+    on<ProductSearchEvent>((event, emit) async {
+      emit(ProductFetching());
+      try {
+        final data = await productUseCase.get(searchKey: event.searchKey);
+        productList.addAll(data.products.products);
+
+        emit(ProductFetched(data.products.products, data.tags));
+      } on UnauthorisedException {
+        event.unAuthorized();
+        emit(ProductFetchError("UnAuthorized"));
+      } catch (e) {
+        prettyPrint(e.toString());
+
+        emit(ProductFetchError(e.toString()));
+      }
+    });
   }
+
   bool search = false;
+  List<ProductModel> productList = [];
   static ProductBloc get(context) => BlocProvider.of(context);
   final tagList = <String>[];
   addTags(String item) {
@@ -63,6 +103,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     productImages.remove(file);
   }
 
+  final searchCategoryController = TextEditingController();
   final productTagController = TextEditingController();
 
   int currentTabIndex = 0;

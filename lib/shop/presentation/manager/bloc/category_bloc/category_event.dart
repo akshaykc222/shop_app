@@ -13,3 +13,9 @@ class ContextCategoryTaped extends CategoryEvent {
 class GetCategoryEvent extends CategoryEvent {
   GetCategoryEvent();
 }
+
+class CategorySearchEvent extends CategoryEvent {
+  final String searchKey;
+
+  CategorySearchEvent(this.searchKey);
+}

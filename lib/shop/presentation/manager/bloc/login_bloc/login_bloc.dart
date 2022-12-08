@@ -4,11 +4,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/core/response_classify.dart';
 import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
+import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 
 import '../../../../domain/use_cases/login_usecase.dart';
 
@@ -53,4 +55,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool showPassWord = false;
+
+  logOut(BuildContext context) {
+    GetStorage storage = GetStorage();
+    storage.remove('token');
+    GoRouter.of(context).replaceNamed(AppPages.initial);
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/product_list.dart';
@@ -23,15 +24,18 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late ProductBloc controller;
+  late ProductBloc prodController;
+  late CategoryBloc catController;
+
   @override
   void initState() {
-    controller = ProductBloc.get(context);
+    prodController = ProductBloc.get(context);
+    catController = CategoryBloc.get(context);
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         prettyPrint("index changing");
-        controller.changeTabIndex(_tabController.index);
+        prodController.changeTabIndex(_tabController.index);
         // controller.add(TabIndexChangingEvent(_tabController.index));
       }
     });
@@ -77,15 +81,70 @@ class _ProductScreenState extends State<ProductScreen>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 20.0),
-                        child: Image.asset(
-                          AppAssets.search,
-                          width: 20,
-                          height: 20,
+                        child: GestureDetector(
+                          onTap: () {
+                            prodController
+                                .add(SearchProductTapEvent(state.index));
+                          },
+                          child: Image.asset(
+                            AppAssets.search,
+                            width: 20,
+                            height: 20,
+                          ),
                         ),
                       )
                     ],
                   ),
                   height: 220);
+            } else if (state is SearchProductTap) {
+              return getAppBar(
+                  context,
+                  Row(
+                    children: [
+                      Expanded(
+                          flex: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: SizedBox(
+                              height: 45,
+                              child: TextFormField(
+                                controller:
+                                    prodController.searchCategoryController,
+                                decoration: const InputDecoration(
+                                    hintText: "Search ... "),
+                                onFieldSubmitted: (val) {
+                                  prodController.add(ProductSearchEvent(
+                                      searchKey: val,
+                                      unAuthorized: () {
+                                        handleUnAuthorizedError(context);
+                                      }));
+                                },
+                              ),
+                            ),
+                          )),
+                      Expanded(
+                        child: Row(children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Image.asset(
+                              AppAssets.search,
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                prodController.add(ProductInitialEvent());
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                                color: AppColors.black,
+                                size: 30,
+                              )),
+                        ]),
+                      )
+                    ],
+                  ));
             }
             return getAppBar(
                 context,
@@ -102,10 +161,15 @@ class _ProductScreenState extends State<ProductScreen>
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Image.asset(
-                        AppAssets.search,
-                        width: 20,
-                        height: 20,
+                      child: GestureDetector(
+                        onTap: () {
+                          prodController.add(const SearchProductTapEvent(0));
+                        },
+                        child: Image.asset(
+                          AppAssets.search,
+                          width: 20,
+                          height: 20,
+                        ),
                       ),
                     )
                   ],

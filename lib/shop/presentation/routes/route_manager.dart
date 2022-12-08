@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
-import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
+import 'package:shop_app/shop/data/models/category_response.dart';
+import 'package:shop_app/shop/domain/entities/category_entity.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/customer_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_man_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/deliveryman_add.dart';
@@ -45,6 +48,13 @@ class AppRouteManager {
         },
       ),
       GoRoute(
+        name: AppPages.login,
+        path: "/${AppPages.login}",
+        builder: (BuildContext context, GoRouterState state) {
+          return const LoginScreen();
+        },
+      ),
+      GoRoute(
         name: AppPages.addProduct,
         path: "/add_product",
         builder: (BuildContext context, GoRouterState state) {
@@ -53,8 +63,15 @@ class AppRouteManager {
       ),
       GoRoute(
         name: AppPages.addCategory,
-        path: "/${AppPages.addCategory}",
+        path: "/${AppPages.addCategory}/:model",
         builder: (BuildContext context, GoRouterState state) {
+          String? json = state.params['model'];
+          if (json != null) {
+            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json));
+            return CategoryAddForm(
+              entity: model,
+            );
+          }
           return const CategoryAddForm();
         },
       ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shop_app/shop/presentation/routes/app_pages.dart';
+import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 
 class AppConstants {
   static const appName = "Shop App ";
@@ -50,3 +53,46 @@ Widget spacer24 = const SizedBox(
 );
 
 enum WeekDays { sunday, monday, tuesday, wednesday, thursday, friday, saturday }
+
+handleUnAuthorizedError(BuildContext context) {
+  showModalBottomSheet(
+      isDismissible: false,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      context: context,
+      builder: (context) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Wrap(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  child: Text(
+                    "Session Expired!",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),
+                  child: Text(
+                    "Your Session has expired. Please login again.",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      GoRouter.of(context).goNamed(AppPages.login);
+                    },
+                    child: const Text("Login"),
+                  ),
+                )
+              ],
+            ),
+          ));
+}

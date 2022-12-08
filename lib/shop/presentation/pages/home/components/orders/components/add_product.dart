@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shop_app/shop/presentation/pages/home/components/products/product_list.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
@@ -16,7 +15,7 @@ class AddOrderProductScreen extends StatelessWidget {
       body: Column(
         children: [
           spacer20,
-          productListTile(adding: true),
+          // productListTile(adding: true),
         ],
       ),
       appBar: getAppBar(

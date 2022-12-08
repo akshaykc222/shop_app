@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +41,7 @@ class CategoryList extends StatelessWidget {
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) => CategoryListTile(
                       entity: state.data[index],
+                      edit: () {},
                     ));
           } else if (state is CategoryLoadingState) {
             return const Center(
@@ -49,7 +52,14 @@ class CategoryList extends StatelessWidget {
               child: Text(state.error),
             );
           }
-          return Container();
+          return ListView.builder(
+              itemCount: controller.categoryList.length,
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) => CategoryListTile(
+                    entity: controller.categoryList[index],
+                    edit: () {},
+                  ));
         },
       ),
     );
@@ -59,7 +69,9 @@ class CategoryList extends StatelessWidget {
 class CategoryListTile extends StatelessWidget {
   final CategoryEntity entity;
   final bool? reOrder;
-  const CategoryListTile({super.key, required this.entity, this.reOrder});
+  final Function edit;
+  const CategoryListTile(
+      {super.key, required this.entity, this.reOrder, required this.edit});
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +177,18 @@ class CategoryListTile extends StatelessWidget {
                 Positioned(
                   top: 2,
                   right: 2,
-                  child: PopupMenuButton(
+                  child: PopupMenuButton<int>(
+                      onSelected: (val) {
+                        switch (val) {
+                          case 1:
+                            GoRouter.of(context).pushNamed(AppPages.addCategory,
+                                params: {'model': jsonEncode(entity.toJson())});
+                            break;
+                          default:
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("default !")));
+                        }
+                      },
                       icon: Image.asset(
                         AppAssets.menu,
                         width: 20,
@@ -173,6 +196,7 @@ class CategoryListTile extends StatelessWidget {
                       ),
                       itemBuilder: (context) => [
                             PopupMenuItem(
+                              value: 1,
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -195,6 +219,7 @@ class CategoryListTile extends StatelessWidget {
                               ),
                             ),
                             PopupMenuItem(
+                              value: 2,
                               child: Row(
                                 children: [
                                   Image.asset(

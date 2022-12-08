@@ -8,6 +8,7 @@ class AppStrings {
   static const phoneNumber = "Phone number";
   static const idType = "ID Type";
   static const idNo = "ID No";
+  static const search = "Search";
 
   static const address = "Address";
   static const add = "Add";

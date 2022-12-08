@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
@@ -12,34 +13,40 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget sideCard(
-        {required String title, required String image, Color? color}) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                    color: AppColors.lightBorderColor.withOpacity(0.24)))),
-        child: Row(
-          children: [
-            Image.asset(
-              image,
-              width: 25,
-              height: 29,
-              fit: BoxFit.fill,
-            ),
-            const SizedBox(
-              width: 14,
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                color: color ?? const Color(0XFF484848),
-                fontWeight: FontWeight.w600,
+        {required String title,
+        required String image,
+        Color? color,
+        required Function onTap}) {
+      return GestureDetector(
+        onTap: () => onTap(),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      color: AppColors.lightBorderColor.withOpacity(0.24)))),
+          child: Row(
+            children: [
+              Image.asset(
+                image,
+                width: 25,
+                height: 29,
+                fit: BoxFit.fill,
               ),
-            )
-          ],
+              const SizedBox(
+                width: 14,
+              ),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: color ?? const Color(0XFF484848),
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
         ),
       );
     }
@@ -225,10 +232,23 @@ class ProfileView extends StatelessWidget {
             // spacer37,
             sideCard(
                 title: AppStrings.changePassword,
-                image: AppAssets.changePassword),
-            sideCard(title: AppStrings.contactUs, image: AppAssets.contactUs),
-            sideCard(title: AppStrings.logOut, image: AppAssets.logout),
-            sideCard(title: AppStrings.deleteAccount, image: AppAssets.delete),
+                image: AppAssets.changePassword,
+                onTap: () {}),
+            sideCard(
+                title: AppStrings.contactUs,
+                image: AppAssets.contactUs,
+                onTap: () {}),
+            sideCard(
+                title: AppStrings.logOut,
+                image: AppAssets.logout,
+                onTap: () {
+                  final controller = LoginBloc.get(context);
+                  controller.logOut(context);
+                }),
+            sideCard(
+                title: AppStrings.deleteAccount,
+                image: AppAssets.delete,
+                onTap: () {}),
           ],
         ),
       ),

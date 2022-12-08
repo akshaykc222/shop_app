@@ -14,6 +14,9 @@ class CategoryAddForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = CategoryBloc.get(context);
+    if (entity != null) {
+      controller.updateForEditing(entity!);
+    }
     buildImageWidget() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,9 +39,12 @@ class CategoryAddForm extends StatelessWidget {
                       color: AppColors.lightGrey,
                     ),
                   )
-                : CachedNetworkImage(
-                    imageUrl: entity?.image ?? "",
-                    fit: BoxFit.contain,
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(19),
+                    child: CachedNetworkImage(
+                      imageUrl: entity?.image ?? "",
+                      fit: BoxFit.contain,
+                    ),
                   ),
           ),
           const SizedBox(

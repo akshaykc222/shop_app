@@ -314,189 +314,194 @@ class OrderSmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: AppColors.offWhite1,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  "Order # 5670125",
-                  style: TextStyle(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15),
-                ),
-                Text(
-                  "Today , 12:50 pm",
-                  style: TextStyle(
-                      color: AppColors.offBlack,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          spacer22,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(
-                width: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: const TextSpan(
-                      text: 'Total Items :',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: AppColors.black),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: '3',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+    return GestureDetector(
+      onTap: (){
+
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.offWhite1,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    "Order # 5670125",
+                    style: TextStyle(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15),
                   ),
-                  spacer10,
-                  RichText(
-                    text: const TextSpan(
-                      text: 'Total Items :',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: AppColors.black),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: '15 AED',
-                            style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primaryColor)),
-                      ],
-                    ),
+                  Text(
+                    "Today , 12:50 pm",
+                    style: TextStyle(
+                        color: AppColors.offBlack,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 13),
                   ),
                 ],
               ),
-              const SizedBox(
-                width: 20,
-              ),
-              // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     const Text(
-              //       "1 ITEM",
-              //       style: TextStyle(
-              //           fontSize: 15,
-              //           color: AppColors.black,
-              //           fontWeight: FontWeight.w600),
-              //     ),
-              //     spacer10,
-              //     const Text(
-              //       "₹15",
-              //       style: TextStyle(color: Colors.blue),
-              //     )
-              //   ],
-              // ),
-              const Spacer(),
-              Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
-                  decoration: BoxDecoration(
-                      color: Colors.deepOrangeAccent.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Text(
-                    "COD",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrangeAccent),
-                  )),
-              const SizedBox(
-                width: 20,
-              )
-            ],
-          ),
-          spacer5,
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Divider(
-              thickness: 0.5,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacer22,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
-                  children: const [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: RippleButton(),
+                const SizedBox(
+                  width: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: 'Total Items :',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: AppColors.black),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '3',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "Pending",
-                      style: TextStyle(
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15),
+                    spacer10,
+                    RichText(
+                      text: const TextSpan(
+                        text: 'Total Items :',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: AppColors.black),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '15 AED',
+                              style: TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primaryColor)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const OrderDetails()))
-                  },
-                  child: Container(
-                    width: 80,
-                    height: 35,
-                    // decoration: BoxDecoration(),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppStrings.details,
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.black.withOpacity(0.6)),
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Image.asset(
-                            AppAssets.rightArrow,
-                            width: 6,
-                            height: 10,
-                            fit: BoxFit.fill,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                const SizedBox(
+                  width: 20,
+                ),
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     const Text(
+                //       "1 ITEM",
+                //       style: TextStyle(
+                //           fontSize: 15,
+                //           color: AppColors.black,
+                //           fontWeight: FontWeight.w600),
+                //     ),
+                //     spacer10,
+                //     const Text(
+                //       "₹15",
+                //       style: TextStyle(color: Colors.blue),
+                //     )
+                //   ],
+                // ),
+                const Spacer(),
+                Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
+                    decoration: BoxDecoration(
+                        color: Colors.deepOrangeAccent.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Text(
+                      "COD",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrangeAccent),
+                    )),
+                const SizedBox(
+                  width: 20,
                 )
               ],
             ),
-          )
-        ],
+            spacer5,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                thickness: 0.5,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: const [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: RippleButton(),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "Pending",
+                        style: TextStyle(
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const OrderDetails()))
+                    },
+                    child: Container(
+                      width: 80,
+                      height: 35,
+                      // decoration: BoxDecoration(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppStrings.details,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.black.withOpacity(0.6)),
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Image.asset(
+                              AppAssets.rightArrow,
+                              width: 6,
+                              height: 10,
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

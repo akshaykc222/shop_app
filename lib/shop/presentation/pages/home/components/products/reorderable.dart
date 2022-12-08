@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
 
-import '../../../../themes/app_assets.dart';
 import '../../../../themes/app_strings.dart';
 import '../../../../widgets/custom_app_bar.dart';
 
@@ -64,6 +63,7 @@ class ReOrderableListCategoryScreen extends StatelessWidget {
                           child: CategoryListTile(
                             entity: e,
                             reOrder: true,
+                            edit: () {},
                           ),
                         ))
                     .toList());
