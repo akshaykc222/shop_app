@@ -1,19 +1,30 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
+import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
+import '../../../../domain/use_cases/add_category_use_case.dart';
 import '../../../../domain/use_cases/category_usecase.dart';
+import '../../../../domain/use_cases/delete_category_usecase.dart';
+import '../../../../domain/use_cases/get_sub_categories.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryUseCase categoryUseCase;
+  final AddCategoryUseCase addCategoryUseCase;
+  final GetSubCategoriesUseCase getSubCategoriesUseCase;
+  final DeleteCategoryUseCase deleteCategoryUseCase;
 
-  CategoryBloc(this.categoryUseCase) : super(CategoryInitial()) {
+  CategoryBloc(this.categoryUseCase, this.addCategoryUseCase,
+      this.getSubCategoriesUseCase, this.deleteCategoryUseCase)
+      : super(CategoryInitial()) {
     on<CategoryEvent>((event, emit) async {
       emit(CategoryInitial());
     });
@@ -23,7 +34,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       var data = await getCategory();
       if (data != null) {
         prettyPrint("data length ${data.categories.length}");
-        emit(CategoryLoadedState(data.categories));
+        totalPage = data.totalPages;
+        emit(CategoryLoadedState(
+            data.categories, data.totalPages == currentPage));
       } else {
         emit(CategoryErrorState("something went wrong"));
       }
@@ -36,24 +49,130 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<CategorySearchEvent>((event, emit) async {
       emit(CategoryLoadingState());
       prettyPrint("searching ... ${event.searchKey}");
+      currentPage = 1;
+      totalPage = 1;
+      categoryList.clear();
       var data = await getCategory(search: event.searchKey);
 
       if (data != null) {
-        categoryList.addAll(data.categories);
+        // categoryList.addAll(data.categories);
         prettyPrint("data length ${data.categories.length}");
-        emit(CategoryLoadedState(data.categories));
+        emit(CategoryLoadedState(
+            data.categories, data.totalPages == currentPage));
       } else {
         emit(CategoryErrorState("something went wrong"));
       }
     });
+    on<AddCategoryEvent>((event, emit) async {
+      emit(CategoryLoadingState());
+      try {
+        await addCategoryUseCase
+            .call(CategoryRequestModel(name: event.name, image: event.filePath))
+            .then((value) {
+          add(GetCategoryEvent());
+          GoRouter.of(event.context).pop();
+        });
+        emit(CategoryLoadCompletedState());
+      } on UnauthorisedException {
+        handleUnAuthorizedError(event.context);
+      } catch (e) {
+        ScaffoldMessenger.of(event.context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+        emit(CategoryErrorState(e.toString()));
+      }
+    });
+    on<UpdateCategoryEvent>((event, emit) async {
+      emit(CategoryLoadingState());
+      try {
+        await addCategoryUseCase.call(event.request).then((value) {
+          add(GetCategoryEvent());
+          categoryList.clear();
+          GoRouter.of(event.context).pop();
+        });
+        emit(CategoryLoadCompletedState());
+      } on UnauthorisedException {
+        handleUnAuthorizedError(event.context);
+      } catch (e) {
+        ScaffoldMessenger.of(event.context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+        emit(CategoryErrorState(e.toString()));
+      }
+    });
+    on<GetCategoryPaginatedEvent>((event, emit) async {
+      emit(CategoryLoadingMoreState());
+      currentPage = currentPage + 1;
+      if (currentPage != totalPage) {
+        await getCategory();
+      } else {
+        currentPage = totalPage;
+      }
+      emit(CategoryLoadedState(categoryList, true));
+    });
+    on<GetSubCategoryEvent>((event, emit) async {
+      emit(CategoryLoadingState());
+      try {
+        var data = await getSubCategoriesUseCase.call(event.request);
+        for (var element in data.categories) {
+          prettyPrint("\n ========== ${element.id}===========");
+          if (!subCategoryList.contains(element)) {
+            prettyPrint("adding to subcategory");
+            subCategoryList.add(element);
+          } else {
+            prettyPrint("else case wrking");
+          }
+        }
+        emit(CategoryLoadCompletedState());
+      } on UnauthorisedException {
+        // emit(CategoryErrorState("something went wrong"));
+        handleUnAuthorizedError(event.context);
+      } catch (e) {
+        // handleError(event.context, e.toString());
+        emit(CategoryErrorState(e.toString()));
+      }
+    });
+    on<GetSubCategoryPaginatedEvent>((event, emit) {
+      emit(CategoryLoadingMoreState());
+    });
+    on<DeleteCategoryEvent>((event, emit) async {
+      emit(CategoryLoadingState());
+      try {
+        final data = await deleteCategoryUseCase.call(event.id);
+        categoryList.removeWhere((element) => element.id == event.id);
+        subCategoryList.removeWhere((element) => element.id == event.id);
+        getCategory();
+        emit(CategoryDeletedState());
+      } on DeleteConflictException {
+        emit(CategoryErrorState(AppConstants.kErrorConflictMessage));
+      } catch (e) {
+        // ScaffoldMessenger.of(event.context)
+        //     .showSnackBar(SnackBar(content: Text(e.toString())));
+        emit(CategoryErrorState(e.toString()));
+      }
+    });
+    on<RefreshPageEvent>((event, emit) => emit(CategoryLoadCompletedState()));
   }
   List<CategoryEntity> categoryList = [];
+  List<CategoryEntity> subCategoryList = [];
+
+  int totalPage = 1;
+  int totalSubPage = 1;
   bool contextTapped = false;
   static CategoryBloc get(context) => BlocProvider.of(context);
 
   Future<CategoryResponse?> getCategory({String? search}) async {
     try {
-      final data = await categoryUseCase.get(searchKey: search);
+      prettyPrint("current page $currentPage");
+      final data =
+          await categoryUseCase.get(searchKey: search, page: currentPage);
+      for (var element in data.categories) {
+        prettyPrint(element.toString());
+        if (!categoryList.contains(element)) {
+          categoryList.add(element);
+        } else {
+          categoryList.remove(element);
+          categoryList.add(element);
+        }
+      }
       return data;
     } on UnauthorisedException {
     } catch (e) {
@@ -63,7 +182,34 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     return null;
   }
 
+  int currentPage = 1;
+  int currentPageSub = 1;
+
+  getPaginatedResponse() {
+    currentPage = currentPage + 1;
+    if (currentPage < totalPage) {
+      add(GetCategoryPaginatedEvent());
+    } else {
+      currentPage = totalPage;
+    }
+  }
+
+  getPaginatedResponseSub() {
+    currentPageSub = currentPageSub + 1;
+    if (currentPageSub < totalSubPage) {
+      add(GetCategoryPaginatedEvent());
+    } else {
+      currentPage = totalSubPage;
+      add(RefreshPageEvent());
+    }
+  }
+
   final categoryNameController = TextEditingController();
+  final searchController = TextEditingController();
+  clearTextFields() {
+    categoryNameController.text = "";
+    searchController.text = "";
+  }
 
   updateForEditing(CategoryEntity entity) {
     categoryNameController.text = entity.name;

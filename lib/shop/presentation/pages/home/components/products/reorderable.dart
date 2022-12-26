@@ -21,7 +21,7 @@ class ReOrderableListCategoryScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 30.0),
+              padding: const EdgeInsets.only(left: 30.0),
               child: GestureDetector(
                 onTap: () => GoRouter.of(context).pop(),
                 child: const Icon(
@@ -64,6 +64,7 @@ class ReOrderableListCategoryScreen extends StatelessWidget {
                             entity: e,
                             reOrder: true,
                             edit: () {},
+                            delete: () {},
                           ),
                         ))
                     .toList());

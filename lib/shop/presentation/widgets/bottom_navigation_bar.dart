@@ -19,9 +19,9 @@ class CustomBottomAppBar extends StatelessWidget {
       height: 77,
       decoration: BoxDecoration(color: AppColors.white, boxShadow: [
         BoxShadow(
-          color: AppColors.lightGrey.withOpacity(0.6),
-          spreadRadius: 4,
-          blurRadius: 5,
+          color: AppColors.lightGrey.withOpacity(0.4),
+          spreadRadius: 2,
+          blurRadius: 2,
           offset: const Offset(0, -1),
         )
       ]),

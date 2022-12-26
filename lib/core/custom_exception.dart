@@ -17,6 +17,11 @@ class BadRequestException extends CustomException {
   BadRequestException([String? message]) : super(message ?? "internetError");
 }
 
+class DeleteConflictException extends CustomException {
+  DeleteConflictException([String? message])
+      : super(message ?? "internetError");
+}
+
 class UnauthorisedException extends CustomException {
   UnauthorisedException([String? message]) : super(message ?? "internetError");
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/hour_tile_cubit/cubit/store_timing_cubit.dart';
@@ -17,6 +17,7 @@ class StoreTimingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = StoreTimingCubit.get(context);
     return Scaffold(
       appBar: getAppBar(
           context,
@@ -63,12 +64,11 @@ class StoreTimingScreen extends StatelessWidget {
               ),
               spacer18,
               ListView.builder(
-                  itemCount: 7,
+                  itemCount: controller.mockTimingList.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => HoursSelectTile(
-                        day: WeekDays.values[index].name,
-                      ))
+                  itemBuilder: (context, index) =>
+                      HoursListTile(entity: controller.mockTimingList[index]))
             ],
           ),
         ),
@@ -285,157 +285,212 @@ class _HoursSelectTileState extends State<HoursSelectTile> {
   }
 }
 
-class HoursListTile extends StatelessWidget {
+class HoursListTile extends StatefulWidget {
   final StoreTimingEntity entity;
   const HoursListTile({super.key, required this.entity});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StoreTimingCubit, StoreTimingState>(
-      builder: (context, state) {
-        return AnimatedContainer(
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.lightBorderColor)),
-          duration: const Duration(milliseconds: 500),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Image.asset(
-                    AppAssets.calender,
-                    width: 17,
-                    height: 15,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    entity.day,
-                    style: const TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  Text(
-                    entity.open ? "Open" : "Closed",
-                    style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.lightBorderColor,
-                        fontWeight: FontWeight.normal),
-                  ),
-                  const SizedBox(
-                    width: 9,
-                  ),
-                  CustomSwitch(
-                    value: entity.open,
-                    onChanged: (val) {},
-                    disableColor: AppColors.red,
-                    enableColor: AppColors.green,
-                  )
-                ],
-              ),
-              entity.is24Open != true
-                  ? Container()
-                  : Padding(
-                      padding: const EdgeInsets.only(top: 27.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          PopupMenuButton<int>(
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    AppAssets.clock,
-                                    width: 17,
-                                    height: 15,
-                                  ),
-                                  const SizedBox(
-                                    width: 9,
-                                  ),
-                                  const Text(
-                                    "24 Hours",
-                                    style: TextStyle(
-                                      color: AppColors.black,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                  const Icon(Icons.keyboard_arrow_down_rounded)
-                                ],
-                              ),
-                              onSelected: (pos) {
-                                prettyPrint("position $pos");
-                                if (pos == 1) {
-                                  entity.is24Open = false;
+  State<HoursListTile> createState() => _HoursListTileState();
+}
 
-                                  showTimePicker(
-                                      context: context,
-                                      initialTime: TimeOfDay(
-                                          hour: DateTime.now().hour,
-                                          minute: DateTime.now().minute));
-                                }
-                              },
-                              itemBuilder: (context) => const [
-                                    PopupMenuItem(
-                                        value: 0,
-                                        child: Text(AppStrings.twentyFourHrs)),
-                                    PopupMenuItem(
-                                        value: 1, child: Text("Select Time"))
-                                  ]),
-                          entity.is24Open == true
-                              ? Container()
-                              : const Text("-"),
-                          entity.is24Open == true
-                              ? Container()
-                              : PopupMenuButton<int>(
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        AppAssets.clock,
-                                        width: 17,
-                                        height: 15,
-                                      ),
-                                      const SizedBox(
-                                        width: 9,
-                                      ),
-                                      const Text(
-                                        "24 Hours",
-                                        style: TextStyle(
-                                          color: AppColors.black,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      const Icon(
-                                          Icons.keyboard_arrow_down_rounded)
-                                    ],
-                                  ),
-                                  onSelected: (pos) {
-                                    prettyPrint("position ");
-                                    if (pos == 1) {
-                                      showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay(
-                                              hour: DateTime.now().hour,
-                                              minute: DateTime.now().minute));
-                                    }
-                                  },
-                                  itemBuilder: (context) => const [
-                                        PopupMenuItem(
-                                            value: 0,
-                                            child:
-                                                Text(AppStrings.twentyFourHrs)),
-                                        PopupMenuItem(
-                                            value: 1,
-                                            child: Text("Select Time"))
-                                      ])
-                        ],
-                      ),
+class _HoursListTileState extends State<HoursListTile> {
+  late ValueNotifier<StoreTimingEntity> _entity;
+
+  @override
+  void initState() {
+    _entity = ValueNotifier(widget.entity);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<StoreTimingEntity>(
+        valueListenable: _entity,
+        builder: (context, val, child) {
+          return AnimatedContainer(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.lightBorderColor)),
+            duration: const Duration(milliseconds: 500),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Image.asset(
+                      AppAssets.calender,
+                      width: 17,
+                      height: 15,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      val.day,
+                      style: const TextStyle(
+                          fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    Text(
+                      val.open ? "Open" : "Closed",
+                      style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.lightBorderColor,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    const SizedBox(
+                      width: 9,
+                    ),
+                    CustomSwitch(
+                      value: val.open,
+                      onChanged: (val) {
+                        _entity.value.open = !_entity.value.open;
+                        _entity.notifyListeners();
+                      },
+                      disableColor: AppColors.red,
+                      enableColor: AppColors.green,
                     )
-            ],
-          ),
-        );
-      },
-    );
+                  ],
+                ),
+                val.open != true
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 27.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            PopupMenuButton<int>(
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      AppAssets.clock,
+                                      width: 17,
+                                      height: 15,
+                                    ),
+                                    const SizedBox(
+                                      width: 9,
+                                    ),
+                                    Text(
+                                      _entity.value.openingTime != null
+                                          ? DateFormat.jm().format(
+                                              _entity.value.openingTime!)
+                                          : AppStrings.twentyFourHrs,
+                                      style: const TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                    const Icon(
+                                        Icons.keyboard_arrow_down_rounded)
+                                  ],
+                                ),
+                                onSelected: (pos) async {
+                                  prettyPrint("position $pos");
+                                  if (pos == 1) {
+                                    _entity.value.is24Open = false;
+
+                                    var time = await showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay(
+                                            hour: DateTime.now().hour,
+                                            minute: DateTime.now().minute));
+                                    if (time != null) {
+                                      _entity.value.openingTime =
+                                          formatTimeOfDay(time);
+                                      _entity.value.closingTime = _entity
+                                          .value.openingTime
+                                          ?.add(const Duration(hours: 8));
+                                    } else {
+                                      _entity.value.is24Open = true;
+                                    }
+                                    _entity.notifyListeners();
+                                  } else {
+                                    _entity.value.openingTime = null;
+                                    _entity.value.is24Open = true;
+                                    _entity.notifyListeners();
+                                  }
+                                },
+                                itemBuilder: (context) => const [
+                                      PopupMenuItem(
+                                          value: 0,
+                                          child:
+                                              Text(AppStrings.twentyFourHrs)),
+                                      PopupMenuItem(
+                                          value: 1, child: Text("Select Time"))
+                                    ]),
+                            val.is24Open == true || val.is24Open == null
+                                ? Container()
+                                : const Text("-"),
+                            val.is24Open == true || val.is24Open == null
+                                ? Container()
+                                : PopupMenuButton<int>(
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          AppAssets.clock,
+                                          width: 17,
+                                          height: 15,
+                                        ),
+                                        const SizedBox(
+                                          width: 9,
+                                        ),
+                                        Text(
+                                          val.closingTime != null
+                                              ? DateFormat.jm().format(
+                                                  _entity.value.closingTime!)
+                                              : "Select",
+                                          style: const TextStyle(
+                                            color: AppColors.black,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                        const Icon(
+                                            Icons.keyboard_arrow_down_rounded)
+                                      ],
+                                    ),
+                                    onSelected: (pos) async {
+                                      if (pos == 1) {
+                                        if (_entity.value.openingTime != null) {
+                                          var time = await showTimePicker(
+                                              context: context,
+                                              initialTime: TimeOfDay(
+                                                  hour: _entity
+                                                      .value.openingTime!
+                                                      .add(const Duration(
+                                                          hours: 8))
+                                                      .hour,
+                                                  minute:
+                                                      DateTime.now().minute));
+                                          if (time != null) {
+                                            _entity.value.closingTime =
+                                                formatTimeOfDay(time);
+
+                                            _entity.notifyListeners();
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      "Select starting time")));
+                                        }
+                                      } else {}
+                                    },
+                                    itemBuilder: (context) => const [
+                                          // PopupMenuItem(
+                                          //     value: 0,
+                                          //     child: Text(
+                                          //         AppStrings.twentyFourHrs)),
+                                          PopupMenuItem(
+                                              value: 1,
+                                              child: Text("Select Time"))
+                                        ])
+                          ],
+                        ),
+                      )
+              ],
+            ),
+          );
+        });
   }
 }

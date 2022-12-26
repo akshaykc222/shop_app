@@ -165,7 +165,7 @@ class DeliveryManAdding extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   )),
-              Expanded(flex: 1, child: SizedBox())
+              const Expanded(flex: 1, child: SizedBox())
             ],
           )),
       bottomNavigationBar: SizedBox(
@@ -255,19 +255,133 @@ class DeliveryManAdding extends StatelessWidget {
                                 .toList(),
                             onChanged: (Object? value) {},
                           )),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          width: 65,
-                          height: 65,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.lightGrey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_rounded,
-                              color: AppColors.lightGrey,
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                    child: SizedBox(
+                                      height: 160,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                  AppStrings.uploadProductImage,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold)),
+                                              IconButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  icon: const Icon(
+                                                    Icons.close,
+                                                    size: 25,
+                                                  ))
+                                            ],
+                                          ),
+                                          spacer20,
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                  child: GestureDetector(
+                                                      onTap: () async {
+                                                        final ImagePicker
+                                                            _picker =
+                                                            ImagePicker();
+                                                        // Pick an image
+                                                        // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                                        // Capture a photo
+                                                        final XFile? photo =
+                                                            await _picker.pickImage(
+                                                                source:
+                                                                    ImageSource
+                                                                        .camera);
+                                                        if (photo != null) {
+                                                          // controller.addFiles(photo);
+                                                          // controller.add(ImageFilesAddedEvent());
+                                                          Navigator.pop(
+                                                              context);
+                                                        }
+                                                      },
+                                                      child: Column(
+                                                        children: [
+                                                          const Icon(
+                                                            Icons
+                                                                .camera_alt_outlined,
+                                                            size: 50,
+                                                          ),
+                                                          spacer5,
+                                                          const Text(
+                                                              AppStrings.camara)
+                                                        ],
+                                                      ))),
+                                              Expanded(
+                                                  child: GestureDetector(
+                                                      onTap: () async {
+                                                        final ImagePicker
+                                                            _picker =
+                                                            ImagePicker();
+                                                        // Pick an image
+                                                        final List<XFile?>
+                                                            image =
+                                                            await _picker
+                                                                .pickMultiImage();
+                                                        for (var file
+                                                            in image) {
+                                                          if (file != null) {
+                                                            // controller.addFiles(file);
+                                                            // controller
+                                                            //     .add(ImageFilesAddedEvent());
+                                                          } else {}
+                                                        }
+
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Column(
+                                                        children: [
+                                                          const Icon(
+                                                            Icons
+                                                                .image_outlined,
+                                                            size: 50,
+                                                          ),
+                                                          spacer5,
+                                                          const Text(AppStrings
+                                                              .gallery)
+                                                        ],
+                                                      ))),
+                                            ],
+                                          ),
+                                          // spacer20,
+                                        ],
+                                      ),
+                                    ),
+                                  ));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Container(
+                            width: 65,
+                            height: 65,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.lightGrey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.image_rounded,
+                                color: AppColors.lightGrey,
+                              ),
                             ),
                           ),
                         ),

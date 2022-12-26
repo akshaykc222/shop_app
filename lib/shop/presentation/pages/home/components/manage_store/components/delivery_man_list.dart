@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
@@ -100,7 +101,12 @@ class DeliveryManList extends StatelessWidget {
                           width: 80,
                           height: 80,
                           decoration: const BoxDecoration(
-                              color: Colors.white, shape: BoxShape.circle),
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  fit: BoxFit.contain,
+                                  image: CachedNetworkImageProvider(
+                                      'https://mapleridge.com/sites/default/files/wp-content/uploads/2014/10/Delivery-Man-iStock_000009564355Medium.jpg'))),
                         ),
                       ),
                       Expanded(

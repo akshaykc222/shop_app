@@ -4,16 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
-import 'package:shop_app/shop/data/models/category_response.dart';
-import 'package:shop_app/shop/domain/entities/category_entity.dart';
+import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/customer_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_man_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/deliveryman_add.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/store_timing_screen.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/orders/components/add_product.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_form.dart';
-import 'package:shop_app/shop/presentation/pages/home/components/profile/components/store_timing_screen.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/products/category/sub_category.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/products/tag_list_screen.dart';
 import 'package:shop_app/shop/presentation/pages/home/login/login_screen.dart';
 
+import '../../data/models/category_response.dart';
+import '../../domain/entities/category_entity.dart';
 import '../pages/home/components/products/product_form.dart';
 import '../pages/home/components/products/reorderable.dart';
 import '../pages/home/components/products/variant_screen.dart';
@@ -39,7 +42,7 @@ class AppRouteManager {
         path: "/",
         builder: (BuildContext context, GoRouterState state) {
           var storage = GetStorage();
-          String? token = storage.read('token');
+          String? token = storage.read(LocalStorageNames.token);
           if (token == null) {
             return const LoginScreen();
           } else {
@@ -55,24 +58,64 @@ class AppRouteManager {
         },
       ),
       GoRoute(
+        name: AppPages.editProduct,
+        path: "/${AppPages.editProduct}/:id",
+        builder: (BuildContext context, GoRouterState state) {
+          if (state.params.containsKey('id')) {
+            return ProductForm(
+              id: int.parse(state.params['id'] ?? "0"),
+            );
+          }
+          return const SizedBox();
+        },
+      ),
+      GoRoute(
         name: AppPages.addProduct,
-        path: "/add_product",
+        path: "/${AppPages.addProduct}",
         builder: (BuildContext context, GoRouterState state) {
           return const ProductForm();
         },
       ),
       GoRoute(
-        name: AppPages.addCategory,
-        path: "/${AppPages.addCategory}/:model",
+        name: AppPages.editCategory,
+        path: "/${AppPages.editCategory}/:model",
         builder: (BuildContext context, GoRouterState state) {
           String? json = state.params['model'];
-          if (json != null) {
-            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json));
+          if (json != null || json != "") {
+            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
             return CategoryAddForm(
               entity: model,
             );
           }
           return const CategoryAddForm();
+        },
+      ),
+      GoRoute(
+        name: AppPages.addCategory,
+        path: "/${AppPages.addCategory}",
+        builder: (BuildContext context, GoRouterState state) {
+          // String? json = state.p;
+          // if (json != null || json != "") {
+          //   CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
+          //   return CategoryAddForm(
+          //     entity: model,
+          //   );
+          // }
+          return const CategoryAddForm();
+        },
+      ),
+      GoRoute(
+        name: AppPages.subCategory,
+        path: "/${AppPages.subCategory}/:model",
+        builder: (BuildContext context, GoRouterState state) {
+          String? json = state.params['model'];
+          if (json != null || json != "") {
+            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
+            return SubCategoryScreen(
+              categoryEntity: model,
+            );
+          }
+          return const SizedBox();
         },
       ),
       GoRoute(
@@ -87,6 +130,13 @@ class AppRouteManager {
         path: "/${AppPages.reOrder}",
         builder: (BuildContext context, GoRouterState state) {
           return const ReOrderableListCategoryScreen();
+        },
+      ),
+      GoRoute(
+        name: AppPages.tagSelect,
+        path: "/${AppPages.tagSelect}",
+        builder: (BuildContext context, GoRouterState state) {
+          return const TagListScreen();
         },
       ),
       GoRoute(

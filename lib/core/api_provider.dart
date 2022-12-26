@@ -64,8 +64,24 @@ class ApiProvider {
     }
   }
 
-  Future<Map<String, dynamic>> post(
-      String endPoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> delete(String endPoint) async {
+    try {
+      addToken();
+      prettyPrint(_dio.options.headers.toString());
+      final Response response = await _dio.delete(
+        endPoint,
+      );
+      prettyPrint("getting response${response.realUri}");
+      final Map<String, dynamic> responseData = classifyResponse(response);
+      return responseData;
+    } on DioError catch (err) {
+      prettyPrint(err.toString(), type: PrettyPrinterTypes.error);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> post(String endPoint, Map<String, dynamic> body,
+      {FormData? formBody}) async {
     prettyPrint("on post call$body");
     try {
       prettyPrint("starting dio");
@@ -74,10 +90,10 @@ class ApiProvider {
       // prettyPrint(_dio.options.)
       final Response response = await _dio.post(
         endPoint,
-        data: body,
+        data: formBody ?? body,
       );
 
-      prettyPrint("getting response$response");
+      prettyPrint("getting response${response.realUri}");
       final Map<String, dynamic> responseData = classifyResponse(response);
       prettyPrint(responseData.toString());
       return responseData;
@@ -113,7 +129,8 @@ class ApiProvider {
   // }
 
   Map<String, dynamic> classifyResponse(Response response) {
-    // print(response);
+    print(response);
+    // try {
     final Map<String, dynamic> responseData =
         response.data as Map<String, dynamic>;
 
@@ -123,15 +140,22 @@ class ApiProvider {
         return responseData;
       case 400:
         throw BadRequestException(responseData.toString());
+      case 404:
+        throw BadRequestException(responseData.toString());
       case 401:
         throw UnauthorisedException(responseData.toString());
       case 403:
         throw BadRequestException(responseData.toString());
+      case 409:
+        throw DeleteConflictException(responseData.toString());
       case 500:
       default:
         throw FetchDataException(
           'Error occurred while Communication with Server with StatusCode : ${response.statusCode}',
         );
     }
+    // } catch (e) {
+    //   throw BadRequestException("something went  wrong");
+    // }
   }
 }

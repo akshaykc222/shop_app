@@ -12,13 +12,23 @@ class ProductInitial extends ProductState {
   List<Object> get props => [];
 }
 
-class ProductFetching extends ProductState {}
+class ProductFetching extends ProductState {
+  final bool? innerLoader;
+
+  ProductFetching({this.innerLoader});
+}
 
 class ProductFetched extends ProductState {
   final List<ProductModel> data;
-  final List<Tag> tags;
+  final List<TagEntity> tags;
 
   ProductFetched(this.data, this.tags);
+}
+
+class ProductFetchedDetail extends ProductState {
+  final ProductModel model;
+
+  ProductFetchedDetail(this.model);
 }
 
 class ProductFetchError extends ProductState {
@@ -27,40 +37,16 @@ class ProductFetchError extends ProductState {
   ProductFetchError(this.error);
 }
 
-class SearchProductTap extends ProductState {
-  final bool search;
-  final int index;
+class ProductDetailFetchError extends ProductState {
+  final String error;
 
-  const SearchProductTap(this.search, this.index);
-
-  @override
-  List<Object?> get props => [search,index];
+  ProductDetailFetchError(this.error);
 }
 
-class ProductTagsAddState extends ProductState {
-  final List<String> tagList;
-  const ProductTagsAddState(this.tagList) : super();
+class TagFetchedState extends ProductState {
+  TagFetchedState();
 }
 
-class ProductTagsRemoveState extends ProductState {
-  final List<String> tagList;
-  const ProductTagsRemoveState(this.tagList) : super();
-}
-
-class ProductImagesAddedState extends ProductState {
-  final List<XFile> files;
-
-  ProductImagesAddedState(this.files);
-}
-
-class ProductImagesRemove extends ProductState {
-  final List<XFile> files;
-
-  ProductImagesRemove(this.files);
-}
-
-class TabIndexState extends ProductState {
-  final int index;
-
-  TabIndexState(this.index);
+class UnitFetchedState extends ProductState {
+  UnitFetchedState();
 }

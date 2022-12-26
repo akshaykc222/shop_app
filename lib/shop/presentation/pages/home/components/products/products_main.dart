@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/product_list.dart';
-import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
+import '../../../../routes/app_pages.dart';
 import '../../../../widgets/custom_app_bar.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -22,24 +20,77 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
   late ProductBloc prodController;
   late CategoryBloc catController;
+  late ValueNotifier<int> tabValueNotifier;
+  late ValueNotifier<bool> showSearchNotifier;
+  late Animation expandingAnimation, transformAnimation, colorAnimation;
+  late AnimationController expandingAnimationController;
 
   @override
   void initState() {
     prodController = ProductBloc.get(context);
     catController = CategoryBloc.get(context);
     _tabController = TabController(length: 2, vsync: this);
+
+    tabValueNotifier = ValueNotifier(_tabController.index);
+    showSearchNotifier = ValueNotifier(false);
+    WidgetsBinding.instance.addObserver(this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
-        prettyPrint("index changing");
-        prodController.changeTabIndex(_tabController.index);
+        showSearchNotifier.value = false;
+        prodController.searchCategoryController.clear();
+        tabValueNotifier.value = _tabController.index;
         // controller.add(TabIndexChangingEvent(_tabController.index));
       }
     });
     super.initState();
+  }
+
+  // addAnimationListenerExpanding(){
+  //   expandingAnimationController.addListener(() {
+  //     if(expandingAnimation.isCompleted){
+  //
+  //     }
+  //   });
+  // }
+  @override
+  void didChangeDependencies() {
+    expandingAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 700));
+
+    expandingAnimation =
+        Tween<double>(begin: 50, end: MediaQuery.of(context).size.width)
+            .animate(CurvedAnimation(
+                parent: expandingAnimationController, curve: Curves.easeInBack))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.forward) {
+            } else if (status == AnimationStatus.reverse) {}
+          });
+    transformAnimation = BorderRadiusTween(
+            begin: const BorderRadius.only(
+                topLeft: Radius.circular(30), bottomLeft: Radius.circular(30)),
+            end: const BorderRadius.only(
+                topLeft: Radius.circular(0), topRight: Radius.circular(0)))
+        .animate(CurvedAnimation(
+            parent: expandingAnimationController, curve: Curves.easeIn));
+    colorAnimation =
+        ColorTween(begin: AppColors.primaryColor, end: AppColors.white).animate(
+            CurvedAnimation(
+                parent: expandingAnimationController, curve: Curves.easeIn));
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    tabValueNotifier.dispose();
+    showSearchNotifier.dispose();
+    expandingAnimationController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -48,133 +99,166 @@ class _ProductScreenState extends State<ProductScreen>
       backgroundColor: AppColors.white,
       appBar: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 70),
-        child: BlocBuilder<ProductBloc, ProductState>(
-          builder: (context, state) {
-            if (state is TabIndexState) {
-              return getAppBar(
-                  context,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      state.index == 0
-                          ? Container()
-                          : GestureDetector(
-                              onTap: (() {
-                                GoRouter.of(context)
-                                    .pushNamed(AppPages.reOrder);
-                              }),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 30.0),
-                                child: Image.asset(
-                                  AppAssets.reorder,
-                                  width: 20,
-                                  height: 20,
+        child: AnimatedBuilder(
+          animation: expandingAnimationController,
+          builder: (BuildContext context, Widget? child) {
+            return ValueListenableBuilder(
+                valueListenable: showSearchNotifier,
+                builder: (context, search, child) {
+                  return ValueListenableBuilder(
+                      valueListenable: tabValueNotifier,
+                      builder: (context, tabIndex, child) {
+                        return !showSearchNotifier.value
+                            ? getAppBar(
+                                context,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: tabValueNotifier.value == 0
+                                          ? Container()
+                                          : GestureDetector(
+                                              onTap: (() {
+                                                GoRouter.of(context).pushNamed(
+                                                    AppPages.reOrder);
+                                              }),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30.0),
+                                                child: Image.asset(
+                                                  AppAssets.reorder,
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          AppStrings.catalogue,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: IconButton(
+                                        onPressed: () {
+                                          showSearchNotifier.value =
+                                              !showSearchNotifier.value;
+                                          expandingAnimationController
+                                              .forward();
+                                        },
+                                        icon: Image.asset(
+                                          AppAssets.search,
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ),
-                            ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          AppStrings.catalogue,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            prodController
-                                .add(SearchProductTapEvent(state.index));
-                          },
-                          child: Image.asset(
-                            AppAssets.search,
-                            width: 20,
-                            height: 20,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  height: 220);
-            } else if (state is SearchProductTap) {
-              return getAppBar(
-                  context,
-                  Row(
-                    children: [
-                      Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: SizedBox(
-                              height: 45,
-                              child: TextFormField(
-                                controller:
-                                    prodController.searchCategoryController,
-                                decoration: const InputDecoration(
-                                    hintText: "Search ... "),
-                                onFieldSubmitted: (val) {
-                                  prodController.add(ProductSearchEvent(
-                                      searchKey: val,
-                                      unAuthorized: () {
-                                        handleUnAuthorizedError(context);
-                                      }));
-                                },
-                              ),
-                            ),
-                          )),
-                      Expanded(
-                        child: Row(children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Image.asset(
-                              AppAssets.search,
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () {
-                                prodController.add(ProductInitialEvent());
-                              },
-                              icon: const Icon(
-                                Icons.close,
-                                color: AppColors.black,
-                                size: 30,
-                              )),
-                        ]),
-                      )
-                    ],
-                  ));
-            }
-            return getAppBar(
-                context,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        AppStrings.catalogue,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          prodController.add(const SearchProductTapEvent(0));
-                        },
-                        child: Image.asset(
-                          AppAssets.search,
-                          width: 20,
-                          height: 20,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                height: 220);
+                                height: 220)
+                            : getAppBar(
+                                context,
+                                Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Container(
+                                      width: expandingAnimation.value,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: colorAnimation.value,
+                                        borderRadius: transformAnimation.value,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              flex: 3,
+                                              child: expandingAnimation.value <
+                                                      200
+                                                  ? Container()
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: SizedBox(
+                                                        height: 55,
+                                                        child: TextFormField(
+                                                          controller: prodController
+                                                              .searchCategoryController,
+                                                          decoration: const InputDecoration(
+                                                              hintText:
+                                                                  "Search ... ",
+                                                              border:
+                                                                  UnderlineInputBorder()),
+                                                          onFieldSubmitted:
+                                                              (val) {
+                                                            prodController.add(
+                                                                ProductSearchEvent(
+                                                                    searchKey:
+                                                                        val,
+                                                                    unAuthorized:
+                                                                        () {
+                                                                      handleUnAuthorizedError(
+                                                                          context);
+                                                                    }));
+                                                          },
+                                                        ),
+                                                      ),
+                                                    )),
+                                          Expanded(
+                                            child: Row(children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  if (tabValueNotifier.value ==
+                                                      0) {
+                                                    prodController.add(
+                                                        ProductSearchEvent(
+                                                            searchKey:
+                                                                prodController
+                                                                    .searchCategoryController
+                                                                    .text,
+                                                            unAuthorized:
+                                                                () {}));
+                                                  } else {
+                                                    catController.add(
+                                                        CategorySearchEvent(
+                                                            prodController
+                                                                .searchCategoryController
+                                                                .text));
+                                                  }
+                                                },
+                                                icon: Image.asset(
+                                                  AppAssets.search,
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    expandingAnimationController
+                                                        .reverse()
+                                                        .then((value) =>
+                                                            showSearchNotifier
+                                                                    .value =
+                                                                !showSearchNotifier
+                                                                    .value);
+                                                  },
+                                                  icon: const Icon(
+                                                    Icons.close,
+                                                    color: AppColors.black,
+                                                    size: 25,
+                                                  )),
+                                            ]),
+                                          )
+                                        ],
+                                      ),
+                                    )));
+                      });
+                });
           },
         ),
       ),

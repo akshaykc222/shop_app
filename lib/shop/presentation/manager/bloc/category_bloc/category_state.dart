@@ -14,10 +14,16 @@ class CategoryContextMenuTapedState extends CategoryState {
 
 class CategoryLoadingState extends CategoryState {}
 
+class CategoryLoadingMoreState extends CategoryState {}
+
+class CategoryLoadCompletedState extends CategoryState {}
+
+class CategoryDeletedState extends CategoryState {}
+
 class CategoryLoadedState extends CategoryState {
   final List<CategoryEntity> data;
-
-  CategoryLoadedState(this.data);
+  final bool isLastPage;
+  CategoryLoadedState(this.data, this.isLastPage);
 }
 
 class CategoryErrorState extends CategoryState {

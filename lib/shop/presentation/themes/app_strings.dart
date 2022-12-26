@@ -9,6 +9,7 @@ class AppStrings {
   static const idType = "ID Type";
   static const idNo = "ID No";
   static const search = "Search";
+  static const tags = "Tags";
 
   static const address = "Address";
   static const add = "Add";
@@ -46,7 +47,9 @@ class AppStrings {
   static const addProduct = "Add product";
   static const requestConfirm = "Request confirmation";
   static const editOrder = "Edit order";
+  static const editPrd = "Edit Products";
   static const edit = "Edit";
+  static const editCategory = "Edit Category";
   static const moveTop = "Move to top";
   static const editFee = "Edit Fee";
   static const editQuantity = "Edit Quantity";
@@ -82,6 +85,7 @@ class AppStrings {
   static const addProductImage = "Add Product Image up to 8";
   static const categoryName = "Category Name";
   static const productCategory = "Product Category";
+  static const subProductCategory = "Sub Category";
 
   static const productName = "Product Name";
   static const firstName = "First Name";
@@ -98,7 +102,7 @@ class AppStrings {
   static const String addColor = "Add color";
   static const String addAnotherColor = "Add another color";
 
-  static const String uploadProductImage = "Upload product images";
+  static const String uploadProductImage = "Choose image";
 
   static const String camara = "Camara";
   static const String gallery = "Gallery";

@@ -21,24 +21,27 @@ class LoginResponse {
 }
 
 class UserDataShort extends UserShortDetailsEntity {
-  UserDataShort({
-    required this.name,
-    required this.phone,
-    required this.email,
-    required this.logo,
-    required this.address,
-  }) : super(
+  UserDataShort(
+      {required this.name,
+      required this.phone,
+      required this.email,
+      required this.logo,
+      required this.address,
+      required this.storeId})
+      : super(
             name: name,
             phone: phone,
             email: email,
             logo: logo,
-            address: address);
+            address: address,
+            storeId: storeId);
 
-  String name;
-  String phone;
-  String email;
-  String logo;
-  String address;
+  final String name;
+  final String phone;
+  final String email;
+  final String logo;
+  final String address;
+  final int storeId;
 
   factory UserDataShort.fromJson(Map<String, dynamic> json) => UserDataShort(
         name: json["name"],
@@ -46,6 +49,7 @@ class UserDataShort extends UserShortDetailsEntity {
         email: json["email"],
         logo: json["logo"],
         address: json["address"],
+        storeId: json["store_id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,5 +58,6 @@ class UserDataShort extends UserShortDetailsEntity {
         "email": email,
         "logo": logo,
         "address": address,
+        "store_id": storeId
       };
 }

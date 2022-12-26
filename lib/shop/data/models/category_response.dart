@@ -31,18 +31,19 @@ class CategoryResponse {
 }
 
 class CategoryModel extends CategoryEntity {
-  CategoryModel({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.parentId,
-    required this.position,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.priority,
-    required this.moduleId,
-  }) : super(
+  CategoryModel(
+      {required this.id,
+      required this.name,
+      required this.image,
+      required this.parentId,
+      required this.position,
+      required this.status,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.priority,
+      required this.moduleId,
+      required this.productCount})
+      : super(
             id: id,
             name: name,
             image: image,
@@ -52,9 +53,10 @@ class CategoryModel extends CategoryEntity {
             createdAt: createdAt,
             updatedAt: updatedAt,
             priority: priority,
-            moduleId: moduleId);
+            moduleId: moduleId,
+            productCount: productCount);
 
-  int id;
+  String id;
   String name;
   String image;
   int parentId;
@@ -64,18 +66,23 @@ class CategoryModel extends CategoryEntity {
   DateTime updatedAt;
   int priority;
   int moduleId;
-
+  int? productCount;
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
-        id: json["id"],
+        id: json["id"].toString(),
         name: json["name"],
-        image: json["image"],
-        parentId: json["parent_id"],
-        position: json["position"],
-        status: json["status"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        priority: json["priority"],
-        moduleId: json["module_id"],
+        image: json["image"] ?? "",
+        parentId: json["parent_id"] ?? 0,
+        position: json["position"] ?? 0,
+        status: json["status"] ?? true,
+        createdAt: json["created_at"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["updated_at"]),
+        priority: json["priority"] ?? 0,
+        moduleId: json["module_id"] ?? 0,
+        productCount: json['product_count'] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -90,4 +97,8 @@ class CategoryModel extends CategoryEntity {
         "priority": priority,
         "module_id": moduleId,
       };
+  @override
+  String toString() {
+    return "$id => $name";
+  }
 }

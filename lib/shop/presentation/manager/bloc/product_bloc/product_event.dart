@@ -58,6 +58,24 @@ class ImageFilesRemovedEvent extends ProductEvent {
   @override
   List<Object?> get props => [];
 }
+
+class GetTagsEvent extends ProductEvent {
+  final BuildContext context;
+
+  const GetTagsEvent(this.context);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class GetUnitsEvent extends ProductEvent {
+  final BuildContext context;
+
+  const GetUnitsEvent(this.context);
+
+  @override
+  List<Object?> get props => [];
+}
 // class ContextMenuTapedCategory extends ProductEvent{
 //
 //   @override
@@ -72,4 +90,57 @@ class TabIndexChangingEvent extends ProductEvent {
 
   @override
   List<Object?> get props => [index];
+}
+
+class ChangeProductStatusEvent extends ProductEvent {
+  final ProductStatusRequestParams params;
+  final BuildContext context;
+  const ChangeProductStatusEvent({required this.params, required this.context});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class GetProductDetailsEvent extends ProductEvent {
+  final BuildContext context;
+  final int id;
+
+  const GetProductDetailsEvent(this.context, this.id);
+
+  @override
+  List<Object?> get props => [id, context];
+}
+
+class RefreshDetailsEvent extends ProductEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class AddProductEvent extends ProductEvent {
+  final BuildContext context;
+  final int? id;
+
+  const AddProductEvent({required this.context, this.id});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class DeleteProductEvent extends ProductEvent {
+  final BuildContext context;
+  final int id;
+
+  const DeleteProductEvent(this.context, this.id);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class GetPaginatedProducts extends ProductEvent {
+  final String? search;
+
+  const GetPaginatedProducts({this.search});
+
+  @override
+  List<Object?> get props => [];
 }

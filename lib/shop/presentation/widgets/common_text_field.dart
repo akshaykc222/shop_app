@@ -14,6 +14,7 @@ class CommonTextField extends StatefulWidget {
   final bool? showSuffixIcon;
   final Function(String)? validator;
   final bool? passwordField;
+
   // final FocusNode focusNode;
   const CommonTextField(
       {Key? key,
@@ -68,9 +69,12 @@ class _CommonTextFieldState extends State<CommonTextField> {
             });
           },
           controller: widget.controller,
-          validator: widget.validator == null
-              ? null
-              : (val) => widget.validator!(val ?? ""),
+          validator: (val){
+            if(widget.validator!=null){
+              widget.validator!(val??"");
+            }
+            return null;
+          },
           focusNode: _focusNode,
           obscureText: showPassword,
           keyboardType: widget.textInputType ?? TextInputType.text,

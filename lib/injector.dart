@@ -5,8 +5,17 @@ import 'package:shop_app/shop/data/repositories/auth_remote_data_rempository_imp
 import 'package:shop_app/shop/data/repositories/product_repository_impl.dart';
 import 'package:shop_app/shop/domain/repositories/auth_remote_data_repository.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
+import 'package:shop_app/shop/domain/use_cases/add_category_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/add_product_request_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/category_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/delete_category_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/delete_product_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/get_product_details_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/get_sub_categories.dart';
+import 'package:shop_app/shop/domain/use_cases/get_tag_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/get_unit_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/login_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/product_status_update_usecase.dart';
 import 'package:shop_app/shop/domain/use_cases/product_use_case.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
@@ -36,14 +45,29 @@ Future<void> init() async {
       () => ProductRepositoryImpl(sl()));
   //use case
   sl.registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()));
+  sl.registerLazySingleton<GetTagUseCase>(() => GetTagUseCase(sl()));
+  sl.registerLazySingleton<GetSubCategoriesUseCase>(
+      () => GetSubCategoriesUseCase(sl()));
+  sl.registerLazySingleton<GetUnitUseCase>(() => GetUnitUseCase(sl()));
   sl.registerLazySingleton<CategoryUseCase>(() => CategoryUseCaseImpl(sl()));
-  sl.registerLazySingleton<ProductUseCase>(() => ProductUseCase(sl()));
+  sl.registerLazySingleton<ProductListUseCase>(() => ProductListUseCase(sl()));
+  sl.registerLazySingleton<AddCategoryUseCase>(() => AddCategoryUseCase(sl()));
+  sl.registerLazySingleton<AddProductUseCase>(() => AddProductUseCase(sl()));
+  sl.registerLazySingleton<DeleteProductUseCase>(() => DeleteProductUseCase(sl()));
+  sl.registerLazySingleton<DeleteCategoryUseCase>(
+      () => DeleteCategoryUseCase(sl()));
+  sl.registerLazySingleton<GetProductDetailsUseCase>(
+      () => GetProductDetailsUseCase(sl()));
+  sl.registerLazySingleton<ProductStatusUpdateUseCase>(
+      () => ProductStatusUpdateUseCase(sl()));
   //bloc providers
   sl.registerLazySingleton<BottomNavigationCubit>(
       () => BottomNavigationCubit());
-  sl.registerLazySingleton<ProductBloc>(() => ProductBloc(sl()));
+  sl.registerLazySingleton<ProductBloc>(
+      () => ProductBloc(sl(), sl(), sl(), sl(),sl(), sl(),sl()));
   sl.registerLazySingleton<VariantBloc>(() => VariantBloc());
-  sl.registerLazySingleton<CategoryBloc>(() => CategoryBloc(sl()));
+  sl.registerLazySingleton<CategoryBloc>(
+      () => CategoryBloc(sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<OrderBloc>(() => OrderBloc());
   sl.registerLazySingleton<LoginBloc>(() => LoginBloc(sl()));
   sl.registerLazySingleton<StoreTimingCubit>(() => StoreTimingCubit());

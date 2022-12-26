@@ -250,7 +250,7 @@ class DashBoardScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          "offline",
+                          "online",
                           style: TextStyle(
                               fontSize: 13,
                               color: AppColors.black.withOpacity(0.6)),

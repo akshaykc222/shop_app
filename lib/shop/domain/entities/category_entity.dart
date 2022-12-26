@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 class CategoryEntity extends Equatable {
-  CategoryEntity({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.parentId,
-    required this.position,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.priority,
-    required this.moduleId,
-  });
+  CategoryEntity(
+      {required this.id,
+      required this.name,
+      required this.image,
+      required this.parentId,
+      required this.position,
+      required this.status,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.priority,
+      required this.moduleId,
+      required this.productCount});
 
-  int id;
+  String id;
   String name;
   String image;
   int parentId;
@@ -24,7 +24,7 @@ class CategoryEntity extends Equatable {
   DateTime updatedAt;
   int priority;
   int moduleId;
-
+  int? productCount;
   @override
   List<Object?> get props => [id, name];
   Map<String, dynamic> toJson() => {

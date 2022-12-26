@@ -170,9 +170,6 @@ class LoginScreen extends StatelessWidget {
                                     password:
                                         controller.passwordController.text,
                                     onSuccess: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text("Success")));
                                       GoRouter.of(context).go(
                                           AppRouteManager.home(
                                               CustomBottomNavigationItems

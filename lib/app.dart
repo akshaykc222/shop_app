@@ -43,6 +43,13 @@ class ShopApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
+        builder: (context, child) {
+          final MediaQueryData data = MediaQuery.of(context);
+          return MediaQuery(
+            data: data.copyWith(textScaleFactor: data.textScaleFactor * (1)),
+            child: child ?? const SizedBox(),
+          );
+        },
         theme: AppTheme.getTheme(),
         title: AppConstants.appName,
         routerConfig: AppRouteManager.appRoutes,

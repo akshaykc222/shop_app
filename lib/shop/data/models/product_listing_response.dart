@@ -1,22 +1,21 @@
+import 'package:shop_app/shop/data/models/category_response.dart';
+import 'package:shop_app/shop/data/models/tag_model.dart';
+
 class ProductResponse {
   ProductResponse({
     required this.tags,
     required this.products,
   });
 
-  List<Tag> tags;
+  List<TagModel> tags;
   Products products;
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) =>
       ProductResponse(
-        tags: List<Tag>.from(json["tags"].map((x) => Tag.fromJson(x))),
+        tags:
+            List<TagModel>.from(json["tags"].map((x) => TagModel.fromJson(x))),
         products: Products.fromJson(json["products"]),
       );
-
-  Map<String, dynamic> toJson() => {
-        "tags": List<dynamic>.from(tags.map((x) => x.toJson())),
-        "products": products.toJson(),
-      };
 }
 
 class Products {
@@ -39,60 +38,53 @@ class Products {
         products: List<ProductModel>.from(
             json["products"].map((x) => ProductModel.fromJson(x))),
       );
-
-  Map<String, dynamic> toJson() => {
-        "total_size": totalSize,
-        "total_pages": totalPages,
-        "current_page_no": currentPageNo,
-        "products": List<dynamic>.from(products.map((x) => x.toJson())),
-      };
 }
 
 class ProductModel {
-  ProductModel({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.image,
-    this.categoryId,
-    required this.categoryIds,
-    required this.variations,
-    required this.addOns,
-    required this.attributes,
-    required this.choiceOptions,
-    this.price,
-    this.tax,
-    this.taxType,
-    this.discount,
-    this.discountType,
-    this.availableTimeStarts,
-    this.availableTimeEnds,
-    this.veg,
-    this.status,
-    this.storeId,
-    this.createdAt,
-    this.updatedAt,
-    this.orderCount,
-    this.avgRating,
-    this.ratingCount,
-    this.moduleId,
-    this.stock,
-    this.unitId,
-    required this.images,
-    this.oneclickTags,
-    this.storeName,
-    this.storeDiscount,
-    this.scheduleOrder,
-    this.unitType,
-    this.unit,
-  });
+  ProductModel(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required this.image,
+      this.categoryId,
+      required this.categoryIds,
+      required this.variations,
+      required this.addOns,
+      required this.attributes,
+      required this.choiceOptions,
+      this.price,
+      this.tax,
+      this.taxType,
+      this.discount,
+      this.discountType,
+      this.availableTimeStarts,
+      this.availableTimeEnds,
+      this.veg,
+      this.status,
+      this.storeId,
+      this.createdAt,
+      this.updatedAt,
+      this.orderCount,
+      this.avgRating,
+      this.ratingCount,
+      this.moduleId,
+      this.stock,
+      this.unitId,
+      required this.images,
+      this.oneclickTags,
+      this.storeName,
+      this.storeDiscount,
+      this.scheduleOrder,
+      this.unitType,
+      this.unit,
+      required this.tags});
 
   int id;
   String name;
   String? description;
   String image;
   int? categoryId;
-  List<CategoryId?> categoryIds;
+  CategoryId? categoryIds;
   List<dynamic> variations;
   List<dynamic> addOns;
   List<dynamic> attributes;
@@ -117,6 +109,7 @@ class ProductModel {
   int? unitId;
   List<dynamic> images;
   String? oneclickTags;
+  List<TagModel>? tags;
   String? storeName;
   int? storeDiscount;
   bool? scheduleOrder;
@@ -129,8 +122,10 @@ class ProductModel {
         description: json["description"],
         image: json["image"],
         categoryId: json["category_id"],
-        categoryIds: List<CategoryId>.from(
-            json["category_ids"].map((x) => CategoryId.fromJson(x))),
+        categoryIds: json['category_ids'] == null ||
+                json['category_ids'] is List<dynamic>
+            ? null
+            : CategoryId.fromJson(json['category_ids']),
         variations: List<dynamic>.from(json["variations"].map((x) => x)),
         addOns: List<dynamic>.from(json["add_ons"].map((x) => x)),
         attributes: List<dynamic>.from(json["attributes"].map((x) => x)),
@@ -154,71 +149,30 @@ class ProductModel {
         stock: json["stock"],
         unitId: json["unit_id"],
         images: List<dynamic>.from(json["images"].map((x) => x)),
-        oneclickTags: json["oneclick_tags"] ?? null,
+        oneclickTags: json["oneclick_tags"],
         storeName: json["store_name"],
         storeDiscount: json["store_discount"],
         scheduleOrder: json["schedule_order"],
         unitType: json["unit_type"],
-        unit: Unit.fromJson(json["unit"]),
+        unit: json["unit"] == null ? null : Unit.fromJson(json["unit"]),
+        tags: json['tags'] == null
+            ? null
+            : List<TagModel>.from(
+                json['tags'].map((e) => TagModel.fromJson(e))),
       );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "image": image,
-        "category_id": categoryId,
-        "category_ids": List<dynamic>.from(categoryIds.map((x) => x?.toJson())),
-        "variations": List<dynamic>.from(variations.map((x) => x)),
-        "add_ons": List<dynamic>.from(addOns.map((x) => x)),
-        "attributes": List<dynamic>.from(attributes.map((x) => x)),
-        "choice_options": List<dynamic>.from(choiceOptions.map((x) => x)),
-        "price": price,
-        "tax": tax,
-        "tax_type": taxType,
-        "discount": discount,
-        "discount_type": discountType,
-        "available_time_starts": availableTimeStarts,
-        "available_time_ends": availableTimeEnds,
-        "veg": veg,
-        "status": status,
-        "store_id": storeId,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "order_count": orderCount,
-        "avg_rating": avgRating,
-        "rating_count": ratingCount,
-        "module_id": moduleId,
-        "stock": stock,
-        "unit_id": unitId,
-        "images": List<dynamic>.from(images.map((x) => x)),
-        "oneclick_tags": oneclickTags,
-        "store_name": storeName,
-        "store_discount": storeDiscount,
-        "schedule_order": scheduleOrder,
-        "unit_type": unitType,
-        "unit": unit?.toJson(),
-      };
 }
 
 class CategoryId {
-  CategoryId({
-    required this.id,
-    required this.position,
-  });
+  final CategoryModel category;
+  final CategoryModel subCategory;
 
-  String id;
-  int position;
-
+  CategoryId({required this.category, required this.subCategory});
   factory CategoryId.fromJson(Map<String, dynamic> json) => CategoryId(
-        id: json["id"],
-        position: json["position"],
-      );
+      category: CategoryModel.fromJson(json['category']),
+      subCategory: CategoryModel.fromJson(json['sub_category']));
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "position": position,
-      };
+  toJson() =>
+      {"category": category.toJson(), "sub_category": subCategory.toJson()};
 }
 
 class Unit {
@@ -244,38 +198,6 @@ class Unit {
   Map<String, dynamic> toJson() => {
         "id": id,
         "unit": unit,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
-}
-
-class Tag {
-  Tag({
-    required this.id,
-    required this.tagName,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  int id;
-  String tagName;
-  int status;
-  DateTime createdAt;
-  DateTime updatedAt;
-
-  factory Tag.fromJson(Map<String, dynamic> json) => Tag(
-        id: json["id"],
-        tagName: json["tag_name"],
-        status: json["status"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "tag_name": tagName,
-        "status": status,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
