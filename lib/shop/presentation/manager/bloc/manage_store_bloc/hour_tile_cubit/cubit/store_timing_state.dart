@@ -9,9 +9,19 @@ abstract class StoreTimingState extends Equatable {
 
 class StoreTimingInitial extends StoreTimingState {}
 
+class StoreLoadCompleted extends StoreTimingState {}
+
+class StoreLoadError extends StoreTimingState {
+  final String error;
+
+  const StoreLoadError(this.error);
+}
+
 class StoreTimingHourChanged extends StoreTimingState {
   final String openingTime;
   final String closingTime;
 
   const StoreTimingHourChanged(this.openingTime, this.closingTime);
 }
+
+class StoreTimeLoading extends StoreTimingState {}

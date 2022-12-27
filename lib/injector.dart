@@ -13,10 +13,13 @@ import 'package:shop_app/shop/domain/use_cases/delete_product_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_product_details_usecase.dart';
 import 'package:shop_app/shop/domain/use_cases/get_sub_categories.dart';
 import 'package:shop_app/shop/domain/use_cases/get_tag_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/get_timing_store_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_unit_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/login_usecase.dart';
 import 'package:shop_app/shop/domain/use_cases/product_status_update_usecase.dart';
 import 'package:shop_app/shop/domain/use_cases/product_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/update_category_status_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/update_timing_use_case.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
@@ -53,7 +56,14 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductListUseCase>(() => ProductListUseCase(sl()));
   sl.registerLazySingleton<AddCategoryUseCase>(() => AddCategoryUseCase(sl()));
   sl.registerLazySingleton<AddProductUseCase>(() => AddProductUseCase(sl()));
-  sl.registerLazySingleton<DeleteProductUseCase>(() => DeleteProductUseCase(sl()));
+  sl.registerLazySingleton<UpdateCategoryUseCase>(
+      () => UpdateCategoryUseCase(sl()));
+  sl.registerLazySingleton<UpdateTimingUseCase>(
+      () => UpdateTimingUseCase(sl()));
+  sl.registerLazySingleton<DeleteProductUseCase>(
+      () => DeleteProductUseCase(sl()));
+  sl.registerLazySingleton<GetStoreTimingUseCase>(
+      () => GetStoreTimingUseCase(sl()));
   sl.registerLazySingleton<DeleteCategoryUseCase>(
       () => DeleteCategoryUseCase(sl()));
   sl.registerLazySingleton<GetProductDetailsUseCase>(
@@ -64,11 +74,12 @@ Future<void> init() async {
   sl.registerLazySingleton<BottomNavigationCubit>(
       () => BottomNavigationCubit());
   sl.registerLazySingleton<ProductBloc>(
-      () => ProductBloc(sl(), sl(), sl(), sl(),sl(), sl(),sl()));
+      () => ProductBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<VariantBloc>(() => VariantBloc());
   sl.registerLazySingleton<CategoryBloc>(
       () => CategoryBloc(sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<OrderBloc>(() => OrderBloc());
   sl.registerLazySingleton<LoginBloc>(() => LoginBloc(sl()));
-  sl.registerLazySingleton<StoreTimingCubit>(() => StoreTimingCubit());
+  sl.registerLazySingleton<StoreTimingCubit>(
+      () => StoreTimingCubit(sl(), sl()));
 }

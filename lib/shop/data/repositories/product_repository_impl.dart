@@ -3,6 +3,7 @@ import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/data/models/product_adding_request.dart';
 import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
@@ -18,8 +19,8 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<ProductResponse> getProducts({String? searchKey,required int page}) {
-    return dataSource.getProducts(searchKey: searchKey,page: page);
+  Future<ProductResponse> getProducts({String? searchKey, required int page}) {
+    return dataSource.getProducts(searchKey: searchKey, page: page);
   }
 
   @override
@@ -68,5 +69,21 @@ class ProductRepositoryImpl extends ProductRepository {
   @override
   Future<String> deleteProduct(int id) {
     return dataSource.deleteProducts(id);
+  }
+
+  @override
+  Future<List<StoreTimingEntity>> getStoreTiming() {
+    return dataSource.getStoreTiming();
+  }
+
+  @override
+  Future<String> updateStoreTiming(List<StoreTimingEntity> timings) {
+    return dataSource.updateTiming(timings);
+  }
+
+  @override
+  Future<String> updateCategoryStatus(
+      {required String id, required int status}) {
+    return dataSource.updateCategoryStatus(id: id, status: status);
   }
 }

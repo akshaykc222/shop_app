@@ -190,3 +190,18 @@ UserDataShort getUserData() {
 
   return UserDataShort.fromJson(userData);
 }
+
+class ConfirmationScreen extends StatelessWidget {
+  const ConfirmationScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [Text(data)],
+        )
+      ],
+    );
+  }
+}

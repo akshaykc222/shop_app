@@ -6,6 +6,9 @@ class AppRemoteRoutes {
   static const tags = "api/v1/vendor/tags";
   static const addProduct = "api/v1/vendor/item/store";
   static const deleteProduct = "api/v1/vendor/item/";
+  static const storeTiming = "api/v1/vendor/store_timing";
+  static const updateStoreTiming = "api/v1/vendor/store_timing/store";
+  static const updateCategoryStatus = "api/v1/vendor/categories/status";
 
   static const products = "api/v1/vendor/item/list?";
   static const productStatusUpdate = "api/v1/vendor/item/update-status";

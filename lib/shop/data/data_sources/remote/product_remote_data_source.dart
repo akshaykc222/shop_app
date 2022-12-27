@@ -3,7 +3,9 @@ import 'package:shop_app/core/api_provider.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shop_app/shop/data/models/store_timing_model.dart';
 import 'package:shop_app/shop/data/models/unit_model.dart';
+import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 
@@ -21,6 +23,7 @@ abstract class ProductRemoteDataSource {
 
   Future<String> deleteProducts(int id);
   Future<String> deleteCategory(int id);
+
   Future<void> updateProduct();
   Future<String> updateProductStatus({required String id, required int status});
 
@@ -30,6 +33,10 @@ abstract class ProductRemoteDataSource {
   Future<String> addCategory(CategoryRequestModel model);
   Future<List<TagEntity>> getTags();
   Future<List<UnitEntity>> getUnits();
+  Future<List<StoreTimingEntity>> getStoreTiming();
+  Future<String> updateTiming(List<StoreTimingEntity> timings);
+  Future<String> updateCategoryStatus(
+      {required String id, required int status});
 }
 
 class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
@@ -124,6 +131,28 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<String> deleteCategory(int id) async {
     final data = await apiProvider.delete("${AppRemoteRoutes.categories}/$id");
+    return data.toString();
+  }
+
+  @override
+  Future<List<StoreTimingEntity>> getStoreTiming() async {
+    final data = await apiProvider.get(AppRemoteRoutes.storeTiming);
+    return List<StoreTimingEntity>.from(
+        data["store_timing"].map((e) => StoreTimingModel.fromJson(e)));
+  }
+
+  @override
+  Future<String> updateTiming(List<StoreTimingEntity> timings) async {
+    final data = await apiProvider.post(
+        AppRemoteRoutes.updateStoreTiming, StoreListModel(timings).toJson());
+    return data.toString();
+  }
+
+  @override
+  Future<String> updateCategoryStatus(
+      {required String id, required int status}) async {
+    final data = await apiProvider.post(
+        AppRemoteRoutes.updateCategoryStatus, {'id': id, 'status': status});
     return data.toString();
   }
 }
