@@ -38,14 +38,19 @@ class HiveService {
   getBoxes<T>(String boxName) async {
     List<T> boxList = <T>[];
 
-    final openBox = await getBox(boxName: boxName);
+    final openBox = await getBox<T>(boxName: boxName);
 
     int length = openBox.length;
 
     for (int i = 0; i < length; i++) {
-      boxList.add(await openBox.getAt(i));
+      boxList.add(openBox.getAt(i) as T);
     }
 
     return boxList;
+  }
+
+  deleteBoxes<T>(String boxName, {required int index}) async {
+    final openBox = await getBox<T>(boxName: boxName);
+    openBox.deleteAt(index);
   }
 }

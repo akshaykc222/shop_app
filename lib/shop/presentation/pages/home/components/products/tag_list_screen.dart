@@ -35,8 +35,8 @@ class TagListScreen extends StatelessWidget {
                   )),
               Expanded(
                   child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.done),
+                onPressed: () => GoRouter.of(context).pop(),
+                icon: const Icon(Icons.done),
               ))
             ],
           )),

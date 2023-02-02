@@ -1,7 +1,16 @@
+import 'package:hive/hive.dart';
+
+part 'sub_category.g.dart';
+
+@HiveType(typeId: 9)
 class SubCategoryModel {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   String? image;
+  @HiveField(2)
   int id;
+  @HiveField(3)
   int categoryId;
 
   SubCategoryModel(

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../data/models/status_model.dart';
+
 class RippleButton extends StatefulWidget {
   final Color? color;
   const RippleButton({super.key, this.color});
@@ -84,5 +86,17 @@ class MyCustomPainter extends CustomPainter {
   @override
   bool shouldRepaint(MyCustomPainter oldDelegate) {
     return true;
+  }
+}
+
+Color? getColor(String status, List<StatusModel> statusList) {
+  var d = statusList.firstWhere(
+      (element) => element.statusName?.toLowerCase() == status.toLowerCase());
+  String? colorCode = d.colorCode;
+  if (colorCode == null) {
+    return null;
+  } else {
+    String ccw = colorCode.replaceAll("#", "0xFF");
+    return Color(int.parse(ccw));
   }
 }

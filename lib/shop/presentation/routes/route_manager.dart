@@ -10,6 +10,7 @@ import 'package:shop_app/shop/presentation/pages/home/components/manage_store/co
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/deliveryman_add.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/store_timing_screen.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/orders/components/add_product.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/orders/components/order_detail.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_form.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/sub_category.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/tag_list_screen.dart';
@@ -119,6 +120,17 @@ class AppRouteManager {
         },
       ),
       GoRoute(
+        name: AppPages.detail,
+        path: "/${AppPages.detail}/:id",
+        builder: (BuildContext context, GoRouterState state) {
+          String? id = state.params['id'];
+          if (id != null) {
+            return OrderDetails(id: id);
+          }
+          return const SizedBox();
+        },
+      ),
+      GoRoute(
         name: AppPages.addVariant,
         path: "/${AppPages.addVariant}",
         builder: (BuildContext context, GoRouterState state) {
@@ -172,6 +184,17 @@ class AppRouteManager {
         path: "/${AppPages.deliverymanAdd}",
         builder: (BuildContext context, GoRouterState state) {
           return const DeliveryManAdding();
+        },
+      ),
+      GoRoute(
+        name: AppPages.deliverymanEdit,
+        path: "/${AppPages.deliverymanEdit}/:id",
+        builder: (BuildContext context, GoRouterState state) {
+          var param = state.params["id"];
+          if (param == null) {
+            throw "Model required";
+          }
+          return DeliveryManAdding(id: int.parse(param));
         },
       ),
       GoRoute(path: home(), builder: _homePageRouteBuilder)

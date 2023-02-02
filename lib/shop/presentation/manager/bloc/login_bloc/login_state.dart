@@ -40,3 +40,17 @@ class PasswordEyeState extends LoginState {
   @override
   List<Object?> get props => [];
 }
+
+class AccountDetailFetchedState extends LoginState {
+  final AccountDetailEntity data;
+
+  const AccountDetailFetchedState(this.data);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangePasswordState extends LoginState {
+  @override
+  List<Object?> get props => [];
+}

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
+
+part 'store_timing_model.g.dart';
 
 class StoreListModel {
   final List<StoreTimingEntity> timingList;
@@ -9,6 +12,7 @@ class StoreListModel {
       {"store_timing": List<dynamic>.from(timingList.map((x) => x.toJson()))};
 }
 
+@HiveType(typeId: 7)
 class StoreTimingModel extends StoreTimingEntity {
   StoreTimingModel({
     required this.id,
@@ -20,14 +24,19 @@ class StoreTimingModel extends StoreTimingEntity {
             id: id,
             day: day,
             open: open,
-            is24Open: openingTime?.hour == 0 && closingTime?.hour == 24,
+            is24Open: openingTime?.hour == 0 && closingTime?.hour == 0,
             openingTime: openingTime,
             closingTime: closingTime);
 
+  @HiveField(0)
   int id;
+  @HiveField(1)
   String day;
+  @HiveField(2)
   DateTime? openingTime;
+  @HiveField(3)
   DateTime? closingTime;
+  @HiveField(4)
   bool open;
 
   factory StoreTimingModel.fromJson(Map<String, dynamic> json) {

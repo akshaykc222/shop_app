@@ -1,12 +1,23 @@
 import 'package:shop_app/shop/data/data_sources/remote/product_remote_data_source.dart';
 import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/category_response.dart';
+import 'package:shop_app/shop/data/models/dashboard_model.dart';
+import 'package:shop_app/shop/data/models/order_detail_model.dart';
+import 'package:shop_app/shop/data/models/order_listing_model.dart';
 import 'package:shop_app/shop/data/models/product_adding_request.dart';
 import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shop_app/shop/data/models/requests/customer_request_model.dart';
+import 'package:shop_app/shop/data/models/requests/edit_order_model.dart';
+import 'package:shop_app/shop/data/models/requests/order_status_change.dart';
+import 'package:shop_app/shop/data/models/status_request.dart';
 import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
+
+import '../../domain/entities/order_entity_request.dart';
+import '../models/customer_model.dart';
+import '../models/product_model.dart';
 
 class ProductRepositoryImpl extends ProductRepository {
   final ProductRemoteDataSource dataSource;
@@ -85,5 +96,40 @@ class ProductRepositoryImpl extends ProductRepository {
   Future<String> updateCategoryStatus(
       {required String id, required int status}) {
     return dataSource.updateCategoryStatus(id: id, status: status);
+  }
+
+  @override
+  Future<OrderListModel> getOrders(OrderEntityRequest request) {
+    return dataSource.getOrder(request);
+  }
+
+  @override
+  Future<OrderDetailModel> getOrderDetail(int id) {
+    return dataSource.getOrderDetail(id);
+  }
+
+  @override
+  Future<String> updateStoreOffline(OfflineStatusRequest request) {
+    return dataSource.updateStoreOffline(request);
+  }
+
+  @override
+  Future<CustomerListModel> getCustomer(CustomerRequestModel request) {
+    return dataSource.customerList(request);
+  }
+
+  @override
+  Future<Map<String, dynamic>> changeOrderStatus(OrderStatusChange model) {
+    return dataSource.changeOrderStatus(model);
+  }
+
+  @override
+  Future<String> editOrder(EditOrderDetailModel model) {
+    return dataSource.editOrder(model);
+  }
+
+  @override
+  Future<DashBoardModel> getDashBoard() {
+    return dataSource.getDashBoard();
   }
 }

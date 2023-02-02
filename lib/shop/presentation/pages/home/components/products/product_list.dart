@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/shop/domain/entities/product_status_request.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
@@ -10,6 +10,7 @@ import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 
+import '../../../../../data/models/product_model.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../utils/app_constants.dart';
 import '../../../../widgets/custom_switch.dart';
@@ -88,6 +89,12 @@ class _ProductListState extends State<ProductList> {
   }
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -102,15 +109,24 @@ class _ProductListState extends State<ProductList> {
         body: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {
             if (state is ProductFetching && controller.productList.isEmpty) {
-              return ListView.builder(
-                  itemCount: 10,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => const ShimmerCategoryLoad());
+              return Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: ListView.builder(
+                    itemCount: 10,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) =>
+                        const ShimmerCategoryLoad()),
+              );
             } else if (state is ProductFetchError) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                handleError(context, state.error, () {
-                  Navigator.pop(context);
-                });
+                if (state.error == "session expired") {
+                  handleUnAuthorizedError(context);
+                } else {
+                  handleError(context, state.error, () {
+                    Navigator.pop(context);
+                  });
+                }
               });
             }
             return ListView.builder(
@@ -121,7 +137,10 @@ class _ProductListState extends State<ProductList> {
                 itemBuilder: (context, index) =>
                     controller.productList.length == index
                         ? controller.currentPage < controller.lastPage
-                            ? const ShimmerCategoryLoad()
+                            ? Shimmer.fromColors(
+                                highlightColor: Colors.grey.shade100,
+                                baseColor: Colors.grey.shade300,
+                                child: ShimmerCategoryLoad())
                             : Container()
                         : ProductListTile(
                             entity: controller.productList[index],
@@ -139,8 +158,13 @@ class ProductListTile extends StatefulWidget {
   final ProductModel entity;
   final bool? adding;
   final Function delete;
+  final Function? selectable;
   const ProductListTile(
-      {Key? key, required this.entity, this.adding, required this.delete})
+      {Key? key,
+      required this.entity,
+      this.adding,
+      required this.delete,
+      this.selectable})
       : super(key: key);
 
   @override
@@ -212,19 +236,21 @@ class _ProductListTileState extends State<ProductListTile> {
                             spacer10,
                             Text(
                               "${(widget.entity.stock ?? "")}${(widget.entity.unit?.unit ?? "")}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: AppColors.offWhiteTextColor,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15),
                             ),
                             spacer9,
-                            const Text(
-                              "In stock",
-                              style: TextStyle(
-                                  color: AppColors.green,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600),
-                            )
+                            widget.entity.stock == null
+                                ? const SizedBox()
+                                : const Text(
+                                    "In stock",
+                                    style: TextStyle(
+                                        color: AppColors.green,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600),
+                                  )
                           ],
                         ),
                       ),
@@ -234,20 +260,26 @@ class _ProductListTileState extends State<ProductListTile> {
                               children: [
                                 spacer20,
                                 spacer30,
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 25, vertical: 2),
-                                  decoration: BoxDecoration(
-                                      border:
-                                          Border.all(color: AppColors.skyBlue),
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: const Center(
-                                      child: Text(
-                                    AppStrings.add,
-                                    style: TextStyle(
-                                      color: AppColors.skyBlue,
-                                    ),
-                                  )),
+                                InkWell(
+                                  onTap: widget.selectable == null
+                                      ? null
+                                      : () => widget.selectable!(),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25, vertical: 2),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.skyBlue),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: const Center(
+                                        child: Text(
+                                      AppStrings.add,
+                                      style: TextStyle(
+                                        color: AppColors.skyBlue,
+                                      ),
+                                    )),
+                                  ),
                                 ),
                               ],
                             )

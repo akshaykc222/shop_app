@@ -1,21 +1,24 @@
 import 'package:dio/dio.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
+import '../routes/app_remote_routes.dart';
+
 class ProductAddingRequest {
-  ProductAddingRequest(
-      {required this.image,
-      required this.status,
-      required this.name,
-      required this.tags,
-      required this.categoryId,
-      required this.subCategoryId,
-      required this.price,
-      required this.discount,
-      required this.discountType,
-      required this.stock,
-      required this.unitId,
-      required this.description,
-      this.id});
+  ProductAddingRequest({
+    required this.id,
+    required this.image,
+    required this.status,
+    required this.name,
+    required this.tags,
+    required this.categoryId,
+    required this.subCategoryId,
+    required this.price,
+    required this.discount,
+    required this.discountType,
+    required this.stock,
+    required this.unitId,
+    required this.description,
+  });
   int? id;
   String image;
   int status;
@@ -46,22 +49,30 @@ class ProductAddingRequest {
           description: json["description"],
           id: json['id']);
 
-  Future<Map<String, dynamic>> toJson() async => {
-        "image": getImageFile(),
-        "status": status,
-        "name": name,
-        "tags": tags,
-        "category_id": categoryId,
-        "sub_category_id": subCategoryId,
-        "price": price,
-        "discount": discount,
-        "discount_type": discountType,
-        "stock": stock,
-        "unit_id": unitId,
-        "store_id": getUserData().storeId,
-        "description": description,
-        "id": id
-      };
+  Future<Map<String, dynamic>> toJson() async {
+    var re = {
+      "id": id,
+      "image": image != ""
+          ? image.contains(AppRemoteRoutes.baseUrl)
+              ? null
+              : await MultipartFile.fromFile(image, filename: name)
+          : null,
+      "status": status,
+      "name": name,
+      "tags": tags,
+      "category_id": categoryId,
+      "sub_category_id": subCategoryId,
+      "price": price,
+      "discount": discount,
+      "discount_type": discountType,
+      "stock": stock,
+      "unit_id": unitId,
+      "store_id": getUserData().storeId,
+      "description": description,
+    };
+    print(re);
+    return re;
+  }
 
   Future<dynamic> getImageFile() async {
     try {

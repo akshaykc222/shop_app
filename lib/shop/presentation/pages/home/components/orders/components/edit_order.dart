@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,7 @@ import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
+import '../../../../../../data/models/order_detail_model.dart';
 import '../../../../../utils/app_constants.dart';
 
 class EditOrder extends StatelessWidget {
@@ -51,7 +53,22 @@ class EditOrder extends StatelessWidget {
                       ?.copyWith(fontSize: 25, fontWeight: FontWeight.w600),
                 ),
               ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.done))
+              BlocBuilder<OrderBloc, OrderState>(
+                builder: (context, state) {
+                  return state is OrderLoadingState
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : IconButton(
+                          onPressed: () {
+                            if (controller.model != null) {
+                              controller.add(ChangeOrderProductsEvent(context,
+                                  controller.model!.orderId.toString()));
+                            }
+                          },
+                          icon: const Icon(Icons.done));
+                },
+              )
             ],
           )),
       // floatingActionButton: FloatingActionButton(
@@ -84,140 +101,157 @@ class EditOrder extends StatelessWidget {
       //   ),
       // ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            spacer30,
-            // TextButton(
-            //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
-            // spacer10,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      text: 'Items : ',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.black.withOpacity(0.43)),
-                      children: const <TextSpan>[
-                        TextSpan(
-                            text: '2',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.black)),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            spacer30,
-            Wrap(
-              children: [
-                BlocBuilder<OrderBloc, OrderState>(
-                  builder: (context, state) {
-                    return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.orderProductCount,
-                        itemBuilder: (context, index) => const OrderProducts(
-                              showEdit: true,
-                            ));
-                  },
-                ),
-              ],
-            ),
-            spacer20,
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.0),
-              child: Divider(
-                thickness: 0.5,
-                color: Colors.grey,
-              ),
-            ),
-            spacer26,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    AppStrings.itemTotal,
-                    style: TextStyle(
-                        color: AppColors.offWhiteTextColor, fontSize: 15),
-                  ),
-                  Text(
-                    '15 AED',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.offWhiteTextColor),
-                  )
-                ],
-              ),
-            ),
-            spacer18,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: const [
-                      Text(
-                        AppStrings.delivery,
-                        style: TextStyle(
-                            color: AppColors.offWhiteTextColor, fontSize: 15),
+        child: BlocBuilder<OrderBloc, OrderState>(
+          builder: (context, state) {
+            return state is OrderDetailsLoaded
+                ? Column(
+                    children: [
+                      spacer30,
+                      // TextButton(
+                      //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
+                      // spacer10,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'Items : ',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.black.withOpacity(0.43)),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: '${state.model.itemCount}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.black)),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        width: 10,
+                      spacer30,
+                      Wrap(
+                        children: [
+                          BlocBuilder<OrderBloc, OrderState>(
+                            builder: (context, state) {
+                              return state is OrderDetailsLoaded
+                                  ? ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          state.model.productDetails.length,
+                                      itemBuilder: (context, index) =>
+                                          OrderProducts(
+                                            showEdit: true,
+                                            model: state
+                                                .model.productDetails[index],
+                                          ))
+                                  : Container();
+                            },
+                          ),
+                        ],
                       ),
-                      // Container(
-                      //   width: 50,
-                      //   height: 23,
-                      //   decoration: BoxDecoration(
-                      //       color: AppColors.white,
-                      //       border: Border.all(
-                      //           color: AppColors.offWhite1, width: 2),
-                      //       borderRadius: BorderRadius.circular(6)),
-                      //   child: const Center(
-                      //     child: Text("0"),
-                      //   ),
-                      // )
+                      spacer20,
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      spacer26,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              AppStrings.itemTotal,
+                              style: TextStyle(
+                                  color: AppColors.offWhiteTextColor,
+                                  fontSize: 15),
+                            ),
+                            Text(
+                              '${controller.getGrandTotal()} AED',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.offWhiteTextColor),
+                            )
+                          ],
+                        ),
+                      ),
+                      spacer18,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: const [
+                                Text(
+                                  AppStrings.delivery,
+                                  style: TextStyle(
+                                      color: AppColors.offWhiteTextColor,
+                                      fontSize: 15),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                // Container(
+                                //   width: 50,
+                                //   height: 23,
+                                //   decoration: BoxDecoration(
+                                //       color: AppColors.white,
+                                //       border: Border.all(
+                                //           color: AppColors.offWhite1, width: 2),
+                                //       borderRadius: BorderRadius.circular(6)),
+                                //   child: const Center(
+                                //     child: Text("0"),
+                                //   ),
+                                // )
+                              ],
+                            ),
+                            const Text(
+                              'Free',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.green),
+                            )
+                          ],
+                        ),
+                      ),
+                      spacer14,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              AppStrings.grandTotal,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(
+                              '${controller.getGrandTotal()} AED',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: AppColors.primaryColor),
+                            )
+                          ],
+                        ),
+                      ),
                     ],
-                  ),
-                  const Text(
-                    'Free',
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal, color: Colors.green),
                   )
-                ],
-              ),
-            ),
-            spacer14,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    AppStrings.grandTotal,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  Text(
-                    '15 AED',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: AppColors.primaryColor),
-                  )
-                ],
-              ),
-            ),
-          ],
+                : const SizedBox();
+          },
         ),
       ),
     );
@@ -260,12 +294,7 @@ class EditQty extends StatelessWidget {
               Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        controller.changeQty(controller.orderQty + 1);
-                        controller.add(ChangeQtyEvent());
-                      },
-                      icon: const Icon(Icons.add)),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
                   BlocBuilder<OrderBloc, OrderState>(
                     builder: (context, state) {
                       return Container(
@@ -281,12 +310,7 @@ class EditQty extends StatelessWidget {
                       );
                     },
                   ),
-                  IconButton(
-                      onPressed: () {
-                        controller.changeQty(controller.orderQty - 1);
-                        controller.add(ChangeQtyEvent());
-                      },
-                      icon: const Icon(Icons.remove)),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.remove)),
                   const Spacer(),
                   BlocBuilder<OrderBloc, OrderState>(
                     builder: (context, state) {
@@ -371,9 +395,25 @@ class EditDeliveryCharge extends StatelessWidget {
   }
 }
 
-class OrderProducts extends StatelessWidget {
+class OrderProducts extends StatefulWidget {
   final bool? showEdit;
-  const OrderProducts({Key? key, this.showEdit}) : super(key: key);
+  final OrderProductModel model;
+  const OrderProducts({Key? key, this.showEdit, required this.model})
+      : super(key: key);
+
+  @override
+  State<OrderProducts> createState() => _OrderProductsState();
+}
+
+class _OrderProductsState extends State<OrderProducts> {
+  late ValueNotifier<int> qtyValueNotifier;
+  late OrderBloc orderBloc;
+  @override
+  void initState() {
+    qtyValueNotifier = ValueNotifier(widget.model.qty);
+    orderBloc = OrderBloc.get(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -402,64 +442,93 @@ class OrderProducts extends StatelessWidget {
                           height: 82,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Colors.grey),
+                              // color: Colors.grey,
+                              image: DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                      widget.model.image))),
                         ),
                       ),
                       spacer10,
-                      showEdit == true
-                          ? Row(
-                              children: [
-                                Container(
-                                  width: 23,
-                                  height: 23,
-                                  decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(6)),
-                                  child: Center(
-                                    child: Text(
-                                      "-",
-                                      style: TextStyle(
-                                          color: AppColors.black
-                                              .withOpacity(0.52)),
+                      widget.showEdit == true
+                          ? ValueListenableBuilder(
+                              valueListenable: qtyValueNotifier,
+                              builder: (context, data, child) {
+                                return Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (qtyValueNotifier.value > 0) {
+                                          qtyValueNotifier.value--;
+                                          orderBloc.changeQty(
+                                              qty: qtyValueNotifier.value,
+                                              orderProductModel: widget.model);
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 23,
+                                        height: 23,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Center(
+                                          child: Text(
+                                            "-",
+                                            style: TextStyle(
+                                                color: AppColors.black
+                                                    .withOpacity(0.52)),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 7,
-                                ),
-                                Container(
-                                  width: 23,
-                                  height: 23,
-                                  decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(6)),
-                                  child: const Center(
-                                    child: Text(
-                                      "1",
-                                      style: TextStyle(color: AppColors.black),
+                                    const SizedBox(
+                                      width: 7,
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 7,
-                                ),
-                                Container(
-                                  width: 23,
-                                  height: 23,
-                                  decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(6)),
-                                  child: Center(
-                                    child: Text(
-                                      "+",
-                                      style: TextStyle(
-                                          color: AppColors.black
-                                              .withOpacity(0.52)),
+                                    Container(
+                                      width: 23,
+                                      height: 23,
+                                      decoration: BoxDecoration(
+                                          color: AppColors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(6)),
+                                      child: Center(
+                                        child: Text(
+                                          qtyValueNotifier.value.toString(),
+                                          style: const TextStyle(
+                                              color: AppColors.black),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            )
+                                    const SizedBox(
+                                      width: 7,
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        qtyValueNotifier.value++;
+                                        orderBloc.changeQty(
+                                            qty: qtyValueNotifier.value,
+                                            orderProductModel: widget.model);
+                                      },
+                                      child: Container(
+                                        width: 23,
+                                        height: 23,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Center(
+                                          child: Text(
+                                            "+",
+                                            style: TextStyle(
+                                                color: AppColors.black
+                                                    .withOpacity(0.52)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              })
                           : Container()
                     ],
                   ),
@@ -480,21 +549,17 @@ class OrderProducts extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      "Product name",
-                                      style: TextStyle(
+                                    Text(
+                                      widget.model.name,
+                                      style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600),
                                     ),
-                                    showEdit == true
+                                    widget.showEdit == true
                                         ? GestureDetector(
                                             onTap: () {
-                                              final controller =
-                                                  OrderBloc.get(context);
-                                              controller.changeOrderProductCount(
-                                                  controller.orderProductCount -
-                                                      1);
-                                              controller.add(AddOrderProduct());
+                                              orderBloc
+                                                  .removeProduct(widget.model);
                                             },
                                             child: Image.asset(
                                               AppAssets.delete,
@@ -518,36 +583,37 @@ class OrderProducts extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.black
                                                 .withOpacity(0.52)),
-                                        children: const <TextSpan>[
+                                        children: <TextSpan>[
                                           TextSpan(
-                                              text: 'Xl',
-                                              style: TextStyle(
+                                              text: widget.model.unit,
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: AppColors.black)),
                                         ],
                                       ),
                                     ),
-                                    Row(
-                                      children: [
-                                        Text("Colour : ",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: AppColors.black
-                                                    .withOpacity(0.52))),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        Container(
-                                          width: 18,
-                                          height: 18,
-                                          decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(2)),
-                                        )
-                                      ],
-                                    ),
+                                    const SizedBox()
+                                    // Row(
+                                    //   children: [
+                                    //     Text("Colour : ",
+                                    //         style: TextStyle(
+                                    //             fontSize: 15,
+                                    //             fontWeight: FontWeight.w600,
+                                    //             color: AppColors.black
+                                    //                 .withOpacity(0.52))),
+                                    //     const SizedBox(
+                                    //       width: 8,
+                                    //     ),
+                                    //     Container(
+                                    //       width: 18,
+                                    //       height: 18,
+                                    //       decoration: BoxDecoration(
+                                    //           color: Colors.red,
+                                    //           borderRadius:
+                                    //               BorderRadius.circular(2)),
+                                    //     )
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                                 spacer10,
@@ -563,10 +629,10 @@ class OrderProducts extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.black
                                                 .withOpacity(0.52)),
-                                        children: const <TextSpan>[
+                                        children: <TextSpan>[
                                           TextSpan(
-                                              text: '3',
-                                              style: TextStyle(
+                                              text: '${widget.model.qty}',
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: AppColors.black)),
                                         ],
@@ -580,10 +646,10 @@ class OrderProducts extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.black
                                                 .withOpacity(0.52)),
-                                        children: const <TextSpan>[
+                                        children: <TextSpan>[
                                           TextSpan(
-                                              text: '3',
-                                              style: TextStyle(
+                                              text: '${widget.model.price}',
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: AppColors.black)),
                                         ],
@@ -596,24 +662,31 @@ class OrderProducts extends StatelessWidget {
                                   // mainAxisAlignment:
                                   //     MainAxisAlignment.spaceBetween,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: ' Total Price : ',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black
-                                                .withOpacity(0.52)),
-                                        children: const <TextSpan>[
-                                          TextSpan(
-                                              text: '500 AED',
-                                              style: TextStyle(
-                                                  fontSize: 19,
-                                                  fontWeight: FontWeight.bold,
-                                                  color:
-                                                      AppColors.primaryColor)),
-                                        ],
-                                      ),
+                                    ValueListenableBuilder(
+                                      builder: (context, data, child) {
+                                        return RichText(
+                                          text: TextSpan(
+                                            text: ' Total Price : ',
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.black
+                                                    .withOpacity(0.52)),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                  text:
+                                                      '${widget.model.price * qtyValueNotifier.value} AED',
+                                                  style: const TextStyle(
+                                                      fontSize: 19,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: AppColors
+                                                          .primaryColor)),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      valueListenable: qtyValueNotifier,
                                     ),
                                   ],
                                 ),

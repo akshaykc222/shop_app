@@ -59,3 +59,10 @@ class DeleteCategoryEvent extends CategoryEvent {
 }
 
 class RefreshPageEvent extends CategoryEvent {}
+class ChangeCategoryEvent extends CategoryEvent{
+  final BuildContext context;
+  final int id;
+  final bool status;
+
+  ChangeCategoryEvent(this.context, this.id,this.status);
+}

@@ -14,6 +14,7 @@ class CommonTextField extends StatefulWidget {
   final bool? showSuffixIcon;
   final Function(String)? validator;
   final bool? passwordField;
+  final int? lines;
 
   // final FocusNode focusNode;
   const CommonTextField(
@@ -28,7 +29,8 @@ class CommonTextField extends StatefulWidget {
       this.controller,
       this.validator,
       this.textInputType,
-      this.passwordField})
+      this.passwordField,
+      this.lines})
       : super(key: key);
 
   @override
@@ -37,7 +39,7 @@ class CommonTextField extends StatefulWidget {
 
 class _CommonTextFieldState extends State<CommonTextField> {
   late bool showPrefixIcon;
-  bool showPassword = false;
+  bool showPassword = true;
   @override
   void initState() {
     showPrefixIcon = widget.showSuffixIcon ?? false;
@@ -69,15 +71,13 @@ class _CommonTextFieldState extends State<CommonTextField> {
             });
           },
           controller: widget.controller,
-          validator: (val){
-            if(widget.validator!=null){
-              widget.validator!(val??"");
-            }
-            return null;
-          },
+          validator: widget.validator == null
+              ? null
+              : (val) => widget.validator!(val ?? ""),
           focusNode: _focusNode,
-          obscureText: showPassword,
+          obscureText: widget.passwordField == true ? showPassword : false,
           keyboardType: widget.textInputType ?? TextInputType.text,
+          maxLines: widget.passwordField == true ? 1 : widget.lines,
           decoration: InputDecoration(
               prefixIcon: showPrefixIcon ? widget.prefix : null,
               suffixIcon: widget.passwordField == true

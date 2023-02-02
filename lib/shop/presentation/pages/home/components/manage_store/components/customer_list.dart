@@ -1,90 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:shop_app/shop/data/models/customer_model.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/customer_bloc/customer_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
-class CustomerList extends StatelessWidget {
+class CustomerList extends StatefulWidget {
   const CustomerList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    Widget customerCard() {
-      return Card(
-        color: AppColors.cardLightGrey,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-          child: Column(
-            children: [
-              spacer10,
-              Row(
-                children: const [
-                  Text(
-                    "Suresh kanan",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: AppColors.black),
-                  ),
-                ],
-              ),
-              spacer9,
-              Row(
-                children: [
-                  Text(
-                    "malapuram",
-                    style: TextStyle(fontSize: 13, color: AppColors.black),
-                  )
-                ],
-              ),
-              spacer20,
-              Row(
-                children: const [
-                  Expanded(
-                    child: Text(
-                      "Total Orders",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ),
-                  Expanded(
-                      child: Text(
-                    "Total Sales",
-                    style: TextStyle(fontSize: 15),
-                  ))
-                ],
-              ),
-              spacer10,
-              Row(
-                children: const [
-                  Expanded(
-                    child: Text(
-                      "15 AED",
-                      style: TextStyle(
-                          color: AppColors.skyBlue,
-                          fontSize: 19,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "108 AED",
-                      style: TextStyle(
-                          color: AppColors.skyBlue,
-                          fontSize: 19,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      );
-    }
+  State<CustomerList> createState() => _CustomerListState();
+}
 
+class _CustomerListState extends State<CustomerList> {
+  late CustomerBloc customerBloc;
+  final sortValueListener = ValueNotifier(0);
+  final scrollController = ScrollController();
+  @override
+  void initState() {
+    customerBloc = CustomerBloc.get(context);
+    customerBloc.add(GetCustomerEvent(context));
+    scrollController.addListener(pagination);
+    super.initState();
+  }
+
+  void pagination() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      customerBloc.add(GetPaginatedCustomerEvent(context,
+          dateSort: (sortValueListener.value == 0 ||
+                  sortValueListener.value == 1 ||
+                  sortValueListener.value == 2)
+              ? null
+              : sortValueListener.value == 3
+                  ? "asc"
+                  : "desc",
+          alphaSort: (sortValueListener.value == 0 ||
+                  sortValueListener.value == 3 ||
+                  sortValueListener.value == 4)
+              ? null
+              : sortValueListener.value == 1
+                  ? "asc"
+                  : "desc"));
+    }
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(
           context,
@@ -105,9 +77,11 @@ class CustomerList extends StatelessWidget {
               ),
               Expanded(
                 flex: 3,
-                child: Text(
-                  AppStrings.customerList,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                child: Center(
+                  child: Text(
+                    AppStrings.customerList,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ),
               ),
               const Expanded(flex: 1, child: SizedBox())
@@ -120,15 +94,271 @@ class CustomerList extends StatelessWidget {
             spacer20,
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: const [
-                Text(
-                  AppStrings.lyfTym,
-                  style: TextStyle(color: AppColors.greyText),
-                ),
-                Icon(Icons.keyboard_arrow_down_outlined),
+              children: [
+                PopupMenuButton(
+                    child: Row(
+                      children: [
+                        ValueListenableBuilder(
+                          builder: (context, val, child) {
+                            return Text(sortValueListener.value == 0
+                                ? AppStrings.sort
+                                : sortValueListener.value == 1
+                                    ? AppStrings.sortByAscending
+                                    : sortValueListener.value == 2
+                                        ? AppStrings.sortByDescending
+                                        : sortValueListener.value == 3
+                                            ? AppStrings.sortByDateAscending
+                                            : AppStrings.sortByDateDescending);
+                          },
+                          valueListenable: sortValueListener,
+                        ),
+                        const Icon(Icons.keyboard_arrow_down)
+                      ],
+                    ),
+                    onSelected: (index) {
+                      sortValueListener.value = index;
+                      customerBloc.add(GetCustomerEvent(context,
+                          dateSort: (index == 0 || index == 1 || index == 2)
+                              ? null
+                              : index == 3
+                                  ? "asc"
+                                  : "desc",
+                          alphaSort: (index == 0 || index == 3 || index == 4)
+                              ? null
+                              : index == 1
+                                  ? "asc"
+                                  : "desc"));
+                    },
+                    itemBuilder: (context) => [
+                          PopupMenuItem(
+                              value: 1,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(AppStrings.sortByAscending),
+                                  Icon(Icons.sort_by_alpha)
+                                ],
+                              )),
+                          PopupMenuItem(
+                              value: 2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(AppStrings.sortByDescending),
+                                  Icon(Icons.sort_by_alpha)
+                                ],
+                              )),
+                          PopupMenuItem(
+                              value: 3,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(AppStrings.sortByDateAscending),
+                                  Icon(Icons.sort)
+                                ],
+                              )),
+                          PopupMenuItem(
+                              value: 3,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(AppStrings.sortByDateDescending),
+                                  Icon(Icons.sort)
+                                ],
+                              )),
+                        ])
               ],
             ),
-            customerCard()
+            Expanded(child: BlocBuilder<CustomerBloc, CustomerState>(
+              builder: (context, state) {
+                if (state is CustomerLoadingState) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey.shade300,
+                    highlightColor: Colors.grey.shade100,
+                    child: ListView.builder(
+                        itemCount: 5,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) =>
+                            const CustomerCardShimmer()),
+                  );
+                }
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: customerBloc.customerList.length,
+                    itemBuilder: (context, index) => CustomerCard(
+                          model: customerBloc.customerList[index],
+                        ));
+              },
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomerCard extends StatelessWidget {
+  final CustomerModel model;
+  const CustomerCard({Key? key, required this.model}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardLightGrey,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        child: Column(
+          children: [
+            spacer10,
+            Row(
+              children: [
+                Text(
+                  "${model.fName} ${model.lName}",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: AppColors.black),
+                ),
+              ],
+            ),
+            spacer9,
+            model.address == null
+                ? const SizedBox()
+                : Row(
+                    children: [
+                      Text(
+                        model.address ?? "",
+                        style: const TextStyle(
+                            fontSize: 13, color: AppColors.black),
+                      )
+                    ],
+                  ),
+            spacer20,
+            Row(
+              children: const [
+                Expanded(
+                  child: Text(
+                    "Total Orders",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+                Expanded(
+                    child: Text(
+                  "Total Sales",
+                  style: TextStyle(fontSize: 15),
+                ))
+              ],
+            ),
+            spacer10,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "${model.totalOrders} AED",
+                    style: const TextStyle(
+                        color: AppColors.skyBlue,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    "${model.totalSales} AED",
+                    style: const TextStyle(
+                        color: AppColors.skyBlue,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w600),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomerCardShimmer extends StatelessWidget {
+  const CustomerCardShimmer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            spacer10,
+            Row(
+              children: [
+                Container(
+                  width: 80,
+                  height: 20,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+            spacer9,
+            Row(
+              children: [
+                Container(
+                  width: 80,
+                  height: 20,
+                  color: Colors.white,
+                )
+              ],
+            ),
+            spacer20,
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: 80,
+                    height: 15,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 80,
+                ),
+                Expanded(
+                    child: Container(
+                  width: 80,
+                  height: 15,
+                  color: Colors.white,
+                ))
+              ],
+            ),
+            spacer10,
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: 50,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 80,
+                ),
+                Expanded(
+                  child: Container(
+                    width: 50,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),

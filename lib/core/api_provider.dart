@@ -27,8 +27,8 @@ class ApiProvider {
           'Content-Type': 'application/json'
         },
         baseUrl: AppRemoteRoutes.baseUrl,
-        connectTimeout: 50000,
-        receiveTimeout: 50000,
+        connectTimeout: 150000,
+        receiveTimeout: 150000,
       ),
     );
     if (!kIsWeb) {
@@ -55,12 +55,13 @@ class ApiProvider {
       final Response response = await _dio.get(
         endPoint,
       );
-
+      prettyPrint("request url : ${response.realUri}");
       final Map<String, dynamic> responseData = classifyResponse(response);
+
       return responseData;
     } on DioError catch (err) {
       prettyPrint(err.toString(), type: PrettyPrinterTypes.error);
-      return {};
+      throw BadRequestException();
     }
   }
 

@@ -12,6 +12,7 @@ import '../../../../domain/use_cases/add_category_use_case.dart';
 import '../../../../domain/use_cases/category_usecase.dart';
 import '../../../../domain/use_cases/delete_category_usecase.dart';
 import '../../../../domain/use_cases/get_sub_categories.dart';
+import '../../../../domain/use_cases/update_category_status_use_case.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';
@@ -21,9 +22,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final AddCategoryUseCase addCategoryUseCase;
   final GetSubCategoriesUseCase getSubCategoriesUseCase;
   final DeleteCategoryUseCase deleteCategoryUseCase;
-
-  CategoryBloc(this.categoryUseCase, this.addCategoryUseCase,
-      this.getSubCategoriesUseCase, this.deleteCategoryUseCase)
+  final UpdateCategoryUseCase updateCategoryUseCase;
+  CategoryBloc(
+      this.categoryUseCase,
+      this.addCategoryUseCase,
+      this.getSubCategoriesUseCase,
+      this.deleteCategoryUseCase,
+      this.updateCategoryUseCase)
       : super(CategoryInitial()) {
     on<CategoryEvent>((event, emit) async {
       emit(CategoryInitial());
@@ -31,6 +36,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<GetCategoryEvent>((event, emit) async {
       prettyPrint("calling data here");
       emit(CategoryLoadingState());
+      currentPage = 1;
       var data = await getCategory();
       if (data != null) {
         prettyPrint("data length ${data.categories.length}");
@@ -102,7 +108,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoadingMoreState());
       currentPage = currentPage + 1;
       if (currentPage != totalPage) {
-        await getCategory();
+        var data = await getCategory();
+        totalPage = data?.totalPages ?? 1;
       } else {
         currentPage = totalPage;
       }
@@ -136,9 +143,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<DeleteCategoryEvent>((event, emit) async {
       emit(CategoryLoadingState());
       try {
-        final data = await deleteCategoryUseCase.call(event.id);
-        categoryList.removeWhere((element) => element.id == event.id);
-        subCategoryList.removeWhere((element) => element.id == event.id);
+        await deleteCategoryUseCase.call(event.id);
+        categoryList
+            .removeWhere((element) => int.parse(element.id) == event.id);
+        subCategoryList
+            .removeWhere((element) => int.parse(element.id) == event.id);
         getCategory();
         emit(CategoryDeletedState());
       } on DeleteConflictException {
@@ -150,6 +159,18 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       }
     });
     on<RefreshPageEvent>((event, emit) => emit(CategoryLoadCompletedState()));
+    on<ChangeCategoryEvent>((event, emit) {
+      try {
+        prettyPrint("calling data");
+        updateCategoryUseCase
+            .call(event.id.toString(), event.status ? 1 : 0)
+            .then((value) => ScaffoldMessenger.of(event.context)
+                .showSnackBar(const SnackBar(content: Text("Updated"))));
+      } catch (e) {
+        handleError(
+            event.context, e.toString(), () => Navigator.pop(event.context));
+      }
+    });
   }
   List<CategoryEntity> categoryList = [];
   List<CategoryEntity> subCategoryList = [];
@@ -175,6 +196,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       }
       return data;
     } on UnauthorisedException {
+      // prettyPrint("unautheruzied");
     } catch (e) {
       prettyPrint(e.toString());
       return null;
@@ -191,6 +213,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       add(GetCategoryPaginatedEvent());
     } else {
       currentPage = totalPage;
+      add(RefreshPageEvent());
     }
   }
 

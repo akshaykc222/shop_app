@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/data/routes/app_remote_routes.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
@@ -13,6 +13,7 @@ import 'package:shop_app/shop/presentation/pages/home/components/products/catego
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
+import 'package:shop_app/shop/presentation/utils/select_image_and_crop.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
@@ -35,99 +36,18 @@ class _ProductFormState extends State<ProductForm> {
   ValueNotifier<String> imagePickerResult = ValueNotifier("");
   buildImageWidget() {
     return GestureDetector(
-      onTap: () => showDialog(
-          context: context,
-          builder: (context) => Dialog(
-                child: SizedBox(
-                  height: 160,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(AppStrings.uploadProductImage,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                          IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(
-                                Icons.close,
-                                size: 25,
-                              ))
-                        ],
-                      ),
-                      spacer20,
-                      Row(
-                        children: [
-                          Expanded(
-                              child: GestureDetector(
-                                  onTap: () async {
-                                    final ImagePicker _picker = ImagePicker();
-                                    // Pick an image
-                                    // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                    // Capture a photo
-                                    final XFile? photo = await _picker
-                                        .pickImage(source: ImageSource.camera);
-                                    if (photo != null) {
-                                      imagePickerResult.value =
-                                          photo.path ?? "";
-                                      controller.image = photo.path ?? "";
-                                      imagePickerResult.notifyListeners();
-                                    }
-                                    Navigator.pop(context);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      const Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 50,
-                                      ),
-                                      spacer5,
-                                      const Text(AppStrings.camara)
-                                    ],
-                                  ))),
-                          Expanded(
-                              child: GestureDetector(
-                                  onTap: () async {
-                                    final ImagePicker _picker = ImagePicker();
-                                    // Pick an image
-                                    // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                    // Capture a photo
-                                    final XFile? photo = await _picker
-                                        .pickImage(source: ImageSource.gallery);
-                                    if (photo != null) {
-                                      imagePickerResult.value =
-                                          photo.path ?? "";
-                                      controller.image = photo.path ?? "";
-                                      imagePickerResult.notifyListeners();
-                                    }
-                                    Navigator.pop(context);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      const Icon(
-                                        Icons.image_outlined,
-                                        size: 50,
-                                      ),
-                                      spacer5,
-                                      const Text(AppStrings.gallery)
-                                    ],
-                                  ))),
-                        ],
-                      ),
-                      // spacer20,
-                    ],
-                  ),
-                ),
-              )),
+      onTap: () async {
+        var result = await selectImageAndCropImage(
+            context: context, title: AppStrings.uploadProductImage);
+        if (result != null) {
+          imagePickerResult.value = result.path ?? "";
+          controller.image = result.path ?? "";
+          imagePickerResult.notifyListeners();
+        }
+      },
       child: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
+          prettyPrint("Current state is $state");
           return ValueListenableBuilder(
               valueListenable: imagePickerResult,
               builder: (context, val, child) {
@@ -144,16 +64,20 @@ class _ProductFormState extends State<ProductForm> {
                           // color: AppColors.lightGrey,
                           border: Border.all(color: AppColors.lightGrey),
                           borderRadius: BorderRadius.circular(19)),
-                      child: val != ""
-                          ? Image.file(File(val))
-                          : state is ProductFetchedDetail
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(19),
-                                  child: CachedNetworkImage(
-                                    imageUrl: state.model.image,
-                                    fit: BoxFit.contain,
-                                  ),
-                                )
+                      child: (controller.image != "" ||
+                                  controller.image != null) &&
+                              controller.image
+                                      ?.contains(AppRemoteRoutes.baseUrl) ==
+                                  true
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(19),
+                              child: CachedNetworkImage(
+                                imageUrl: controller.image!,
+                                fit: BoxFit.contain,
+                              ),
+                            )
+                          : val != ""
+                              ? Image.file(File(val))
                               : const Center(
                                   child: Icon(
                                     Icons.camera_alt_outlined,
@@ -471,6 +395,8 @@ class _ProductFormState extends State<ProductForm> {
     controller = ProductBloc.get(context);
     if (widget.id != null) {
       controller.add(GetProductDetailsEvent(context, widget.id!));
+    } else {
+      controller.clearTextFields();
     }
 
     cateBloc = CategoryBloc.get(context);
@@ -870,7 +796,6 @@ class _ProductFormState extends State<ProductForm> {
                             context: context,
                             message: AppConstants.kSelectUnit);
                       } else {
-                        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Validation Completed")));
                         controller.add(
                             AddProductEvent(context: context, id: widget.id));
                       }
@@ -879,8 +804,8 @@ class _ProductFormState extends State<ProductForm> {
                       widget.id == null
                           ? AppStrings.addNewProduct
                           : AppStrings.edit,
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 17),
                     ),
                   ),
                 );

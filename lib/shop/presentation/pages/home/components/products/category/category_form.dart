@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 
 import '../../../../../themes/app_strings.dart';
-import '../../../../../utils/app_constants.dart';
+import '../../../../../utils/select_image_and_crop.dart';
 import '../../../../../widgets/custom_app_bar.dart';
 
 class CategoryAddForm extends StatefulWidget {
@@ -28,86 +27,13 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
   buildImageWidget() {
     return GestureDetector(
       onTap: () async {
-        showDialog(
-            context: context,
-            builder: (context) => Dialog(
-                  child: SizedBox(
-                    height: 160,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(AppStrings.uploadProductImage,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold)),
-                            IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(
-                                  Icons.close,
-                                  size: 25,
-                                ))
-                          ],
-                        ),
-                        spacer20,
-                        Row(
-                          children: [
-                            Expanded(
-                                child: GestureDetector(
-                                    onTap: () async {
-                                      final ImagePicker picker = ImagePicker();
-
-                                      final XFile? image =
-                                          await picker.pickImage(
-                                              source: ImageSource.gallery);
-                                      imagePickerResult.value =
-                                          image?.path ?? "";
-                                    },
-                                    child: Column(
-                                      children: [
-                                        const Icon(
-                                          Icons.camera_alt_outlined,
-                                          size: 50,
-                                        ),
-                                        spacer5,
-                                        const Text(AppStrings.camara)
-                                      ],
-                                    ))),
-                            Expanded(
-                                child: GestureDetector(
-                                    onTap: () async {
-                                      final ImagePicker picker = ImagePicker();
-
-                                      final XFile? image =
-                                          await picker.pickImage(
-                                              source: ImageSource.gallery);
-                                      imagePickerResult.value =
-                                          image?.path ?? "";
-                                      Navigator.pop(context);
-                                    },
-                                    child: Column(
-                                      children: [
-                                        const Icon(
-                                          Icons.image_outlined,
-                                          size: 50,
-                                        ),
-                                        spacer5,
-                                        const Text(AppStrings.gallery)
-                                      ],
-                                    ))),
-                          ],
-                        ),
-                        // spacer20,
-                      ],
-                    ),
-                  ),
-                ));
+        var result = await selectImageAndCropImage(
+            context: context, title: AppStrings.selectImage);
+        if (result != null) {
+          imagePickerResult.value = result.path ?? "";
+          // controller.image = result.path ?? "";
+          imagePickerResult.notifyListeners();
+        }
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

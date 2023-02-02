@@ -4,12 +4,18 @@ class AppStrings {
   static const revenue = "Revenue";
   static const revenueGraph = "Revenue Graph";
   static const share = "Share";
+  static const selectImage = "Select Image";
   static const customerList = "Customer List";
   static const phoneNumber = "Phone number";
   static const idType = "ID Type";
   static const idNo = "ID No";
+  static const idNum = "Identity Number";
   static const search = "Search";
   static const tags = "Tags";
+  static const update = "Update";
+  static const backOnline = "Back Online.";
+  static const reasonForAddingProduct = "Reason for adding product";
+  static const noInternetConnection = "Please check your internet connection";
 
   static const address = "Address";
   static const add = "Add";
@@ -109,6 +115,11 @@ class AppStrings {
   static const String goOnlineAfter = "Go online after";
   static const String allOrders = "All orders";
   static const String lyfTym = "Life time";
+  static const String sort = "Sort";
+  static const String sortByAscending = "Sort by Ascending";
+  static const String sortByDescending = "Sort by Descending";
+  static const String sortByDateDescending = "Sort by joining Descending";
+  static const String sortByDateAscending = "Sort by joining Ascending";
 
   static const String city = "City";
   static const String pinCode = "Pin code";
@@ -122,6 +133,7 @@ class AppStrings {
   static const String yourStoreWillAutoDesc =
       "Your store will be automatically switched online/ Offline based on the hours you choose.";
   static const String saveAndContinue = "Save & continue";
+  static const companyName = "Company Name";
   static const String country = "Country";
   static const String or = "or";
   static const String twentyFourHrs = "24 Hours";
@@ -138,4 +150,11 @@ class AppStrings {
   static const String readyToDeliver = "Ready to deliver";
   static const String onTheWay = "On the way";
   static const String receipt = "Receipt";
+  static const String yes = "Yes";
+  static const String no = "No";
+  static const String areYouSure = "Are you sure ?";
+  static const String selectAction =
+      "If you need to proceed with your action select 'Yes'.";
+  static const String deleteAction =
+      "Once deleted you can not undo the action.";
 }

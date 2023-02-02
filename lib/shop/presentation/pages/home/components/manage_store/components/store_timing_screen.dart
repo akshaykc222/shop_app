@@ -290,6 +290,7 @@ class _HoursListTileState extends State<HoursListTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             PopupMenuButton<int>(
+                                initialValue: val.is24Open == true ? 0 : 1,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -302,8 +303,10 @@ class _HoursListTileState extends State<HoursListTile> {
                                     ),
                                     Text(
                                       _entity.value.openingTime != null
-                                          ? DateFormat.jm().format(
-                                              _entity.value.openingTime!)
+                                          ? _entity.value.is24Open == true
+                                              ? AppStrings.twentyFourHrs
+                                              : DateFormat.jm().format(
+                                                  _entity.value.openingTime!)
                                           : AppStrings.twentyFourHrs,
                                       style: const TextStyle(
                                         color: AppColors.black,

@@ -26,3 +26,32 @@ class ShowPasswordEvent extends LoginEvent {
   @override
   List<Object?> get props => [];
 }
+
+class GetAccountDetailEvent extends LoginEvent {
+  final BuildContext context;
+
+  const GetAccountDetailEvent(this.context);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangePasswordEvent extends LoginEvent {
+  final BuildContext context;
+  final String password;
+
+  const ChangePasswordEvent(this.context, this.password);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeAccountDetailsEvent extends LoginEvent {
+  final ChangeAccountDetailsModel model;
+  final BuildContext context;
+
+  const ChangeAccountDetailsEvent(this.model, this.context);
+
+  @override
+  List<Object?> get props => [];
+}

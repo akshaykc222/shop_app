@@ -10,8 +10,22 @@ class SearchOrderState extends OrderState {
   SearchOrderState(this.taped);
 }
 
+class OrderLoadingState extends OrderState {
+  OrderLoadingState();
+}
+
+class OrderMoreLoadingState extends OrderState {
+  OrderMoreLoadingState();
+}
+
+class OrderLoadedState extends OrderState {}
+
+class OrderMoreLoadedState extends OrderState {}
+
+class OrderErrorState extends OrderState {}
+
 class SelectedTagState extends OrderState {
-  final String tag;
+  final StatusModel? tag;
 
   SelectedTagState(this.tag);
 }
@@ -33,3 +47,11 @@ class AddOrderProductsState extends OrderState {
 
   AddOrderProductsState(this.count);
 }
+
+class OrderDetailsLoaded extends OrderState {
+  final OrderDetailModel model;
+
+  OrderDetailsLoaded(this.model);
+}
+
+class OrderMoreLoaded extends OrderState {}

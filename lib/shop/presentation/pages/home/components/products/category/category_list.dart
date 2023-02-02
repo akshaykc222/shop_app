@@ -129,10 +129,14 @@ class _CategoryListState extends State<CategoryList>
       body: BlocBuilder<CategoryBloc, CategoryState>(
         builder: (context, state) {
           if (state is CategoryLoadingState) {
-            return ListView.builder(
-                itemCount: 10,
-                shrinkWrap: true,
-                itemBuilder: (context, index) => const ShimmerCategoryLoad());
+            return Shimmer.fromColors(
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              child: ListView.builder(
+                  itemCount: 10,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => const ShimmerCategoryLoad()),
+            );
           } else if (state is CategoryErrorState) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               handleError(context, state.error, () => Navigator.pop(context));
@@ -145,6 +149,15 @@ class _CategoryListState extends State<CategoryList>
           }
           return controller.categoryList.isEmpty
               ? emptyList()
+              // : Shimmer.fromColors(
+              //     baseColor: Colors.grey.shade300,
+              //     highlightColor: Colors.grey.shade100,
+              //     child: ListView.builder(
+              //         itemCount: 10,
+              //         shrinkWrap: true,
+              //         itemBuilder: (context, index) =>
+              //             const ShimmerCategoryLoad()),
+              //   );
               : ListView.builder(
                   itemCount: controller.categoryList.length + 1,
                   shrinkWrap: true,
@@ -153,7 +166,10 @@ class _CategoryListState extends State<CategoryList>
                   itemBuilder: (context, index) =>
                       controller.categoryList.length == index
                           ? controller.currentPage < controller.totalPage
-                              ? const ShimmerCategoryLoad()
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: const ShimmerCategoryLoad())
                               : Container()
                           : CategoryListTile(
                               entity: controller.categoryList[index],
@@ -229,7 +245,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.offWhite1,
+                      // color: AppColors.offWhite1,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -323,6 +339,12 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                                     _notifier.value =
                                                         !_notifier.value;
                                                     _notifier.notifyListeners();
+                                                    controller.add(
+                                                        ChangeCategoryEvent(
+                                                            context,
+                                                            int.parse(widget
+                                                                .entity.id),
+                                                            _notifier.value));
                                                   },
                                                   height: 27,
                                                   width: 51,
@@ -478,103 +500,85 @@ class ShimmerCategoryLoad extends StatelessWidget {
             flex: 3,
             child: Stack(
               children: [
-                Shimmer.fromColors(
-                  baseColor: Colors.grey.shade300,
-                  highlightColor: Colors.grey.shade100,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.offWhite1,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 16.0, right: 20, top: 0),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 18.0),
-                                child: Shimmer.fromColors(
-                                  baseColor: Colors.red,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    width: 82,
-                                    height: 82,
-                                    decoration: BoxDecoration(
-                                        color: AppColors.red,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                Container(
+                  decoration: BoxDecoration(
+                    // color: AppColors.offWhite1,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16.0, right: 20, top: 0),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 18.0),
+                              child: Container(
+                                width: 82,
+                                height: 82,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  spacer22,
+                                  Container(
+                                    color: Colors.white,
+                                    width: 150,
+                                    height: 15,
                                   ),
-                                ),
+                                  spacer10,
+                                  Container(
+                                    width: 150,
+                                    height: 25,
+                                    color: Colors.white,
+                                  ),
+                                  spacer9,
+                                  // const Text(
+                                  //   "Active",
+                                  //   style: TextStyle(
+                                  //       color: AppColors.green,
+                                  //       fontSize: 15,
+                                  //       fontWeight: FontWeight.w600),
+                                  // )
+                                ],
                               ),
-                              const SizedBox(
-                                width: 25,
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    spacer22,
-                                    Shimmer.fromColors(
-                                      baseColor: Colors.grey.shade300,
-                                      highlightColor: Colors.grey.shade100,
-                                      child: const SizedBox(
-                                        width: 150,
-                                        height: 10,
-                                      ),
-                                    ),
-                                    spacer10,
-                                    Shimmer.fromColors(
-                                        baseColor: Colors.grey.shade300,
-                                        highlightColor: Colors.grey.shade100,
-                                        child: const SizedBox(
-                                          width: 150,
-                                          height: 10,
-                                        )),
-                                    spacer9,
-                                    // const Text(
-                                    //   "Active",
-                                    //   style: TextStyle(
-                                    //       color: AppColors.green,
-                                    //       fontSize: 15,
-                                    //       fontWeight: FontWeight.w600),
-                                    // )
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    spacer37,
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  spacer37,
 
-                                    // const Spacer(),
-                                    Shimmer.fromColors(
-                                      baseColor: Colors.grey.shade300,
-                                      highlightColor: Colors.grey.shade100,
-                                      child: Container(
-                                        width: 40,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+                                  // const Spacer(),
+                                  Container(
+                                    width: 40,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
                         ),
-                        spacer20,
-                      ],
-                    ),
+                      ),
+                      spacer20,
+                    ],
                   ),
                 ),
               ],

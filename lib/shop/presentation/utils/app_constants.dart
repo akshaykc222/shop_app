@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
+import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 
 import '../../../core/custom_exception.dart';
 import '../../data/models/login_response.dart';
@@ -10,6 +12,10 @@ import '../../data/routes/hive_storage_name.dart';
 
 class AppConstants {
   static const appName = "Shop App ";
+  static const phoneRegex =
+      "^(?:\\+971|00971|0)?(?:50|51|52|55|56|2|3|4|6|7|9)\\d{7}\$";
+  // static const passportRegex ="^(?!^0+\$)[a-zA-Z0-9]{3,20}\$";
+  // static const
   static const emailRegex =
       "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$";
   static const kEmailError = "Invalid email. please enter a valid email";
@@ -25,6 +31,7 @@ class AppConstants {
   static const kProductValidNameError = "Enter a valid Product Name";
   static const kSelectUnitType = "Choose unit type";
   static const kSelectUnit = "Enter unit";
+
   static const kPasswordInvalidError =
       "Enter password greater than 6 characters";
   static const kErrorConflictMessage =
@@ -199,9 +206,35 @@ class ConfirmationScreen extends StatelessWidget {
     return Column(
       children: [
         Row(
-          children: [Text(data)],
-        )
+          children: [
+            const Text(
+              AppStrings.areYouSure,
+              style: TextStyle(
+                  color: AppColors.black, fontWeight: FontWeight.w600),
+            ),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.close))
+          ],
+        ),
+        spacer20,
       ],
     );
+  }
+}
+
+String getFormatedDate(DateTime date) {
+  final now = DateTime.now();
+
+  if (now.day == date.day && date.month == now.month && date.year == now.year) {
+    return "Today , ${DateFormat.Hm().format(date)}";
+  } else if (now.day + 1 == date.day &&
+      date.month == now.month &&
+      date.year == now.year) {
+    return "Tomorrow , ${DateFormat.Hm().format(date)}";
+  } else if (now.day - 1 == date.day &&
+      date.month == now.month &&
+      date.year == now.year) {
+    return "Yesterday , ${DateFormat.Hm().format(date)}";
+  } else {
+    return "${date.day}-${date.month}-${date.year} , ${DateFormat.Hm().format(date)}";
   }
 }

@@ -1,4 +1,7 @@
+import 'package:hive/hive.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
+
+part 'category_response.g.dart';
 
 class CategoryResponse {
   CategoryResponse({
@@ -30,6 +33,7 @@ class CategoryResponse {
       };
 }
 
+@HiveType(typeId: 1)
 class CategoryModel extends CategoryEntity {
   CategoryModel(
       {required this.id,
@@ -56,16 +60,27 @@ class CategoryModel extends CategoryEntity {
             moduleId: moduleId,
             productCount: productCount);
 
+  @HiveField(0)
   String id;
+  @HiveField(1)
   String name;
+  @HiveField(2)
   String image;
+  @HiveField(3)
   int parentId;
+  @HiveField(4)
   int position;
+  @HiveField(5)
   bool status;
+  @HiveField(6)
   DateTime createdAt;
+  @HiveField(7)
   DateTime updatedAt;
+  @HiveField(8)
   int priority;
+  @HiveField(9)
   int moduleId;
+  @HiveField(10)
   int? productCount;
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
         id: json["id"].toString(),

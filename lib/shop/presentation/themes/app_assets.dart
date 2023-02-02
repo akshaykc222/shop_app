@@ -44,5 +44,6 @@ class AppAssets {
   static const logout = "assets/icons/logout.png";
   static const changePassword = "assets/icons/change_password.png";
   static const ordering = "assets/icons/order.png";
+  static const error = "assets/icons/order.png";
   // static const search = "assets/icons/search.png";
 }

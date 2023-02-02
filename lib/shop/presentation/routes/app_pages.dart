@@ -17,6 +17,7 @@ class AppPages {
   static const storeTiming = "store_timing";
   static const deliveryman = "delivery_man";
   static const deliverymanAdd = "delivery_man_add";
+  static const deliverymanEdit = "delivery_man_edit_new";
   static const customerList = "customer_list";
   static const reOrder = "reOrder";
   static const tagSelect = "tagSelect";

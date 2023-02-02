@@ -13,7 +13,7 @@ import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import '../../../../../core/custom_exception.dart';
 import '../../../../data/models/product_adding_request.dart';
 import '../../../../data/models/product_list_request.dart';
-import '../../../../data/models/product_listing_response.dart';
+import '../../../../data/models/product_model.dart';
 import '../../../../domain/entities/category_entity.dart';
 import '../../../../domain/use_cases/add_product_request_use_case.dart';
 import '../../../../domain/use_cases/delete_product_use_case.dart';
@@ -36,15 +36,16 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final AddProductUseCase addProductUseCase;
   final GetUnitUseCase getUnitUseCase;
   final DeleteProductUseCase deleteProductUseCase;
+
   ProductBloc(
-      this.productUseCase,
-      this.productStatusUpdateUseCase,
-      this.getProductDetailsUseCase,
-      this.getUnitUseCase,
-      this.getTagUseCase,
-      this.addProductUseCase,
-      this.deleteProductUseCase)
-      : super(const ProductInitial()) {
+    this.productUseCase,
+    this.productStatusUpdateUseCase,
+    this.getProductDetailsUseCase,
+    this.getUnitUseCase,
+    this.getTagUseCase,
+    this.addProductUseCase,
+    this.deleteProductUseCase,
+  ) : super(const ProductInitial()) {
     on<ProductEvent>((event, emit) {});
     on<ProductInitialEvent>((event, emit) => emit(const ProductInitial()));
 
@@ -78,6 +79,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         final data = await productUseCase.call(
             ProductListRequest(page: currentPage, search: event.searchKey));
         productList.clear();
+        lastPage = data.products.totalPages;
         productList.addAll(data.products.products);
         productList.toSet().toList();
         emit(ProductFetched(data.products.products, data.tags));
@@ -202,6 +204,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(ProductFetching());
       try {
         ProductAddingRequest request = ProductAddingRequest(
+            id: event.id,
             image: image ?? "",
             status: 0,
             name: productNameController.text,
@@ -216,8 +219,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
             description: productDetailsController.text);
         await addProductUseCase.call(request).then((value) {
           Navigator.pop(event.context);
-          ScaffoldMessenger.of(event.context)
-              .showSnackBar(const SnackBar(content: Text("Added")));
+          ScaffoldMessenger.of(event.context).showSnackBar(
+              SnackBar(content: Text(event.id == null ? "Added" : "Updated")));
         });
         emit(UnitFetchedState());
         add(ProductFetchEvent(() {}, (p0) => {}, () {}));
@@ -236,6 +239,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       try {
         productList.removeWhere((element) => element.id == event.id);
         // subCategoryList.removeWhere((element) => element.id == event.id);
+        await deleteProductUseCase.call(event.id);
         add(ProductFetchEvent(() {}, (p0) => {}, () {}));
       } on DeleteConflictException {
         emit(ProductFetchError(AppConstants.kErrorConflictMessage));
@@ -247,7 +251,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     });
     on<GetPaginatedProducts>((event, emit) async {
       emit(ProductFetching());
-      prettyPrint("getting paginated response");
+      prettyPrint("getting paginated response $currentPage");
       try {
         currentPage = currentPage + 1;
         if (currentPage != lastPage) {
@@ -374,6 +378,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     productNameController.text = "";
     unitTypeController.text = "";
     productDetailsController.text = "";
+    productUnitController.text = "";
     image = null;
     selectedCategory = null;
     selectedTags = [];
