@@ -5,7 +5,7 @@ class CategoryRequestModel {
   final String name;
   final String image;
   final int? parentId;
-  final int? page;
+  int? page;
   final String? searchKey;
   CategoryRequestModel(
       {required this.name,

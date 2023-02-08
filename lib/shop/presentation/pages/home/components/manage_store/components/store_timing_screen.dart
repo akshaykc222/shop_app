@@ -75,11 +75,11 @@ class _StoreTimingScreenState extends State<StoreTimingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              spacer26,
-              const Text(
-                AppStrings.hours,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
-              ),
+              // spacer26,
+              // const Text(
+              //   AppStrings.hours,
+              //   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+              // ),
               spacer17,
               const Text(
                 AppStrings.yourStoreWillAutoDesc,
@@ -240,8 +240,9 @@ class _HoursListTileState extends State<HoursListTile> {
             margin: const EdgeInsets.symmetric(vertical: 5),
             padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.lightBorderColor)),
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
             duration: const Duration(milliseconds: 500),
             child: Column(
               children: [
@@ -249,6 +250,7 @@ class _HoursListTileState extends State<HoursListTile> {
                   children: [
                     Image.asset(
                       AppAssets.calender,
+                      color: AppColors.primaryColor,
                       width: 17,
                       height: 15,
                     ),
@@ -296,6 +298,7 @@ class _HoursListTileState extends State<HoursListTile> {
                                     Image.asset(
                                       AppAssets.clock,
                                       width: 17,
+                                      color: AppColors.primaryColor,
                                       height: 15,
                                     ),
                                     const SizedBox(

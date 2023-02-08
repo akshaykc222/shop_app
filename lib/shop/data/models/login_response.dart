@@ -27,6 +27,7 @@ class UserDataShort extends UserShortDetailsEntity {
       required this.email,
       required this.logo,
       required this.address,
+      required this.currency,
       required this.storeId})
       : super(
             name: name,
@@ -34,7 +35,8 @@ class UserDataShort extends UserShortDetailsEntity {
             email: email,
             logo: logo,
             address: address,
-            storeId: storeId);
+            storeId: storeId,
+            currency: currency);
 
   final String name;
   final String phone;
@@ -42,15 +44,16 @@ class UserDataShort extends UserShortDetailsEntity {
   final String logo;
   final String address;
   final int storeId;
+  final CurrencyModel currency;
 
   factory UserDataShort.fromJson(Map<String, dynamic> json) => UserDataShort(
-        name: json["name"],
-        phone: json["phone"],
-        email: json["email"],
-        logo: json["logo"],
-        address: json["address"],
-        storeId: json["store_id"],
-      );
+      name: json["name"],
+      phone: json["phone"],
+      email: json["email"],
+      logo: json["logo"],
+      address: json["address"],
+      storeId: json["store_id"],
+      currency: CurrencyModel.fromJson(json["currency"]));
 
   Map<String, dynamic> toJson() => {
         "name": name,
@@ -58,6 +61,27 @@ class UserDataShort extends UserShortDetailsEntity {
         "email": email,
         "logo": logo,
         "address": address,
-        "store_id": storeId
+        "store_id": storeId,
+        "currency": currency.toJson()
+      };
+}
+
+class CurrencyModel {
+  CurrencyModel({
+    required this.symbol,
+    required this.position,
+  });
+
+  String symbol;
+  String position;
+
+  factory CurrencyModel.fromJson(Map<String, dynamic> json) => CurrencyModel(
+        symbol: json["symbol"],
+        position: json["position"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "symbol": symbol,
+        "position": position,
       };
 }

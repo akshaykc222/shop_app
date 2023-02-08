@@ -21,8 +21,7 @@ class ManageStoreScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 30),
           decoration: BoxDecoration(
-              color: AppColors.cardLightGrey,
-              borderRadius: BorderRadius.circular(10)),
+              color: AppColors.white, borderRadius: BorderRadius.circular(10)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -34,7 +33,7 @@ class ManageStoreScreen extends StatelessWidget {
                   color: AppColors.white,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(3.0),
                   child: Image.asset(
                     image,
                     width: 24,
@@ -62,11 +61,14 @@ class ManageStoreScreen extends StatelessWidget {
           context,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                AppStrings.manageStore,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    AppStrings.manageStore,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ))
             ],
           )),
       body: Padding(

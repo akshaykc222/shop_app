@@ -6,9 +6,16 @@ class AppTheme {
   static ThemeData getTheme() {
     return ThemeData(
         // bottomSheetTheme: BottomSheetThemeData(
-        //   elevation: 0,
+        //   elevation: 0,Ra
         // ),
-        scaffoldBackgroundColor: AppColors.white,
+        radioTheme: RadioThemeData(
+            fillColor: MaterialStateProperty.resolveWith((Set states) {
+          if (states.contains(MaterialState.disabled)) {
+            return AppColors.primaryColor.withOpacity(.32);
+          }
+          return AppColors.primaryColor;
+        })),
+        scaffoldBackgroundColor: AppColors.offWhite1,
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
             backgroundColor: AppColors.primaryColor),
         fontFamily: GoogleFonts.poppins().fontFamily,

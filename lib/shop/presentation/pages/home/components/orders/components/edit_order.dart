@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -12,6 +13,7 @@ import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
 import '../../../../../../data/models/order_detail_model.dart';
 import '../../../../../utils/app_constants.dart';
+import '../order_screen.dart';
 
 class EditOrder extends StatelessWidget {
   const EditOrder({Key? key}) : super(key: key);
@@ -57,14 +59,110 @@ class EditOrder extends StatelessWidget {
                 builder: (context, state) {
                   return state is OrderLoadingState
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: CircularProgressIndicator()),
+                          ),
                         )
                       : IconButton(
                           onPressed: () {
-                            if (controller.model != null) {
-                              controller.add(ChangeOrderProductsEvent(context,
-                                  controller.model!.orderId.toString()));
-                            }
+                            final editForm = GlobalKey<FormState>();
+                            final editController = TextEditingController();
+                            showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(15),
+                                        topLeft: Radius.circular(15))),
+                                isScrollControlled: true,
+                                builder: (context) => Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                              .viewInsets
+                                              .bottom),
+                                      child: Form(
+                                        key: editForm,
+                                        child: Wrap(
+                                          children: [
+                                            const Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 16.0,
+                                                  top: 20,
+                                                  bottom: 20),
+                                              child: Text(
+                                                AppStrings.reasonForEditing,
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 16.0,
+                                                  left: 16,
+                                                  bottom: 16),
+                                              child: TextFormField(
+                                                controller: editController,
+                                                maxLines: 5,
+                                                validator: (val) {
+                                                  if (val == null ||
+                                                      val.isEmpty) {
+                                                    return "Enter reason for editing";
+                                                  } else if (val.length < 5) {
+                                                    return "Enter a valid reason";
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 50,
+                                              child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                      shape: const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          15),
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          15)))),
+                                                  onPressed: () {
+                                                    if (editForm.currentState
+                                                            ?.validate() ==
+                                                        true) {
+                                                      if (controller.model !=
+                                                          null) {
+                                                        Navigator.pop(context);
+                                                        controller.add(
+                                                            ChangeOrderProductsEvent(
+                                                                context,
+                                                                controller
+                                                                    .model!
+                                                                    .orderId
+                                                                    .toString(),
+                                                                editController
+                                                                    .text));
+                                                      }
+                                                    }
+                                                  },
+                                                  child: const Text(
+                                                    AppStrings.save,
+                                                    style:
+                                                        TextStyle(fontSize: 17),
+                                                  )),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ));
                           },
                           icon: const Icon(Icons.done));
                 },
@@ -103,154 +201,173 @@ class EditOrder extends StatelessWidget {
       body: SingleChildScrollView(
         child: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
-            return state is OrderDetailsLoaded
-                ? Column(
-                    children: [
-                      spacer30,
-                      // TextButton(
-                      //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
-                      // spacer10,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            RichText(
-                              text: TextSpan(
-                                text: 'Items : ',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.black.withOpacity(0.43)),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: '${state.model.itemCount}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.black)),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      spacer30,
-                      Wrap(
+            return state is OrderLoadingState
+                ? Flexible(
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child: ListView.builder(
+                          itemCount: 3,
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (context, index) =>
+                              const OrderListShimmer()),
+                    ),
+                  )
+                : state is OrderDetailsLoaded
+                    ? Column(
                         children: [
-                          BlocBuilder<OrderBloc, OrderState>(
-                            builder: (context, state) {
-                              return state is OrderDetailsLoaded
-                                  ? ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount:
-                                          state.model.productDetails.length,
-                                      itemBuilder: (context, index) =>
-                                          OrderProducts(
-                                            showEdit: true,
-                                            model: state
-                                                .model.productDetails[index],
-                                          ))
-                                  : Container();
-                            },
-                          ),
-                        ],
-                      ),
-                      spacer20,
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      spacer26,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              AppStrings.itemTotal,
-                              style: TextStyle(
-                                  color: AppColors.offWhiteTextColor,
-                                  fontSize: 15),
+                          spacer30,
+                          // TextButton(
+                          //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
+                          // spacer10,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Items : ',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                        color:
+                                            AppColors.black.withOpacity(0.43)),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: '${state.model.itemCount}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.black)),
+                                    ],
+                                  ),
+                                )
+                              ],
                             ),
-                            Text(
-                              '${controller.getGrandTotal()} AED',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.offWhiteTextColor),
-                            )
-                          ],
-                        ),
-                      ),
-                      spacer18,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: const [
-                                Text(
-                                  AppStrings.delivery,
+                          ),
+                          spacer30,
+                          Wrap(
+                            children: [
+                              BlocBuilder<OrderBloc, OrderState>(
+                                builder: (context, state) {
+                                  return state is OrderDetailsLoaded
+                                      ? ListView.builder(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount:
+                                              state.model.productDetails.length,
+                                          itemBuilder: (context, index) =>
+                                              OrderProducts(
+                                                showEdit: true,
+                                                model: state.model
+                                                    .productDetails[index],
+                                              ))
+                                      : Container();
+                                },
+                              ),
+                            ],
+                          ),
+                          spacer20,
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Divider(
+                              thickness: 0.5,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          spacer26,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  AppStrings.itemTotal,
                                   style: TextStyle(
                                       color: AppColors.offWhiteTextColor,
                                       fontSize: 15),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                // Container(
-                                //   width: 50,
-                                //   height: 23,
-                                //   decoration: BoxDecoration(
-                                //       color: AppColors.white,
-                                //       border: Border.all(
-                                //           color: AppColors.offWhite1, width: 2),
-                                //       borderRadius: BorderRadius.circular(6)),
-                                //   child: const Center(
-                                //     child: Text("0"),
-                                //   ),
-                                // )
+                                Text(
+                                  '${controller.getGrandTotal()} AED',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.offWhiteTextColor),
+                                )
                               ],
                             ),
-                            const Text(
-                              'Free',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.green),
-                            )
-                          ],
-                        ),
-                      ),
-                      spacer14,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              AppStrings.grandTotal,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          spacer18,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: const [
+                                    Text(
+                                      AppStrings.delivery,
+                                      style: TextStyle(
+                                          color: AppColors.offWhiteTextColor,
+                                          fontSize: 15),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    // Container(
+                                    //   width: 50,
+                                    //   height: 23,
+                                    //   decoration: BoxDecoration(
+                                    //       color: AppColors.white,
+                                    //       border: Border.all(
+                                    //           color: AppColors.offWhite1, width: 2),
+                                    //       borderRadius: BorderRadius.circular(6)),
+                                    //   child: const Center(
+                                    //     child: Text("0"),
+                                    //   ),
+                                    // )
+                                  ],
+                                ),
+                                const Text(
+                                  'Free',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.green),
+                                )
+                              ],
                             ),
-                            Text(
-                              '${controller.getGrandTotal()} AED',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: AppColors.primaryColor),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : const SizedBox();
+                          ),
+                          spacer14,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  AppStrings.grandTotal,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                Text(
+                                  '${controller.getGrandTotal()} AED',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: AppColors.primaryColor),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox();
           },
         ),
       ),
@@ -444,6 +561,11 @@ class _OrderProductsState extends State<OrderProducts> {
                               borderRadius: BorderRadius.circular(10),
                               // color: Colors.grey,
                               image: DecorationImage(
+                                  onError: (
+                                    e,
+                                    s,
+                                  ) =>
+                                      Image.asset(AppAssets.errorImage),
                                   image: CachedNetworkImageProvider(
                                       widget.model.image))),
                         ),
@@ -457,7 +579,7 @@ class _OrderProductsState extends State<OrderProducts> {
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        if (qtyValueNotifier.value > 0) {
+                                        if (qtyValueNotifier.value > 1) {
                                           qtyValueNotifier.value--;
                                           orderBloc.changeQty(
                                               qty: qtyValueNotifier.value,

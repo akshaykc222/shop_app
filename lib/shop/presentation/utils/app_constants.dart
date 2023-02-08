@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -9,6 +12,7 @@ import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import '../../../core/custom_exception.dart';
 import '../../data/models/login_response.dart';
 import '../../data/routes/hive_storage_name.dart';
+import '../themes/app_assets.dart';
 
 class AppConstants {
   static const appName = "Shop App ";
@@ -188,14 +192,16 @@ commonErrorDialog(
   ));
 }
 
-UserDataShort getUserData() {
+Future<UserDataShort> getUserData() async {
   GetStorage storage = GetStorage();
-  Map<String, dynamic>? userData = storage.read(LocalStorageNames.userData);
+  var sh = await SharedPreferences.getInstance();
+
+  String? userData = sh.getString(LocalStorageNames.userData);
   if (userData == null) {
     throw UnauthorisedException();
   }
 
-  return UserDataShort.fromJson(userData);
+  return UserDataShort.fromJson(jsonDecode(userData ?? ""));
 }
 
 class ConfirmationScreen extends StatelessWidget {
@@ -237,4 +243,108 @@ String getFormatedDate(DateTime date) {
   } else {
     return "${date.day}-${date.month}-${date.year} , ${DateFormat.Hm().format(date)}";
   }
+}
+
+deleteDialog(
+    {required String title,
+    required String message,
+    required Function delete,
+    required BuildContext context}) {
+  showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      builder: (context) => Container(
+            height: 280,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    spacer10,
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Image.asset(
+                        AppAssets.deleteGif,
+                        width: 80,
+                        height: 80,
+                      ),
+                    ),
+                    spacer10,
+                    const Text(
+                      "Close Your Account",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const Text(
+                      "Please note that account closure is a permanent action, and once your account is closed, it will no longer be available to you and cannot be restored.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    spacer10,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                shape: const RoundedRectangleBorder(
+                                    side: BorderSide(color: Colors.red)),
+                                foregroundColor: Colors.black),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(AppStrings.cancel),
+                          )),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                              child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red),
+                            onPressed: () {},
+                            child: const Text(AppStrings.confirm),
+                          )),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                // Positioned(
+                //     top: 10,
+                //     right: 10,
+                //     child: InkWell(
+                //       onTap: () {
+                //         Navigator.pop(context);
+                //       },
+                //       child: Container(
+                //         width: 30,
+                //         height: 30,
+                //         // padding: const EdgeInsets.all(10),
+                //         decoration: BoxDecoration(
+                //           color: Colors.grey.shade400,
+                //           shape: BoxShape.circle,
+                //         ),
+                //         child: const Center(
+                //           child: Icon(
+                //             Icons.close,
+                //             size: 20,
+                //             color: Colors.black,
+                //           ),
+                //         ),
+                //       ),
+                //     ))
+              ],
+            ),
+          ));
 }

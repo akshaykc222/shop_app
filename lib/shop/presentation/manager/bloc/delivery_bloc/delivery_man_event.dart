@@ -7,7 +7,9 @@ abstract class DeliveryManEvent extends Equatable {
 class GetDeliveryManListEvent extends DeliveryManEvent {
   final BuildContext context;
   final String sort;
-  const GetDeliveryManListEvent(this.context, this.sort);
+  final String? search;
+  const GetDeliveryManListEvent(
+      {required this.context, required this.sort, this.search});
 
   @override
   List<Object?> get props => [];

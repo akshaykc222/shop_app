@@ -114,7 +114,7 @@ class _CategoryListState extends State<CategoryList>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           controller.clearTextFields();
@@ -175,6 +175,13 @@ class _CategoryListState extends State<CategoryList>
                               entity: controller.categoryList[index],
                               edit: () {},
                               delete: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => Wrap(
+                                          children: const [
+                                            Text(AppStrings.addProduct)
+                                          ],
+                                        ));
                                 controller.add(DeleteCategoryEvent(
                                     context: context,
                                     id: int.parse(
@@ -233,8 +240,10 @@ class _CategoryListTileState extends State<CategoryListTile> {
           if (widget.selectable == true) {
             widget.select!();
           } else {
-            GoRouter.of(context).pushNamed(AppPages.subCategory,
-                params: {'model': jsonEncode(widget.entity.toJson())});
+            if (widget.entity.parentId == 0) {
+              GoRouter.of(context).pushNamed(AppPages.subCategory,
+                  params: {'model': jsonEncode(widget.entity.toJson())});
+            }
           }
         },
         child: Row(
@@ -245,7 +254,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      // color: AppColors.offWhite1,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -262,17 +271,14 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                   width: 82,
                                   height: 82,
                                   decoration: BoxDecoration(
-                                      color: Colors.grey,
+                                      // color: Colors.grey,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10.0),
                                     child: CachedNetworkImage(
                                       imageUrl: widget.entity.image,
                                       errorWidget: (context, error, child) =>
-                                          Container(
-                                        decoration: const BoxDecoration(
-                                            color: AppColors.blue),
-                                      ),
+                                          Image.asset(AppAssets.errorImage),
                                     ),
                                   ),
                                 ),
@@ -293,13 +299,98 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                           color: AppColors.black,
                                           fontWeight: FontWeight.w600),
                                     ),
-                                    spacer10,
-                                    Text(
-                                      "${widget.entity.productCount} product listed",
-                                      style: const TextStyle(
-                                          color: AppColors.offWhiteTextColor,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 15),
+                                    spacer5,
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            width: 70,
+                                            decoration: BoxDecoration(
+                                                color: AppColors.offWhite1,
+                                                border: Border.all(
+                                                    color: AppColors.offWhite1,
+                                                    width: 2),
+                                                borderRadius:
+                                                    BorderRadius.circular(15)),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      color: AppColors.white),
+                                                  child: Image.asset(
+                                                    AppAssets.prodCount,
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    child: Center(
+                                                        child: Text(widget
+                                                                .entity
+                                                                .productCount
+                                                                .toString() ??
+                                                            "0")))
+                                              ],
+                                            ),
+                                          ),
+                                          widget.entity.parentId != 0
+                                              ? const SizedBox()
+                                              : Container(
+                                                  width: 70,
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          AppColors.offWhite1,
+                                                      border: Border.all(
+                                                          color: AppColors
+                                                              .offWhite1,
+                                                          width: 2),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15)),
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                            color: AppColors
+                                                                .white),
+                                                        child: Image.asset(
+                                                          AppAssets.catCount,
+                                                          width: 20,
+                                                          height: 20,
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                          child: Center(
+                                                              child: Text(widget
+                                                                      .entity
+                                                                      .subCatCount
+                                                                      .toString() ??
+                                                                  "0")))
+                                                    ],
+                                                  ),
+                                                ),
+                                        ],
+                                      ),
                                     ),
                                     spacer9,
                                     // const Text(
@@ -414,29 +505,29 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                         ],
                                       ),
                                     ),
-                                    PopupMenuItem(
-                                      value: 2,
-                                      child: Row(
-                                        children: [
-                                          Image.asset(
-                                            AppAssets.moveTop,
-                                            width: 15,
-                                            height: 15,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          const SizedBox(
-                                            width: 12,
-                                          ),
-                                          const Text(
-                                            AppStrings.moveTop,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15,
-                                                color: AppColors.black),
-                                          )
-                                        ],
-                                      ),
-                                    ),
+                                    // PopupMenuItem(
+                                    //   value: 2,
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Image.asset(
+                                    //         AppAssets.moveTop,
+                                    //         width: 15,
+                                    //         height: 15,
+                                    //         fit: BoxFit.cover,
+                                    //       ),
+                                    //       const SizedBox(
+                                    //         width: 12,
+                                    //       ),
+                                    //       const Text(
+                                    //         AppStrings.moveTop,
+                                    //         style: TextStyle(
+                                    //             fontWeight: FontWeight.w600,
+                                    //             fontSize: 15,
+                                    //             color: AppColors.black),
+                                    //       )
+                                    //     ],
+                                    //   ),
+                                    // ),
                                     PopupMenuItem(
                                       value: 3,
                                       child: Row(

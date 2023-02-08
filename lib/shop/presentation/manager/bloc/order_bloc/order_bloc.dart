@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/data/models/order_detail_model.dart';
@@ -17,8 +16,6 @@ import '../../../../domain/use_cases/change_order_status_use_case.dart';
 import '../../../../domain/use_cases/edit_order_use_case.dart';
 import '../../../../domain/use_cases/get_order_detail_use_case.dart';
 import '../../../../domain/use_cases/get_order_use_case.dart';
-import '../../../routes/route_manager.dart';
-import '../../../widgets/bottom_navigation_bar.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';
@@ -54,6 +51,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           pageNo: "1",
         ));
         orderList = data.orders.orders;
+        if (data.statuses.isNotEmpty) {
+          changeSelectedFilter(data.statuses.first);
+        }
+
         prettyPrint("order list length ${data.orders}");
         statusList = data.statuses;
         currentPage = data.orders.currentPageNo;
@@ -116,7 +117,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         if (d != null) {
           await editOrderUseCase
               .call(EditOrderDetailModel(
-                  productData: d, orderId: int.parse(event.orderId)))
+                  productData: d,
+                  orderId: int.parse(event.orderId),
+                  editReason: event.editingReason))
               .then((value) =>
                   add(GetOrderDetailEvent(event.context, model!.orderId)));
         }
@@ -131,8 +134,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       try {
         await changeOrderStatusUseCase
             .call(OrderStatusChange(model!.orderId, event.status))
-            .then((value) => GoRouter.of(event.context).go(
-                AppRouteManager.home(CustomBottomNavigationItems.values[1])));
+            .then((value) =>
+                add(GetOrderDetailEvent(event.context, model!.orderId)));
       } catch (e) {
         handleError(
             event.context, e.toString(), () => Navigator.pop(event.context));
@@ -143,8 +146,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       try {
         currentPage = currentPage + 1;
         if (currentPage != totalPages) {
-          var data = await getOrderUseCase
-              .call(OrderEntityRequest(pageNo: currentPage.toString()));
+          var data = await getOrderUseCase.call(OrderEntityRequest(
+              pageNo: currentPage.toString(),
+              status: event.request.status,
+              search: event.request.search));
           orderList.addAll(data.orders.orders);
           emit(OrderMoreLoadedState());
         } else {
@@ -219,8 +224,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         discount: double.parse(m.discount.toString()),
         totalPrice: double.parse(m.price.toString()));
     if (model != null) {
-      model!.productDetails.add(temp);
-      add(AddOrderProductEvent());
+      if (!model!.productDetails.contains(temp)) {
+        model!.productDetails.add(temp);
+        add(AddOrderProductEvent());
+      }
     }
   }
 }

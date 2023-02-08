@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphic/graphic.dart';
+import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/dashboard_bloc/dashboard_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
@@ -26,8 +27,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15),
       decoration: BoxDecoration(
-          color: AppColors.cardLightGrey,
-          borderRadius: BorderRadius.circular(10)),
+          color: AppColors.white, borderRadius: BorderRadius.circular(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,21 +71,25 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       width: MediaQuery.of(context).size.width * 0.4,
       // height: 150,
       child: Card(
-        color: AppColors.cardLightGrey,
+        color: AppColors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
         child: Column(
           children: [
             spacer10,
             Container(
-              width: 60,
-              height: 60,
-              decoration: const BoxDecoration(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.white,
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: CachedNetworkImageProvider(
-                          "https://goodmenproject.com/wp-content/uploads/2013/07/Robert2.jpg"))),
+                      onError: (
+                        context,
+                        err,
+                      ) =>
+                          Image.asset(AppAssets.errorImage),
+                      image: CachedNetworkImageProvider(image))),
             ),
             spacer10,
             Text(
@@ -145,7 +149,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       width: MediaQuery.of(context).size.width * 0.6,
       height: 120,
       child: Card(
-        color: AppColors.cardLightGrey,
+        color: AppColors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 18),
@@ -159,8 +163,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(10)),
                   child: CachedNetworkImage(
-                    imageUrl:
-                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0011%2F2341%2F8172%2Fproducts%2FTM838-Tasti-Lee-single_1024x1024.jpg%3Fv%3D1523418370&f=1&nofb=1&ipt=20741e525ea5dc66296e7caf5ab6d4da82d312b0f7edda3311dbc6af3374f5ad&ipo=images",
+                    imageUrl: image,
                     fit: BoxFit.fill,
                   )),
               Expanded(
@@ -323,7 +326,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   @override
   void initState() {
     dashboardBloc = DashboardBloc.get(context);
-
+    dashboardBloc.add(DashBoardGetEvent(context));
     super.initState();
   }
 
@@ -348,14 +351,31 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         height: 20,
                         fit: BoxFit.fill,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 7.0),
-                        child: Text(
-                          "E -Store",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
+                      Expanded(
+                        child: FutureBuilder(
+                            future: getUserData(),
+                            builder: (
+                              context,
+                              snap,
+                            ) {
+                              if (snap.hasData) {
+                                var d = snap.data as UserDataShort;
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 7.0, right: 10),
+                                  child: Text(
+                                    d.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                );
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            }),
                       ),
-                      const Spacer(),
+                      // const Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(right: 27.0),
                         child: Row(
@@ -478,7 +498,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                     title: "Cancelled",
                                     image: AppAssets.onTheWay,
                                     content: dashboardBloc.model?.data
-                                            .statusCount.confirmedOrders
+                                            .statusCount.canceledOrders
                                             .toString() ??
                                         "0"),
                               ),
@@ -507,10 +527,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                     spacer20,
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      height: 150,
+                                      height: 170,
                                       child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           shrinkWrap: true,
+                                          physics:
+                                              const BouncingScrollPhysics(),
                                           itemCount: dashboardBloc.model?.data
                                                   .topDeliveryMan.length ??
                                               0,
@@ -521,8 +543,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                                       .data
                                                       .topDeliveryMan[index]
                                                       .name,
-                                                  image:
-                                                      AppAssets.changePassword,
+                                                  image: dashboardBloc
+                                                      .model!
+                                                      .data
+                                                      .topDeliveryMan[index]
+                                                      .image,
                                                   orders: dashboardBloc
                                                       .model!
                                                       .data
@@ -555,6 +580,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       width: MediaQuery.of(context).size.width,
                                       height: 150,
                                       child: ListView.builder(
+                                        physics: const BouncingScrollPhysics(),
                                         itemCount: dashboardBloc.model?.data
                                                 .topSellingItems.length ??
                                             0,
@@ -567,7 +593,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                                     .data
                                                     .topSellingItems[index]
                                                     .name,
-                                                image: AppAssets.changePassword,
+                                                image: dashboardBloc
+                                                    .model!
+                                                    .data
+                                                    .topSellingItems[index]
+                                                    .image,
                                                 sold: dashboardBloc
                                                     .model!
                                                     .data
@@ -579,6 +609,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                     spacer24,
                                   ],
                                 ),
+                          spacer10,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -593,7 +624,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           ),
                           spacer20,
                           Card(
-                            elevation: 10,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(19)),
                             child: Column(
@@ -607,9 +638,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                         margin: const EdgeInsets.all(8),
                                         height: 50,
                                         decoration: BoxDecoration(
-                                            color: AppColors.cardLightGrey,
+                                            color: AppColors.white,
                                             borderRadius:
-                                                BorderRadius.circular(30)),
+                                                BorderRadius.circular(15)),
                                         child: Row(
                                           children: const [
                                             Text("This Week"),
@@ -621,7 +652,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 10),
-                                  width: 350,
+                                  padding: const EdgeInsets.all(10),
+                                  // width: 350,
                                   height: 300,
                                   child: Chart(
                                     data: basicData,
@@ -671,6 +703,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ],
                             ),
                           ),
+                          spacer20
                         ],
                       ),
                     ],

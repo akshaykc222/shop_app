@@ -91,7 +91,11 @@ class _CommonTextFieldState extends State<CommonTextField> {
                           ? const Icon(Icons.abc_sharp)
                           : const Icon(Icons.remove_red_eye))
                   : widget.suffix,
-              label: widget.widgetLabel ?? Text(widget.title),
+              label: widget.widgetLabel ??
+                  Text(
+                    widget.title,
+                    style: TextStyle(color: Colors.grey),
+                  ),
               enabled: widget.enable ?? true),
         ),
       ],

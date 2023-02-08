@@ -3,14 +3,19 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
+import 'package:shop_app/shop/presentation/utils/app_constants.dart';
+import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
+import 'package:shop_app/shop/presentation/widgets/mandatory_text.dart';
 
 import '../../../../../themes/app_strings.dart';
 import '../../../../../utils/select_image_and_crop.dart';
 import '../../../../../widgets/custom_app_bar.dart';
+import 'category_list.dart';
 
 class CategoryAddForm extends StatefulWidget {
   final CategoryEntity? entity;
@@ -84,35 +89,108 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
   }
 
   buildTextField() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            AppStrings.categoryName,
-            style: TextStyle(
-                color: AppColors.offWhiteTextColor,
-                fontSize: 15,
-                fontWeight: FontWeight.w600),
-          ),
-        ),
-        TextFormField(
-          controller: controller.categoryNameController,
-          decoration:
-              const InputDecoration(label: Text(AppStrings.categoryName)),
-        ),
-      ],
+    return CommonTextField(
+      title: AppStrings.categoryName,
+      controller: controller.categoryNameController,
+    );
+  }
+
+  var scrollController = ScrollController();
+
+  buildTextFieldCategory() {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            builder: (context) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: Column(
+                    children: [
+                      spacer20,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: controller.searchController,
+                              decoration: const InputDecoration(
+                                  hintText: "Search ... "),
+                            ),
+                          )),
+                          IconButton(
+                              onPressed: () {
+                                controller.add(CategorySearchEvent(
+                                    controller.searchController.text));
+                              },
+                              icon: const Icon(
+                                Icons.search,
+                                size: 30,
+                              ))
+                        ],
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: controller.categoryList.length + 1,
+                            shrinkWrap: true,
+                            controller: scrollController,
+                            physics: const BouncingScrollPhysics(),
+                            itemBuilder: (context, index) => controller
+                                        .categoryList.length ==
+                                    index
+                                ? controller.currentPage < controller.totalPage
+                                    ? Shimmer.fromColors(
+                                        baseColor: Colors.grey.shade300,
+                                        highlightColor: Colors.grey.shade100,
+                                        child: const ShimmerCategoryLoad())
+                                    : Container()
+                                : CategoryListTile(
+                                    entity: controller.categoryList[index],
+                                    edit: () {},
+                                    selectable: true,
+                                    select: () {
+                                      controller.changeSelectedCategory(
+                                          controller.categoryList[index]);
+                                      FocusScope.of(context).unfocus();
+                                      Navigator.pop(context);
+                                    },
+                                    delete: () {},
+                                  )),
+                      ),
+                    ],
+                  ),
+                ));
+      },
+      child: CommonTextField(
+        enable: false,
+        controller: controller.categoryController,
+        title: AppStrings.parentCat,
+        required: true,
+      ),
     );
   }
 
   @override
   void initState() {
     controller = CategoryBloc.get(context);
+    controller.changeSelectedChoice(AppStrings.yes);
+    controller.changeSelectedCategory(null);
     if (widget.entity != null) {
       controller.updateForEditing(widget.entity!);
     }
+    scrollController.addListener(pagination);
     super.initState();
+  }
+
+  void pagination() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      controller.getPaginatedResponse();
+    }
   }
 
   @override
@@ -165,6 +243,9 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
                           controller.add(AddCategoryEvent(
                               name: controller.categoryNameController.text,
                               filePath: imagePickerResult.value,
+                              parentId: controller.selectedParentCat?.id == null
+                                  ? null
+                                  : int.parse(controller.selectedParentCat!.id),
                               context: context));
                         } else {
                           controller.add(UpdateCategoryEvent(
@@ -172,6 +253,11 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
                               request: CategoryRequestModel(
                                   name: controller.categoryNameController.text,
                                   image: imagePickerResult.value,
+                                  parentId:
+                                      controller.selectedParentCat?.id == null
+                                          ? null
+                                          : int.parse(
+                                              controller.selectedParentCat!.id),
                                   id: int.tryParse(widget.entity!.id))));
                         }
                       },
@@ -192,17 +278,58 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            buildImageWidget(),
-            const SizedBox(
-              height: 20,
-            ),
-            buildTextField(),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildImageWidget(),
+              const SizedBox(
+                height: 20,
+              ),
+              buildTextField(),
+              spacer20,
+              const MandatoryText(
+                title: AppStrings.parentCatQuest,
+              ),
+              BlocBuilder<CategoryBloc, CategoryState>(
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          const Text(AppStrings.yes),
+                          Radio(
+                              value: AppStrings.yes,
+                              groupValue: controller.selectedChoice,
+                              onChanged: (val) {
+                                if (widget.entity == null) {
+                                  controller.changeSelectedChoice(
+                                      val ?? AppStrings.yes);
+                                }
+                              }),
+                          const Text(AppStrings.no),
+                          Radio(
+                              value: AppStrings.no,
+                              groupValue: controller.selectedChoice,
+                              onChanged: (val) {
+                                if (widget.entity == null) {
+                                  controller.changeSelectedChoice(
+                                      val ?? AppStrings.yes);
+                                }
+                              }),
+                        ],
+                      ),
+                      controller.selectedChoice == AppStrings.no
+                          ? buildTextFieldCategory()
+                          : const SizedBox()
+                    ],
+                  );
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

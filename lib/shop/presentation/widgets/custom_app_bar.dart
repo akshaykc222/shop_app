@@ -9,7 +9,7 @@ PreferredSize getAppBar(BuildContext context, Widget child, {double? height}) {
       padding: const EdgeInsets.only(top: 8.0, left: 2, right: 2),
       child: Container(
         decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.offWhite1,
             borderRadius: const BorderRadius.only(
                 bottomRight: Radius.circular(15),
                 bottomLeft: Radius.circular(15)),

@@ -46,7 +46,8 @@ class CategoryModel extends CategoryEntity {
       required this.updatedAt,
       required this.priority,
       required this.moduleId,
-      required this.productCount})
+      required this.productCount,
+      required this.subCatCount})
       : super(
             id: id,
             name: name,
@@ -58,7 +59,8 @@ class CategoryModel extends CategoryEntity {
             updatedAt: updatedAt,
             priority: priority,
             moduleId: moduleId,
-            productCount: productCount);
+            productCount: productCount,
+            subCatCount: subCatCount);
 
   @HiveField(0)
   String id;
@@ -82,23 +84,25 @@ class CategoryModel extends CategoryEntity {
   int moduleId;
   @HiveField(10)
   int? productCount;
+  @HiveField(11)
+  int? subCatCount;
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
-        id: json["id"].toString(),
-        name: json["name"],
-        image: json["image"] ?? "",
-        parentId: json["parent_id"] ?? 0,
-        position: json["position"] ?? 0,
-        status: json["status"] ?? true,
-        createdAt: json["created_at"] == null
-            ? DateTime.now()
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? DateTime.now()
-            : DateTime.parse(json["updated_at"]),
-        priority: json["priority"] ?? 0,
-        moduleId: json["module_id"] ?? 0,
-        productCount: json['product_count'] ?? 0,
-      );
+      id: json["id"].toString(),
+      name: json["name"] ?? "",
+      image: json["image"] ?? "",
+      parentId: json["parent_id"] ?? 0,
+      position: json["position"] ?? 0,
+      status: json["status"] ?? true,
+      createdAt: json["created_at"] == null
+          ? DateTime.now()
+          : DateTime.parse(json["created_at"]),
+      updatedAt: json["updated_at"] == null
+          ? DateTime.now()
+          : DateTime.parse(json["updated_at"]),
+      priority: json["priority"] ?? 0,
+      moduleId: json["module_id"] ?? 0,
+      productCount: json['product_count'] ?? 0,
+      subCatCount: json["subcategory_count"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,

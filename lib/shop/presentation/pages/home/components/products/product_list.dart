@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shop_app/shop/domain/entities/product_status_request.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
@@ -13,7 +12,6 @@ import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import '../../../../../data/models/product_model.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../utils/app_constants.dart';
-import '../../../../widgets/custom_switch.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({Key? key}) : super(key: key);
@@ -106,6 +104,7 @@ class _ProductListState extends State<ProductList> {
             child: Icon(Icons.add),
           ),
         ),
+        backgroundColor: AppColors.offWhite1,
         body: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {
             if (state is ProductFetching && controller.productList.isEmpty) {
@@ -140,7 +139,7 @@ class _ProductListState extends State<ProductList> {
                             ? Shimmer.fromColors(
                                 highlightColor: Colors.grey.shade100,
                                 baseColor: Colors.grey.shade300,
-                                child: ShimmerCategoryLoad())
+                                child: const ShimmerCategoryLoad())
                             : Container()
                         : ProductListTile(
                             entity: controller.productList[index],
@@ -191,12 +190,13 @@ class _ProductListTileState extends State<ProductListTile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.5),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4),
       child: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppColors.offWhite1,
+              // color: AppColors.offWhite1,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -217,6 +217,10 @@ class _ProductListTileState extends State<ProductListTile> {
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(
                             imageUrl: widget.entity.image,
+                            errorWidget: (n, j, q) =>
+                                Image.asset(AppAssets.errorImage),
+                            placeholder: (n, j) =>
+                                Image.asset(AppAssets.errorImage),
                           ),
                         ),
                       ),
@@ -234,23 +238,47 @@ class _ProductListTileState extends State<ProductListTile> {
                                   fontWeight: FontWeight.w600),
                             ),
                             spacer10,
-                            Text(
-                              "${(widget.entity.stock ?? "")}${(widget.entity.unit?.unit ?? "")}",
-                              style: const TextStyle(
-                                  color: AppColors.offWhiteTextColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15),
-                            ),
-                            spacer9,
                             widget.entity.stock == null
                                 ? const SizedBox()
-                                : const Text(
-                                    "In stock",
-                                    style: TextStyle(
-                                        color: AppColors.green,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600),
-                                  )
+                                : widget.entity.stock == 0
+                                    ? const Text(
+                                        "Out of stock",
+                                        style: TextStyle(
+                                            color: AppColors.red,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    : const Text(
+                                        "In stock",
+                                        style: TextStyle(
+                                            color: AppColors.green,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                            Row(
+                              children: [
+                                Text(
+                                  "${(widget.entity.price ?? "")}",
+                                  style: const TextStyle(
+                                      color: AppColors.offWhiteTextColor,
+                                      decoration: TextDecoration.lineThrough,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15),
+                                ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  "${((widget.entity.price ?? 0.0) - (widget.entity.discount ?? 0.0) ?? "")}",
+                                  style: const TextStyle(
+                                      color: AppColors.black,
+                                      // decoration: TextDecoration.lineThrough,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15),
+                                ),
+                              ],
+                            ),
+                            spacer9,
                           ],
                         ),
                       ),
@@ -284,9 +312,8 @@ class _ProductListTileState extends State<ProductListTile> {
                               ],
                             )
                           : Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                spacer18,
                                 PopupMenuButton<int>(
                                     icon: Image.asset(
                                       AppAssets.menu,
@@ -381,37 +408,37 @@ class _ProductListTileState extends State<ProductListTile> {
                                                 ],
                                               )),
                                         ]),
-                                spacer37,
-                                // const Spacer(),
-                                ValueListenableBuilder(
-                                    valueListenable: _notifier,
-                                    builder: (context, val, child) {
-                                      return CustomSwitch(
-                                        value: val,
-                                        enableColor: AppColors.green,
-                                        disableColor: AppColors.brown,
-                                        onChanged: (value) {
-                                          _notifier.value = !_notifier.value;
-                                          _controller.add(
-                                              ChangeProductStatusEvent(
-                                                  params:
-                                                      ProductStatusRequestParams(
-                                                          id:
-                                                              widget
-                                                                  .entity.id
-                                                                  .toString(),
-                                                          status:
-                                                              _notifier.value
-                                                                  ? 1
-                                                                  : 0),
-                                                  context: context));
 
-                                          // _notifier.notifyListeners();
-                                        },
-                                        height: 27,
-                                        width: 51,
-                                      );
-                                    })
+                                // const Spacer(),
+                                // ValueListenableBuilder(
+                                //     valueListenable: _notifier,
+                                //     builder: (context, val, child) {
+                                //       return CustomSwitch(
+                                //         value: val,
+                                //         enableColor: AppColors.green,
+                                //         disableColor: AppColors.brown,
+                                //         onChanged: (value) {
+                                //           _notifier.value = !_notifier.value;
+                                //           _controller.add(
+                                //               ChangeProductStatusEvent(
+                                //                   params:
+                                //                       ProductStatusRequestParams(
+                                //                           id:
+                                //                               widget
+                                //                                   .entity.id
+                                //                                   .toString(),
+                                //                           status:
+                                //                               _notifier.value
+                                //                                   ? 1
+                                //                                   : 0),
+                                //                   context: context));
+                                //
+                                //           // _notifier.notifyListeners();
+                                //         },
+                                //         height: 27,
+                                //         width: 51,
+                                //       );
+                                //     })
                               ],
                             )
                     ],

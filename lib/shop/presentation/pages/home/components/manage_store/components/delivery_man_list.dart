@@ -30,7 +30,8 @@ class _DeliveryManListState extends State<DeliveryManList>
   void initState() {
     deliveryManBloc = DeliveryManBloc.get(context);
     showSearchNotifier = ValueNotifier(false);
-    deliveryManBloc.add(GetDeliveryManListEvent(context, "asc"));
+    deliveryManBloc.searchTextController.clear();
+    deliveryManBloc.add(GetDeliveryManListEvent(context: context, sort: "asc"));
     scrollController.addListener(pagination);
     super.initState();
   }
@@ -90,73 +91,102 @@ class _DeliveryManListState extends State<DeliveryManList>
             return ValueListenableBuilder(
                 valueListenable: showSearchNotifier,
                 builder: (context, search, child) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      showSearchNotifier.value
-                          ? Row(
-                              children: [
-                                Expanded(
-                                    flex: 3,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: SizedBox(
-                                        height: 55,
-                                        child: TextFormField(
-                                          // enabled: false,
-                                          // controller: deliveryManBloc
-                                          //     .searchTextController,
-                                          decoration: const InputDecoration(
-                                              hintText: "Search ... ",
-                                              border: UnderlineInputBorder()),
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: AppColors.offWhite1,
+                        borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(15),
+                            bottomLeft: Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade300,
+                            offset: const Offset(0.0, 1.0), //(x,y)
+                            blurRadius: 4.0,
+                          )
+                        ]),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        showSearchNotifier.value
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, bottom: 8),
+                                        child: SizedBox(
+                                          height: 55,
+                                          child: TextFormField(
+                                            // enabled: false,
+                                            controller: deliveryManBloc
+                                                .searchTextController,
+                                            onFieldSubmitted: (val) {
+                                              deliveryManBloc.add(
+                                                  GetDeliveryManListEvent(
+                                                      context: context,
+                                                      sort: "desc",
+                                                      search: val));
+                                            },
+                                            textInputAction:
+                                                TextInputAction.search,
+                                            decoration: const InputDecoration(
+                                                hintText: "Search ... ",
+                                                border: UnderlineInputBorder()),
+                                          ),
                                         ),
-                                      ),
-                                    ) ),
-                                Expanded(
-                                    child: IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    showSearchNotifier.value = false;
-                                  },
-                                ))
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Expanded(
-                                    flex: 1,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      icon: const Icon(Icons.arrow_back),
-                                    )),
-                                Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Text(
-                                        AppStrings.deliveryMan,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                      ),
-                                    )),
-                                Expanded(
-                                    flex: 1,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        showSearchNotifier.value = true;
-                                        // showSearchNotifier.notifyListeners();
-                                      },
-                                      icon: Image.asset(
-                                        AppAssets.search,
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                    ))
-                              ],
-                            ),
-                    ],
+                                      )),
+                                  Expanded(
+                                      child: IconButton(
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () {
+                                      showSearchNotifier.value = false;
+                                      deliveryManBloc.searchTextController
+                                          .clear();
+                                      deliveryManBloc.add(
+                                          GetDeliveryManListEvent(
+                                              context: context, sort: "asc"));
+                                    },
+                                  ))
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                      flex: 1,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          context.pop();
+                                        },
+                                        icon: const Icon(Icons.arrow_back),
+                                      )),
+                                  Expanded(
+                                      flex: 3,
+                                      child: Center(
+                                        child: Text(
+                                          AppStrings.deliveryMan,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                      )),
+                                  Expanded(
+                                      flex: 1,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          showSearchNotifier.value = true;
+                                          // showSearchNotifier.notifyListeners();
+                                        },
+                                        icon: Image.asset(
+                                          AppAssets.search,
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ))
+                                ],
+                              ),
+                      ],
+                    ),
                   );
                 });
           },
@@ -200,12 +230,12 @@ class _DeliveryManListState extends State<DeliveryManList>
                     onSelected: (val) {
                       switch (val) {
                         case 1:
-                          deliveryManBloc
-                              .add(GetDeliveryManListEvent(context, "asc"));
+                          deliveryManBloc.add(GetDeliveryManListEvent(
+                              context: context, sort: "asc"));
                           break;
                         case 2:
-                          deliveryManBloc
-                              .add(GetDeliveryManListEvent(context, "desc"));
+                          deliveryManBloc.add(GetDeliveryManListEvent(
+                              context: context, sort: "desc"));
                           break;
                       }
                     },
@@ -266,7 +296,7 @@ class DeliverManListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.cardLightGrey,
+      color: AppColors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
       child: Column(
@@ -301,17 +331,11 @@ class DeliverManListCard extends StatelessWidget {
                           fontWeight: FontWeight.w600),
                     ),
                     spacer10,
-                    Text(
-                      model.email,
-                      style:
-                          const TextStyle(fontSize: 13, color: AppColors.black),
-                    ),
-                    spacer5,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          model.phone,
+                          model.email,
                           style: const TextStyle(
                               fontSize: 13, color: AppColors.black),
                         ),
@@ -333,6 +357,16 @@ class DeliverManListCard extends StatelessWidget {
                             ),
                           ),
                         )
+                      ],
+                    ),
+                    spacer5,
+                    Row(
+                      children: [
+                        Text(
+                          model.phone,
+                          style: const TextStyle(
+                              fontSize: 13, color: AppColors.black),
+                        ),
                       ],
                     ),
                   ],

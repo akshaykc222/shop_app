@@ -41,9 +41,15 @@ class AppAssets {
   static const delivery = "assets/icons/delivery.png";
   static const revenue = "assets/icons/revenue.png";
   static const contactUs = "assets/icons/contact us.png";
+  static const terms = "assets/icons/terms.png";
+  static const deleteGif = "assets/icons/delete_icon_gif.gif";
   static const logout = "assets/icons/logout.png";
+  static const privacy = "assets/icons/privacy.png";
   static const changePassword = "assets/icons/change_password.png";
+  static const errorImage = "assets/icons/change_password.png";
   static const ordering = "assets/icons/order.png";
   static const error = "assets/icons/order.png";
+  static const prodCount = "assets/icons/prod_count.png";
+  static const catCount = "assets/icons/cat_count.png";
   // static const search = "assets/icons/search.png";
 }

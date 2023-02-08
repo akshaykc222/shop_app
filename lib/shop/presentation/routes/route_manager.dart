@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
-import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/customer_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_man_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/deliveryman_add.dart';
@@ -15,6 +13,7 @@ import 'package:shop_app/shop/presentation/pages/home/components/products/catego
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/sub_category.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/tag_list_screen.dart';
 import 'package:shop_app/shop/presentation/pages/home/login/login_screen.dart';
+import 'package:shop_app/shop/presentation/pages/splash_screen.dart';
 
 import '../../data/models/category_response.dart';
 import '../../domain/entities/category_entity.dart';
@@ -41,160 +40,400 @@ class AppRouteManager {
       GoRoute(
         name: AppPages.initial,
         path: "/",
-        builder: (BuildContext context, GoRouterState state) {
-          var storage = GetStorage();
-          String? token = storage.read(LocalStorageNames.token);
-          if (token == null) {
-            return const LoginScreen();
-          } else {
-            return const HomeScreen(currentIndex: 0);
-          }
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const SplashScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              // Change the opacity of the screen using a Curve based on the the animation's
+              // value
+              return FadeTransition(
+                opacity:
+                    CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                child: child,
+              );
+            },
+          );
         },
+        // builder: (BuildContext context, GoRouterState state) {
+        //   var storage = GetStorage();
+        //   String? token = storage.read(LocalStorageNames.token);
+        //   if (token == null) {
+        //     return const LoginScreen();
+        //   } else {
+        //     return const HomeScreen(currentIndex: 0);
+        //   }
+        // },
       ),
       GoRoute(
         name: AppPages.login,
         path: "/${AppPages.login}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const LoginScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const LoginScreen(),
+            transitionDuration: const Duration(milliseconds: 800),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              // return ScaleTransition(
+              //   scale: CurveTween(curve: Curves.slowMiddle).animate(animation),
+              //   child: child,
+              // );
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        name: AppPages.home,
+        path: "/${AppPages.home}",
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const HomeScreen(currentIndex: 0),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.editProduct,
         path: "/${AppPages.editProduct}/:id",
-        builder: (BuildContext context, GoRouterState state) {
-          if (state.params.containsKey('id')) {
-            return ProductForm(
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ProductForm(
               id: int.parse(state.params['id'] ?? "0"),
-            );
-          }
-          return const SizedBox();
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.addProduct,
         path: "/${AppPages.addProduct}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const ProductForm();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const ProductForm(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.editCategory,
         path: "/${AppPages.editCategory}/:model",
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (context, state) {
           String? json = state.params['model'];
-          if (json != null || json != "") {
-            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
-            return CategoryAddForm(
+          CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: CategoryAddForm(
               entity: model,
-            );
-          }
-          return const CategoryAddForm();
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.addCategory,
         path: "/${AppPages.addCategory}",
-        builder: (BuildContext context, GoRouterState state) {
-          // String? json = state.p;
-          // if (json != null || json != "") {
-          //   CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
-          //   return CategoryAddForm(
-          //     entity: model,
-          //   );
-          // }
-          return const CategoryAddForm();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const CategoryAddForm(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.subCategory,
         path: "/${AppPages.subCategory}/:model",
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (context, state) {
           String? json = state.params['model'];
-          if (json != null || json != "") {
-            CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
-            return SubCategoryScreen(
+          CategoryEntity? model = CategoryModel.fromJson(jsonDecode(json!));
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: SubCategoryScreen(
               categoryEntity: model,
-            );
-          }
-          return const SizedBox();
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.detail,
         path: "/${AppPages.detail}/:id",
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (context, state) {
           String? id = state.params['id'];
-          if (id != null) {
-            return OrderDetails(id: id);
-          }
-          return const SizedBox();
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: OrderDetails(id: id!),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.addVariant,
         path: "/${AppPages.addVariant}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const VariantScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const VariantScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.reOrder,
         path: "/${AppPages.reOrder}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const ReOrderableListCategoryScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const ReOrderableListCategoryScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.tagSelect,
         path: "/${AppPages.tagSelect}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const TagListScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const TagListScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.customerList,
         path: "/${AppPages.customerList}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const CustomerList();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const CustomerList(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.addNewOrderProduct,
         path: "/${AppPages.addNewOrderProduct}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const AddOrderProductScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const AddOrderProductScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.storeTiming,
         path: "/${AppPages.storeTiming}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const StoreTimingScreen();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const StoreTimingScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.deliveryman,
         path: "/${AppPages.deliveryman}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const DeliveryManList();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const DeliveryManList(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.deliverymanAdd,
         path: "/${AppPages.deliverymanAdd}",
-        builder: (BuildContext context, GoRouterState state) {
-          return const DeliveryManAdding();
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const DeliveryManAdding(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(
         name: AppPages.deliverymanEdit,
         path: "/${AppPages.deliverymanEdit}/:id",
-        builder: (BuildContext context, GoRouterState state) {
+        pageBuilder: (context, state) {
           var param = state.params["id"];
-          if (param == null) {
-            throw "Model required";
-          }
-          return DeliveryManAdding(id: int.parse(param));
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DeliveryManAdding(id: int.parse(param!)),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
         },
       ),
       GoRoute(path: home(), builder: _homePageRouteBuilder)

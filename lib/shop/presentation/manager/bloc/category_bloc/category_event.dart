@@ -20,7 +20,9 @@ class GetCategoryPaginatedEvent extends CategoryEvent {
 }
 
 class GetSubCategoryPaginatedEvent extends CategoryEvent {
-  GetSubCategoryPaginatedEvent();
+  final BuildContext context;
+  final CategoryRequestModel request;
+  GetSubCategoryPaginatedEvent({required this.context, required this.request});
 }
 
 class CategorySearchEvent extends CategoryEvent {
@@ -33,9 +35,12 @@ class AddCategoryEvent extends CategoryEvent {
   final String name;
   final String filePath;
   final BuildContext context;
-
+  final int? parentId;
   AddCategoryEvent(
-      {required this.name, required this.filePath, required this.context});
+      {required this.name,
+      required this.filePath,
+      required this.context,
+      this.parentId});
 }
 
 class GetSubCategoryEvent extends CategoryEvent {
@@ -59,10 +64,11 @@ class DeleteCategoryEvent extends CategoryEvent {
 }
 
 class RefreshPageEvent extends CategoryEvent {}
-class ChangeCategoryEvent extends CategoryEvent{
+
+class ChangeCategoryEvent extends CategoryEvent {
   final BuildContext context;
   final int id;
   final bool status;
 
-  ChangeCategoryEvent(this.context, this.id,this.status);
+  ChangeCategoryEvent(this.context, this.id, this.status);
 }

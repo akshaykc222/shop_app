@@ -24,7 +24,7 @@ class DeliverManDataSourceImpl extends DeliveryManDataSource {
   Future<DeliverymanList> deliverymanList(
       DeliveryManListRequest request) async {
     final data = await apiProvider.get(
-        "${AppRemoteRoutes.deliveryMan}/list?r=${request.query}&date_sort=${request.dateSort}&page_no=${request.page}");
+        "${AppRemoteRoutes.deliveryMan}/list?q=${request.query}&date_sort=${request.dateSort}&page_no=${request.page}");
     return DeliverymanList.fromJson(data);
   }
 

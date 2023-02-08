@@ -95,7 +95,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   Future<ProductResponse> getProducts(
       {String? searchKey, required int page}) async {
     final data = await apiProvider.get(
-        "${AppRemoteRoutes.products}store_id=${getUserData().storeId}&page_no=$page&tags&q=${searchKey ?? ""}");
+        "${AppRemoteRoutes.products}store_id=${(await getUserData()).storeId}&page_no=$page&tags&q=${searchKey ?? ""}");
     final products = ProductResponse.fromJson(data);
     hiveService.addBoxes<ProductModel>(
         products.products.products, LocalStorageNames.products);
@@ -124,6 +124,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<String> addCategory(CategoryRequestModel model) async {
+    prettyPrint("ADDING CAT JSON ${await model.toJson()}");
     final data = await apiProvider.post(AppRemoteRoutes.addCategory, {},
         formBody: FormData.fromMap(await model.toJson()));
     return data.toString();
@@ -198,7 +199,6 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     final data =
         await apiProvider.post(AppRemoteRoutes.orders, request.toJson());
 
-    prettyPrint("data orders : # $data");
     final order = OrderListModel.fromJson(data);
     hiveService.addBoxes(order.orders.orders, LocalStorageNames.orders);
     hiveService.addBoxes(order.statuses, LocalStorageNames.status);

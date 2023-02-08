@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/products/category/category_list.dart';
@@ -9,7 +8,6 @@ import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
-import '../../../../routes/app_pages.dart';
 import '../../../../widgets/custom_app_bar.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -77,8 +75,8 @@ class _ProductScreenState extends State<ProductScreen>
         .animate(CurvedAnimation(
             parent: expandingAnimationController, curve: Curves.easeIn));
     colorAnimation =
-        ColorTween(begin: AppColors.primaryColor, end: AppColors.white).animate(
-            CurvedAnimation(
+        ColorTween(begin: AppColors.primaryColor, end: AppColors.offWhite1)
+            .animate(CurvedAnimation(
                 parent: expandingAnimationController, curve: Curves.easeIn));
 
     super.didChangeDependencies();
@@ -96,7 +94,7 @@ class _ProductScreenState extends State<ProductScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.offWhite1,
       appBar: PreferredSize(
         preferredSize: Size(MediaQuery.of(context).size.width, 70),
         child: AnimatedBuilder(
@@ -118,18 +116,19 @@ class _ProductScreenState extends State<ProductScreen>
                                           ? Container()
                                           : GestureDetector(
                                               onTap: (() {
-                                                GoRouter.of(context).pushNamed(
-                                                    AppPages.reOrder);
+                                                // GoRouter.of(context).pushNamed(
+                                                //     AppPages.reOrder);
                                               }),
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 30.0),
-                                                child: Image.asset(
-                                                  AppAssets.reorder,
-                                                  width: 20,
-                                                  height: 20,
-                                                ),
-                                              ),
+                                              child: const SizedBox(),
+                                              // child: Padding(
+                                              //   padding: const EdgeInsets.only(
+                                              //       left: 30.0),
+                                              //   child: Image.asset(
+                                              //     AppAssets.reorder,
+                                              //     width: 20,
+                                              //     height: 20,
+                                              //   ),
+                                              // ),
                                             ),
                                     ),
                                     Expanded(

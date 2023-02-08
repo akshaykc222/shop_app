@@ -67,7 +67,7 @@ class ProductAddingRequest {
       "discount_type": discountType,
       "stock": stock,
       "unit_id": unitId,
-      "store_id": getUserData().storeId,
+      "store_id": (await getUserData()).storeId,
       "description": description,
     };
     print(re);

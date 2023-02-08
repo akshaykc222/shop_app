@@ -12,7 +12,8 @@ class CategoryEntity extends Equatable {
       required this.updatedAt,
       required this.priority,
       required this.moduleId,
-      required this.productCount});
+      required this.productCount,
+      required this.subCatCount});
 
   String id;
   String name;
@@ -25,6 +26,8 @@ class CategoryEntity extends Equatable {
   int priority;
   int moduleId;
   int? productCount;
+  int? subCatCount;
+
   @override
   List<Object?> get props => [id, name];
   Map<String, dynamic> toJson() => {

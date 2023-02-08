@@ -6,6 +6,7 @@ import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
+import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
 import '../../../../domain/use_cases/add_category_use_case.dart';
@@ -73,7 +74,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoadingState());
       try {
         await addCategoryUseCase
-            .call(CategoryRequestModel(name: event.name, image: event.filePath))
+            .call(CategoryRequestModel(
+                name: event.name,
+                image: event.filePath,
+                parentId: event.parentId))
             .then((value) {
           add(GetCategoryEvent());
           GoRouter.of(event.context).pop();
@@ -106,8 +110,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     });
     on<GetCategoryPaginatedEvent>((event, emit) async {
       emit(CategoryLoadingMoreState());
-      currentPage = currentPage + 1;
-      if (currentPage != totalPage) {
+      // currentPage = currentPage + 1;
+      if (currentPage <= totalPage) {
         var data = await getCategory();
         totalPage = data?.totalPages ?? 1;
       } else {
@@ -118,6 +122,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<GetSubCategoryEvent>((event, emit) async {
       emit(CategoryLoadingState());
       try {
+        subCategoryList.clear();
         var data = await getSubCategoriesUseCase.call(event.request);
         for (var element in data.categories) {
           prettyPrint("\n ========== ${element.id}===========");
@@ -137,8 +142,31 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         emit(CategoryErrorState(e.toString()));
       }
     });
-    on<GetSubCategoryPaginatedEvent>((event, emit) {
-      emit(CategoryLoadingMoreState());
+    on<GetSubCategoryPaginatedEvent>((event, emit) async {
+      try {
+        if (event.request.page == null) {
+          event.request.page = 2;
+        } else {
+          event.request.page = (event.request.page!) + 1;
+        }
+        var data = await getSubCategoriesUseCase.call(event.request);
+        for (var element in data.categories) {
+          prettyPrint("\n ========== ${element.id}===========");
+          if (!subCategoryList.contains(element)) {
+            prettyPrint("adding to subcategory");
+            subCategoryList.add(element);
+          } else {
+            prettyPrint("else case wrking");
+          }
+        }
+        emit(CategoryLoadCompletedState());
+      } on UnauthorisedException {
+        // emit(CategoryErrorState("something went wrong"));
+        handleUnAuthorizedError(event.context);
+      } catch (e) {
+        // handleError(event.context, e.toString());
+        emit(CategoryErrorState(e.toString()));
+      }
     });
     on<DeleteCategoryEvent>((event, emit) async {
       emit(CategoryLoadingState());
@@ -174,6 +202,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
   List<CategoryEntity> categoryList = [];
   List<CategoryEntity> subCategoryList = [];
+  String selectedChoice = AppStrings.yes;
+//parent category name
+  var categoryController = TextEditingController();
+  changeSelectedChoice(String val) {
+    selectedChoice = val;
+    add(RefreshPageEvent());
+  }
 
   int totalPage = 1;
   int totalSubPage = 1;
@@ -209,10 +244,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   getPaginatedResponse() {
     currentPage = currentPage + 1;
-    if (currentPage < totalPage) {
+    if (currentPage <= totalPage) {
       add(GetCategoryPaginatedEvent());
     } else {
-      currentPage = totalPage;
+      // currentPage = totalPage;
       add(RefreshPageEvent());
     }
   }
@@ -235,6 +270,23 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   updateForEditing(CategoryEntity entity) {
-    categoryNameController.text = entity.name;
+    selectedChoice = entity.parentId == 0 ? AppStrings.yes : AppStrings.no;
+    if (entity.parentId != 0) {
+      categoryNameController.text = entity.name;
+      changeSelectedCategory(entity);
+    } else {
+      categoryNameController.text = entity.name;
+      selectedParentCat = null;
+    }
+  }
+
+  CategoryEntity? selectedParentCat;
+  //changing selected parent category
+  changeSelectedCategory(CategoryEntity? cat) {
+    selectedParentCat = cat;
+    if (cat != null) {
+      categoryController.text = cat.name;
+      add(RefreshPageEvent());
+    }
   }
 }

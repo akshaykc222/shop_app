@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/data/models/requests/change_account_detail_model.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -32,6 +33,106 @@ class _ProfileViewState extends State<ProfileView> {
     super.initState();
   }
 
+  deleteAlert() {
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        builder: (context) => Container(
+              height: 280,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      spacer10,
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Image.asset(
+                          AppAssets.deleteGif,
+                          width: 80,
+                          height: 80,
+                        ),
+                      ),
+                      spacer10,
+                      const Text(
+                        "Close Your Account",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const Text(
+                        "Please note that account closure is a permanent action, and once your account is closed, it will no longer be available to you and cannot be restored.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      ),
+                      spacer10,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                  shape: const RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.red)),
+                                  foregroundColor: Colors.black),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(AppStrings.cancel),
+                            )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                                child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red),
+                              onPressed: () {},
+                              child: const Text(AppStrings.confirm),
+                            )),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  // Positioned(
+                  //     top: 10,
+                  //     right: 10,
+                  //     child: InkWell(
+                  //       onTap: () {
+                  //         Navigator.pop(context);
+                  //       },
+                  //       child: Container(
+                  //         width: 30,
+                  //         height: 30,
+                  //         // padding: const EdgeInsets.all(10),
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.grey.shade400,
+                  //           shape: BoxShape.circle,
+                  //         ),
+                  //         child: const Center(
+                  //           child: Icon(
+                  //             Icons.close,
+                  //             size: 20,
+                  //             color: Colors.black,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ))
+                ],
+              ),
+            ));
+  }
+
   Widget sideCard(
       {required String title,
       required String image,
@@ -41,7 +142,7 @@ class _ProfileViewState extends State<ProfileView> {
       onTap: () => onTap(),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
@@ -50,7 +151,7 @@ class _ProfileViewState extends State<ProfileView> {
           children: [
             Image.asset(
               image,
-              width: 25,
+              width: 29,
               height: 29,
               fit: BoxFit.fill,
             ),
@@ -253,9 +354,10 @@ class _ProfileViewState extends State<ProfileView> {
               const Expanded(flex: 1, child: SizedBox()),
               Expanded(
                   flex: 3,
-                  child: Center(
+                  child: TextButton(
+                    onPressed: () {},
                     child: Text(
-                      AppStrings.profile,
+                      AppStrings.companyProfile,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   )),
@@ -306,10 +408,13 @@ class _ProfileViewState extends State<ProfileView> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              GestureDetector(
+                              InkWell(
                                 onTap: () => showModalBottomSheet(
                                     context: context,
                                     isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                     builder: (context) => Padding(
                                           padding: EdgeInsets.only(
                                               bottom: MediaQuery.of(context)
@@ -324,8 +429,8 @@ class _ProfileViewState extends State<ProfileView> {
                                         )),
                                 child: Image.asset(
                                   AppAssets.edit,
-                                  width: 13,
-                                  height: 13,
+                                  width: 15,
+                                  height: 15,
                                   color: AppColors.skyBlue,
                                   fit: BoxFit.fill,
                                 ),
@@ -357,15 +462,9 @@ class _ProfileViewState extends State<ProfileView> {
                                 vertical: 34, horizontal: 30),
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             decoration: BoxDecoration(
-                                color: AppColors.cardLightGrey,
-                                borderRadius: BorderRadius.circular(19),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.shade400,
-                                    offset: const Offset(0.0, 1.0),
-                                    blurRadius: 2.0,
-                                  ),
-                                ]),
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(19),
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -384,15 +483,15 @@ class _ProfileViewState extends State<ProfileView> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: const [
+                                      children: [
                                         Text(
-                                          "20",
-                                          style: TextStyle(
+                                          state.data.orderCount,
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 15,
                                               color: AppColors.skyBlue),
                                         ),
-                                        Text(
+                                        const Text(
                                           AppStrings.orders,
                                           style:
                                               TextStyle(color: AppColors.black),
@@ -415,15 +514,36 @@ class _ProfileViewState extends State<ProfileView> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          "324 AED",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15,
-                                              color: AppColors.skyBlue),
-                                        ),
-                                        Text(
+                                      children: [
+                                        FutureBuilder(
+                                            future: getUserData(),
+                                            builder: (context, snap) {
+                                              if (snap.hasData) {
+                                                var d =
+                                                    snap.data as UserDataShort;
+                                                bool isLeft = snap.data
+                                                        ?.currency.position ==
+                                                    "left";
+                                                return Text(
+                                                  "${isLeft ? d.currency.symbol : ""} ${state.data.totalRevenue.toStringAsFixed(2)} ${!isLeft ? d.currency.symbol : ""}",
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 15,
+                                                      color: AppColors.skyBlue),
+                                                );
+                                              } else {
+                                                return Text(
+                                                  "${state.data.totalRevenue.toStringAsFixed(2)} ",
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 15,
+                                                      color: AppColors.skyBlue),
+                                                );
+                                              }
+                                            }),
+                                        const Text(
                                           AppStrings.revenue,
                                           style:
                                               TextStyle(color: AppColors.black),
@@ -442,19 +562,31 @@ class _ProfileViewState extends State<ProfileView> {
                               onTap: () {
                                 showModalBottomSheet(
                                     context: context,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                     isScrollControlled: true,
                                     builder: (context) => Padding(
                                           padding: EdgeInsets.only(
                                               bottom: MediaQuery.of(context)
                                                   .viewInsets
                                                   .bottom),
-                                          child: ChangePassword(),
+                                          child: const ChangePassword(),
                                         ));
                               }),
 
                           sideCard(
                               title: AppStrings.contactUs,
                               image: AppAssets.contactUs,
+                              onTap: () {}),
+
+                          sideCard(
+                              title: AppStrings.privacyPolicy,
+                              image: AppAssets.privacy,
+                              onTap: () {}),
+                          sideCard(
+                              title: AppStrings.terms,
+                              image: AppAssets.terms,
                               onTap: () {}),
                           sideCard(
                               title: AppStrings.logOut,
@@ -466,7 +598,10 @@ class _ProfileViewState extends State<ProfileView> {
                           sideCard(
                               title: AppStrings.deleteAccount,
                               image: AppAssets.delete,
-                              onTap: () {}),
+                              onTap: () {
+                                deleteAlert();
+                              }),
+                          spacer20
                         ],
                       )
                     : const SizedBox();
@@ -499,69 +634,121 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: SizedBox(
-          height: 250,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
+    return Stack(
+      children: [
+        Form(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: SizedBox(
+              height: 450,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  spacer20,
-                  const Text(
-                    AppStrings.changePassword,
-                    style: TextStyle(fontSize: 18, color: AppColors.black),
+                  Row(
+                    children: [
+                      spacer20,
+                      const Text(
+                        AppStrings.changePassword,
+                        style: TextStyle(fontSize: 18, color: AppColors.black),
+                      ),
+                    ],
                   ),
+                  spacer10,
+                  CommonTextField(
+                    title: AppStrings.currentPassword,
+                    passwordField: true,
+                    validator: (val) {
+                      if (val.length < 6) {
+                        return "Enter a Password length greater than 6 characters.";
+                      }
+                    },
+                    controller: loginBloc.passwordController,
+                  ),
+                  spacer10,
+                  CommonTextField(
+                    title: AppStrings.newPassword,
+                    validator: (val) {
+                      if (val.length < 6) {
+                        return "Enter a Password length greater than 6 characters.";
+                      }
+                    },
+                    controller: loginBloc.passwordController,
+                  ),
+                  spacer10,
+                  CommonTextField(
+                    title: AppStrings.retypeNewPassword,
+                    passwordField: true,
+                    validator: (val) {
+                      if (val.length < 6) {
+                        return "Enter a Password length greater than 6 characters.";
+                      }
+                    },
+                    controller: loginBloc.passwordController,
+                  ),
+                  spacer10,
+                  SizedBox(
+                    width: 300,
+                    height: 50,
+                    child: BlocBuilder<LoginBloc, LoginState>(
+                      builder: (context, state) {
+                        if (state is ChangePasswordState) {
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Password updated.")));
+                          });
+                          loginBloc.add(GetAccountDetailEvent(context));
+                          Navigator.pop(context);
+                        }
+                        return state is LoginLoadingState
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ElevatedButton(
+                                onPressed: () {
+                                  if (formKey.currentState!.validate()) {
+                                    loginBloc.add(ChangePasswordEvent(context,
+                                        loginBloc.passwordController.text));
+                                  }
+
+                                  // Navigator.pop(context);
+                                },
+                                child: const Text(AppStrings.changePassword));
+                      },
+                    ),
+                  )
                 ],
               ),
-              spacer10,
-              CommonTextField(
-                title: AppStrings.changePassword,
-                validator: (val) {
-                  if (val.length < 6) {
-                    return "Enter a Password length greater than 6 characters.";
-                  }
-                },
-                controller: loginBloc.passwordController,
-              ),
-              spacer10,
-              SizedBox(
-                width: 300,
-                height: 50,
-                child: BlocBuilder<LoginBloc, LoginState>(
-                  builder: (context, state) {
-                    if (state is ChangePasswordState) {
-                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Password updated.")));
-                      });
-                      loginBloc.add(GetAccountDetailEvent(context));
-                      Navigator.pop(context);
-                    }
-                    return state is LoginLoadingState
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : ElevatedButton(
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                loginBloc.add(ChangePasswordEvent(context,
-                                    loginBloc.passwordController.text));
-                              }
-
-                              // Navigator.pop(context);
-                            },
-                            child: const Text(AppStrings.changePassword));
-                  },
-                ),
-              )
-            ],
+            ),
           ),
         ),
-      ),
+        Positioned(
+            top: 10,
+            right: 10,
+            child: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: 30,
+                height: 30,
+                // padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ))
+      ],
     );
   }
 }
@@ -594,195 +781,234 @@ class _EditAccountDetailState extends State<EditAccountDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: [
-          Row(
-            children: const [
-              Text(
-                AppStrings.update,
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600),
-              )
+    return Stack(
+      children: [
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
+          child: Column(
+            children: [
+              Row(
+                children: const [
+                  Text(
+                    AppStrings.updateCompanyProfile,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w500),
+                  )
+                ],
+              ),
+              spacer10,
+              GestureDetector(
+                onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                          child: SizedBox(
+                            height: 170,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(AppStrings.uploadProductImage,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.bold)),
+                                    IconButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        icon: const Icon(
+                                          Icons.close,
+                                          size: 25,
+                                        ))
+                                  ],
+                                ),
+                                spacer20,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: GestureDetector(
+                                            onTap: () async {
+                                              final ImagePicker _picker =
+                                                  ImagePicker();
+                                              // Pick an image
+                                              // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                              // Capture a photo
+                                              final XFile? photo =
+                                                  await _picker.pickImage(
+                                                      source:
+                                                          ImageSource.camera);
+                                              if (photo != null) {
+                                                imagePickerResult.value =
+                                                    photo.path ?? "";
+                                                controller.image =
+                                                    photo.path ?? "";
+                                                imagePickerResult
+                                                    .notifyListeners();
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                            child: Column(
+                                              children: [
+                                                const Icon(
+                                                  Icons.camera_alt_outlined,
+                                                  size: 50,
+                                                ),
+                                                spacer5,
+                                                const Text(AppStrings.camara)
+                                              ],
+                                            ))),
+                                    Expanded(
+                                        child: GestureDetector(
+                                            onTap: () async {
+                                              final ImagePicker _picker =
+                                                  ImagePicker();
+                                              // Pick an image
+                                              // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                              // Capture a photo
+                                              final XFile? photo =
+                                                  await _picker.pickImage(
+                                                      source:
+                                                          ImageSource.gallery);
+                                              if (photo != null) {
+                                                imagePickerResult.value =
+                                                    photo.path ?? "";
+                                                controller.image =
+                                                    photo.path ?? "";
+                                                imagePickerResult
+                                                    .notifyListeners();
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                            child: Column(
+                                              children: [
+                                                const Icon(
+                                                  Icons.image_outlined,
+                                                  size: 50,
+                                                ),
+                                                spacer5,
+                                                const Text(AppStrings.gallery)
+                                              ],
+                                            ))),
+                                  ],
+                                ),
+                                spacer20,
+                              ],
+                            ),
+                          ),
+                        )),
+                child: ValueListenableBuilder(
+                    valueListenable: imagePickerResult,
+                    builder: (context, data, child) {
+                      return Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: imagePickerResult.value != ""
+                                ? DecorationImage(
+                                    image: FileImage(
+                                        File(imagePickerResult.value)))
+                                : DecorationImage(
+                                    image: NetworkImage(widget.entity.logo))),
+                        child: Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                                width: 25,
+                                height: 25,
+                                decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.skyBlue),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ))),
+                      );
+                    }),
+              ),
+              spacer5,
+              CommonTextField(
+                title: AppStrings.companyName,
+                controller: nameController,
+              ),
+              spacer5,
+              CommonTextField(
+                title: AppStrings.email,
+                controller: emailController,
+              ),
+              spacer5,
+              CommonTextField(
+                title: AppStrings.phoneNumber,
+                controller: phoneController,
+              ),
+              spacer5,
+              CommonTextField(
+                title: AppStrings.address,
+                lines: 5,
+                controller: addressController,
+              ),
+              spacer5,
+              SizedBox(
+                  width: 300,
+                  height: 50,
+                  child: BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                      return state is LoginLoadingState
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                controller.add(ChangeAccountDetailsEvent(
+                                    ChangeAccountDetailsModel(
+                                        name: nameController.text,
+                                        phone: phoneController.text,
+                                        email: emailController.text,
+                                        address: addressController.text,
+                                        logo: controller.image),
+                                    context));
+                              },
+                              child: const Text(AppStrings.update));
+                    },
+                  ))
             ],
           ),
-          GestureDetector(
-            onTap: () => showDialog(
-                context: context,
-                builder: (context) => Dialog(
-                      child: SizedBox(
-                        height: 160,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(AppStrings.uploadProductImage,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold)),
-                                IconButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    icon: const Icon(
-                                      Icons.close,
-                                      size: 25,
-                                    ))
-                              ],
-                            ),
-                            spacer20,
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: GestureDetector(
-                                        onTap: () async {
-                                          final ImagePicker _picker =
-                                              ImagePicker();
-                                          // Pick an image
-                                          // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                          // Capture a photo
-                                          final XFile? photo =
-                                              await _picker.pickImage(
-                                                  source: ImageSource.camera);
-                                          if (photo != null) {
-                                            imagePickerResult.value =
-                                                photo.path ?? "";
-                                            controller.image = photo.path ?? "";
-                                            imagePickerResult.notifyListeners();
-                                          }
-                                          Navigator.pop(context);
-                                        },
-                                        child: Column(
-                                          children: [
-                                            const Icon(
-                                              Icons.camera_alt_outlined,
-                                              size: 50,
-                                            ),
-                                            spacer5,
-                                            const Text(AppStrings.camara)
-                                          ],
-                                        ))),
-                                Expanded(
-                                    child: GestureDetector(
-                                        onTap: () async {
-                                          final ImagePicker _picker =
-                                              ImagePicker();
-                                          // Pick an image
-                                          // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                          // Capture a photo
-                                          final XFile? photo =
-                                              await _picker.pickImage(
-                                                  source: ImageSource.gallery);
-                                          if (photo != null) {
-                                            imagePickerResult.value =
-                                                photo.path ?? "";
-                                            controller.image = photo.path ?? "";
-                                            imagePickerResult.notifyListeners();
-                                          }
-                                          Navigator.pop(context);
-                                        },
-                                        child: Column(
-                                          children: [
-                                            const Icon(
-                                              Icons.image_outlined,
-                                              size: 50,
-                                            ),
-                                            spacer5,
-                                            const Text(AppStrings.gallery)
-                                          ],
-                                        ))),
-                              ],
-                            ),
-                            // spacer20,
-                          ],
-                        ),
-                      ),
-                    )),
-            child: ValueListenableBuilder(
-                valueListenable: imagePickerResult,
-                builder: (context, data, child) {
-                  return Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: imagePickerResult.value != ""
-                            ? DecorationImage(
-                                image: FileImage(File(imagePickerResult.value)))
-                            : DecorationImage(
-                                image: NetworkImage(widget.entity.logo))),
-                    child: Align(
-                        alignment: Alignment.topRight,
-                        child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.skyBlue),
-                            child: const Center(
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                            ))),
-                  );
-                }),
-          ),
-          spacer5,
-          CommonTextField(
-            title: AppStrings.companyName,
-            controller: nameController,
-          ),
-          spacer5,
-          CommonTextField(
-            title: AppStrings.email,
-            controller: emailController,
-          ),
-          spacer5,
-          CommonTextField(
-            title: AppStrings.phoneNumber,
-            controller: phoneController,
-          ),
-          spacer5,
-          CommonTextField(
-            title: AppStrings.address,
-            lines: 5,
-            controller: addressController,
-          ),
-          spacer5,
-          SizedBox(
-              width: 300,
-              height: 50,
-              child: BlocBuilder<LoginBloc, LoginState>(
-                builder: (context, state) {
-                  return state is LoginLoadingState
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ElevatedButton(
-                          onPressed: () {
-                            controller.add(ChangeAccountDetailsEvent(
-                                ChangeAccountDetailsModel(
-                                    name: nameController.text,
-                                    phone: phoneController.text,
-                                    email: emailController.text,
-                                    address: addressController.text,
-                                    logo: controller.image),
-                                context));
-                          },
-                          child: const Text(AppStrings.update));
-                },
-              ))
-        ],
-      ),
+        ),
+        Positioned(
+            top: 10,
+            right: 10,
+            child: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: 30,
+                height: 30,
+                // padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ))
+      ],
     );
   }
 }

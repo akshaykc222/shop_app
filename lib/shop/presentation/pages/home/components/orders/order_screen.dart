@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/shop/domain/entities/order_entity_request.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
@@ -220,7 +219,7 @@ class _OrderScreenState extends State<OrderScreen>
             },
           ),
         ),
-        backgroundColor: AppColors.white,
+        // backgroundColor: AppColors.white,
         body: Column(
           children: [
             spacer20,
@@ -372,32 +371,32 @@ class _OrderScreenState extends State<OrderScreen>
                               AppStrings.youDonnHaveOrders,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Text(
-                                AppStrings.shareYourStoreLink,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.65,
-                              height: 50,
-                              child: OutlinedButton(
-                                  onPressed: () {
-                                    Share.share('hi',
-                                        subject: 'Look what I made!');
-                                  },
-                                  child: const Text(
-                                    AppStrings.shareYourStore,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                            ),
-                            spacer20,
+                            // const SizedBox(
+                            //   height: 2,
+                            // ),
+                            // Padding(
+                            //   padding:
+                            //       const EdgeInsets.symmetric(horizontal: 20.0),
+                            //   child: Text(
+                            //     AppStrings.shareYourStoreLink,
+                            //     textAlign: TextAlign.center,
+                            //     style: Theme.of(context).textTheme.bodySmall,
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   width: MediaQuery.of(context).size.width * 0.65,
+                            //   height: 50,
+                            //   child: OutlinedButton(
+                            //       onPressed: () {
+                            //         Share.share('hi',
+                            //             subject: 'Look what I made!');
+                            //       },
+                            //       child: const Text(
+                            //         AppStrings.shareYourStore,
+                            //         style: TextStyle(fontSize: 18),
+                            //       )),
+                            // ),
+                            // spacer20,
                             const Spacer(),
                           ],
                         ),
@@ -443,7 +442,7 @@ class OrderListCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: AppColors.offWhite1,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(

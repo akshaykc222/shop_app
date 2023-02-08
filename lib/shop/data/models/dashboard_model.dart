@@ -47,24 +47,25 @@ class Data {
 }
 
 class StatusCount {
-  StatusCount({
-    required this.confirmedOrders,
-    required this.processingOrders,
-    required this.readyOrders,
-    required this.onthewayOrders,
-  });
+  StatusCount(
+      {required this.confirmedOrders,
+      required this.processingOrders,
+      required this.readyOrders,
+      required this.onthewayOrders,
+      required this.canceledOrders});
 
   int confirmedOrders;
   int processingOrders;
   int readyOrders;
   int onthewayOrders;
+  int canceledOrders;
 
   factory StatusCount.fromJson(Map<String, dynamic> json) => StatusCount(
-        confirmedOrders: json["confirmed_orders"],
-        processingOrders: json["processing_orders"],
-        readyOrders: json["ready_orders"],
-        onthewayOrders: json["ontheway_orders"],
-      );
+      confirmedOrders: json["confirmed_orders"],
+      processingOrders: json["processing_orders"],
+      readyOrders: json["ready_orders"],
+      onthewayOrders: json["ontheway_orders"],
+      canceledOrders: json["canceled_orders"]);
 
   Map<String, dynamic> toJson() => {
         "confirmed_orders": confirmedOrders,
@@ -75,21 +76,22 @@ class StatusCount {
 }
 
 class TopDeliveryMan {
-  TopDeliveryMan({
-    required this.id,
-    required this.name,
-    required this.ordersCount,
-  });
+  TopDeliveryMan(
+      {required this.id,
+      required this.name,
+      required this.ordersCount,
+      required this.image});
 
   int id;
   String name;
   int ordersCount;
+  String image;
 
   factory TopDeliveryMan.fromJson(Map<String, dynamic> json) => TopDeliveryMan(
-        id: json["id"],
-        name: json["name"],
-        ordersCount: json["orders_count"],
-      );
+      id: json["id"],
+      name: json["name"],
+      ordersCount: json["orders_count"],
+      image: json["image"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -99,30 +101,31 @@ class TopDeliveryMan {
 }
 
 class TopSellingItem {
-  TopSellingItem({
-    required this.id,
-    required this.name,
-    required this.orderCount,
-    this.unitType,
-    required this.translations,
-    this.unit,
-  });
+  TopSellingItem(
+      {required this.id,
+      required this.name,
+      required this.orderCount,
+      this.unitType,
+      required this.translations,
+      this.unit,
+      required this.image});
 
   int id;
   String name;
   int orderCount;
   dynamic unitType;
   List<dynamic> translations;
+  String image;
   dynamic unit;
 
   factory TopSellingItem.fromJson(Map<String, dynamic> json) => TopSellingItem(
-        id: json["id"],
-        name: json["name"],
-        orderCount: json["order_count"],
-        unitType: json["unit_type"],
-        translations: List<dynamic>.from(json["translations"].map((x) => x)),
-        unit: json["unit"],
-      );
+      id: json["id"],
+      name: json["name"],
+      orderCount: json["order_count"],
+      unitType: json["unit_type"],
+      translations: List<dynamic>.from(json["translations"].map((x) => x)),
+      unit: json["unit"],
+      image: json["image"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,

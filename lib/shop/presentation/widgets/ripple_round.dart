@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/status_model.dart';
@@ -90,9 +91,9 @@ class MyCustomPainter extends CustomPainter {
 }
 
 Color? getColor(String status, List<StatusModel> statusList) {
-  var d = statusList.firstWhere(
+  var d = statusList.firstWhereOrNull(
       (element) => element.statusName?.toLowerCase() == status.toLowerCase());
-  String? colorCode = d.colorCode;
+  String? colorCode = d?.colorCode;
   if (colorCode == null) {
     return null;
   } else {

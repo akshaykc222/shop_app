@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/data/routes/app_remote_routes.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
@@ -130,6 +131,14 @@ class _ProductFormState extends State<ProductForm> {
                   height: MediaQuery.of(context).size.height * 0.8,
                   child: Column(
                     children: [
+                      Container(
+                        width: 150,
+                        height: 5,
+                        margin: const EdgeInsets.only(top: 2),
+                        decoration: BoxDecoration(
+                            color: AppColors.primaryColor,
+                            borderRadius: BorderRadius.circular(15)),
+                      ),
                       spacer20,
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -155,36 +164,56 @@ class _ProductFormState extends State<ProductForm> {
                         ],
                       ),
                       Expanded(
-                        child: ListView.builder(
-                            itemCount: cateBloc.categoryList.length + 1,
-                            shrinkWrap: true,
-                            controller: categoryScroll,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) =>
-                                cateBloc.categoryList.length == index
-                                    ? cateBloc.currentPage < cateBloc.totalPage
-                                        ? const ShimmerCategoryLoad()
-                                        : Container()
-                                    : CategoryListTile(
-                                        entity: cateBloc.categoryList[index],
-                                        edit: () {},
-                                        selectable: true,
-                                        select: () {
-                                          controller.changeSelectedCategory(
-                                              cateBloc.categoryList[index]);
-                                          cateBloc.add(GetSubCategoryEvent(
-                                              context: context,
-                                              request: CategoryRequestModel(
-                                                  name: cateBloc
-                                                      .categoryList[index].name,
-                                                  image: "",
-                                                  parentId: int.parse(cateBloc
-                                                      .categoryList[index]
-                                                      .id))));
-                                          Navigator.pop(context);
-                                        },
-                                        delete: () {},
-                                      )),
+                        child: BlocBuilder<CategoryBloc, CategoryState>(
+                          builder: (context, state) {
+                            return cateBloc.categoryList.isEmpty
+                                ? const Center(
+                                    child: Text("No Categories."),
+                                  )
+                                : ListView.builder(
+                                    itemCount: cateBloc.categoryList.length + 1,
+                                    shrinkWrap: true,
+                                    controller: categoryScroll,
+                                    physics: const BouncingScrollPhysics(),
+                                    itemBuilder: (context, index) => cateBloc
+                                                .categoryList.length ==
+                                            index
+                                        ? cateBloc.currentPage <
+                                                cateBloc.totalPage
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade300,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child:
+                                                    const ShimmerCategoryLoad())
+                                            : Container()
+                                        : CategoryListTile(
+                                            entity:
+                                                cateBloc.categoryList[index],
+                                            edit: () {},
+                                            selectable: true,
+                                            select: () {
+                                              controller.changeSelectedCategory(
+                                                  cateBloc.categoryList[index]);
+                                              cateBloc.add(GetSubCategoryEvent(
+                                                  context: context,
+                                                  request: CategoryRequestModel(
+                                                      name: cateBloc
+                                                          .categoryList[index]
+                                                          .name,
+                                                      image: "",
+                                                      parentId: int.parse(
+                                                          cateBloc
+                                                              .categoryList[
+                                                                  index]
+                                                              .id))));
+                                              FocusScope.of(context).unfocus();
+                                              Navigator.pop(context);
+                                            },
+                                            delete: () {},
+                                          ));
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -211,6 +240,14 @@ class _ProductFormState extends State<ProductForm> {
                   height: MediaQuery.of(context).size.height * 0.8,
                   child: Column(
                     children: [
+                      Container(
+                        width: 150,
+                        height: 5,
+                        margin: const EdgeInsets.only(top: 2),
+                        decoration: BoxDecoration(
+                            color: AppColors.primaryColor,
+                            borderRadius: BorderRadius.circular(15)),
+                      ),
                       spacer20,
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -235,28 +272,47 @@ class _ProductFormState extends State<ProductForm> {
                               ))
                         ],
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                            itemCount: cateBloc.subCategoryList.length + 1,
-                            shrinkWrap: true,
-                            controller: categoryScroll,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) =>
-                                cateBloc.subCategoryList.length == index
-                                    ? cateBloc.currentPage < cateBloc.totalPage
-                                        ? const ShimmerCategoryLoad()
-                                        : Container()
-                                    : CategoryListTile(
-                                        entity: cateBloc.subCategoryList[index],
-                                        edit: () {},
-                                        selectable: true,
-                                        select: () {
-                                          controller.changeSelectedSubCategory(
-                                              cateBloc.subCategoryList[index]);
-                                          Navigator.pop(context);
-                                        },
-                                        delete: () {},
-                                      )),
+                      BlocBuilder<CategoryBloc, CategoryState>(
+                        builder: (context, state) {
+                          return Expanded(
+                            child: cateBloc.subCategoryList.isEmpty
+                                ? const Center(
+                                    child: Text("No Subcategories"),
+                                  )
+                                : ListView.builder(
+                                    itemCount:
+                                        cateBloc.subCategoryList.length + 1,
+                                    shrinkWrap: true,
+                                    controller: categoryScroll,
+                                    physics: const BouncingScrollPhysics(),
+                                    itemBuilder: (context, index) => cateBloc
+                                                .subCategoryList.length ==
+                                            index
+                                        ? cateBloc.currentPage <
+                                                cateBloc.totalPage
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade300,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child:
+                                                    const ShimmerCategoryLoad())
+                                            : Container()
+                                        : CategoryListTile(
+                                            entity:
+                                                cateBloc.subCategoryList[index],
+                                            edit: () {},
+                                            selectable: true,
+                                            select: () {
+                                              controller
+                                                  .changeSelectedSubCategory(
+                                                      cateBloc.subCategoryList[
+                                                          index]);
+                                              Navigator.pop(context);
+                                            },
+                                            delete: () {},
+                                          )),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -510,7 +566,7 @@ class _ProductFormState extends State<ProductForm> {
                           child: Text(
                             AppStrings.tags,
                             style: TextStyle(
-                                color: AppColors.offWhiteTextColor,
+                                color: AppColors.black,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600),
                           ),
@@ -665,6 +721,7 @@ class _ProductFormState extends State<ProductForm> {
                       CommonTextField(
                         title: AppStrings.productDetails,
                         controller: controller.productDetailsController,
+                        lines: 4,
                       ),
                       spacer20,
                       // GestureDetector(
@@ -823,10 +880,12 @@ class TagCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 30,
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(9),
-          border: Border.all(color: AppColors.green)),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Row(
         children: [
           Padding(
@@ -836,13 +895,18 @@ class TagCard extends StatelessWidget {
               style: const TextStyle(color: AppColors.black),
             ),
           ),
-          GestureDetector(
-            onTap: () {},
-            child: const Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Icon(
-                Icons.close,
-                color: AppColors.black,
+          Container(
+            decoration: BoxDecoration(
+                color: AppColors.offWhite1,
+                borderRadius: BorderRadius.circular(15)),
+            child: GestureDetector(
+              onTap: () {},
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Icon(
+                  Icons.close,
+                  color: AppColors.red,
+                ),
               ),
             ),
           )

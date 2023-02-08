@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../themes/app_colors.dart';
-
 class MandatoryText extends StatelessWidget {
   final String title;
 
@@ -15,7 +13,8 @@ class MandatoryText extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-              color: AppColors.offWhiteTextColor,
+              //
+              color: Colors.black,
               fontSize: 15,
               fontWeight: FontWeight.w600),
         ),

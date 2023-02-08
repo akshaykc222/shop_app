@@ -65,13 +65,13 @@ class ProductModel extends Equatable {
   List<dynamic> attributes;
   List<dynamic> choiceOptions;
   @HiveField(6)
-  int? price;
+  double? price;
   @HiveField(7)
   int? tax;
   @HiveField(8)
   String? taxType;
   @HiveField(9)
-  int? discount;
+  double? discount;
   @HiveField(10)
   String? discountType;
   @HiveField(11)
@@ -131,10 +131,10 @@ class ProductModel extends Equatable {
         addOns: List<dynamic>.from(json["add_ons"].map((x) => x)),
         attributes: List<dynamic>.from(json["attributes"].map((x) => x)),
         choiceOptions: List<dynamic>.from(json["choice_options"].map((x) => x)),
-        price: json["price"],
+        price: json["price"].toDouble(),
         tax: json["tax"],
         taxType: json["tax_type"],
-        discount: json["discount"],
+        discount: json["discount"].toDouble(),
         discountType: json["discount_type"],
         availableTimeStarts: json["available_time_starts"],
         availableTimeEnds: json["available_time_ends"],

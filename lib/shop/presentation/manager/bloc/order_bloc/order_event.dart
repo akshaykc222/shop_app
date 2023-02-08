@@ -68,7 +68,9 @@ class AddOrderProductEvent extends OrderEvent {
 class ChangeOrderProductsEvent extends OrderEvent {
   final BuildContext context;
   final String orderId;
-  ChangeOrderProductsEvent(this.context, this.orderId);
+  final String editingReason;
+
+  ChangeOrderProductsEvent(this.context, this.orderId, this.editingReason);
 
   @override
   List<Object?> get props => [];

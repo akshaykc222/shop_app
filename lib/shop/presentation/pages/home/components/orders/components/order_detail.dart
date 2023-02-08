@@ -54,9 +54,6 @@ class _OrderDetailsState extends State<OrderDetails> {
     IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
     _port.listen((dynamic data) {
-      String id = data[0];
-      DownloadTaskStatus status = data[1];
-      int progress = data[2];
       setState(() {});
     });
 
@@ -172,16 +169,21 @@ class _OrderDetailsState extends State<OrderDetails> {
                         height: 70,
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
+                                disabledForegroundColor: Colors.white,
+                                disabledBackgroundColor: Colors.grey,
                                 backgroundColor: Colors.green,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(20)))),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) =>
-                                      AcceptOrder(ctx: _context));
-                            },
+                            onPressed: state.model.orderStatus.toLowerCase() ==
+                                    "confirmed".toLowerCase()
+                                ? null
+                                : () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) =>
+                                            AcceptOrder(ctx: _context));
+                                  },
                             child: const Text(
                               AppStrings.acceptOrder,
                               style: TextStyle(
@@ -277,15 +279,13 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     onTap: () async {
                                       var path =
                                           await getApplicationDocumentsDirectory();
-                                      final taskId =
-                                          await FlutterDownloader.enqueue(
+
+                                      await FlutterDownloader.enqueue(
                                         url: state.model.receiptUrl,
-                                        headers: {}, // optional: header send with url (auth token etc)
+                                        headers: {},
                                         savedDir: path.path,
-                                        showNotification:
-                                            true, // show download progress in status bar (for Android)
-                                        openFileFromNotification:
-                                            true, // click on notification to open downloaded file (for Android)
+                                        showNotification: true,
+                                        openFileFromNotification: true,
                                       );
                                     },
                                     child: Row(
@@ -351,30 +351,30 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
-                                    children: [
-                                      const Text(
+                                    children: const [
+                                      Text(
                                         AppStrings.delivery,
                                         style: TextStyle(
                                             color: AppColors.offWhiteTextColor,
                                             fontSize: 15),
                                       ),
-                                      const SizedBox(
+                                      SizedBox(
                                         width: 10,
                                       ),
-                                      Container(
-                                        width: 50,
-                                        height: 23,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.white,
-                                            border: Border.all(
-                                                color: AppColors.offWhite1,
-                                                width: 2),
-                                            borderRadius:
-                                                BorderRadius.circular(6)),
-                                        child: const Center(
-                                          child: Text("0"),
-                                        ),
-                                      )
+                                      // Container(
+                                      //   width: 50,
+                                      //   height: 23,
+                                      //   decoration: BoxDecoration(
+                                      //       color: AppColors.white,
+                                      //       border: Border.all(
+                                      //           color: AppColors.offWhite1,
+                                      //           width: 2),
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(6)),
+                                      //   child: const Center(
+                                      //     child: Text("0"),
+                                      //   ),
+                                      // )
                                     ],
                                   ),
                                   const Text(

@@ -6,13 +6,14 @@ class AppStrings {
   static const share = "Share";
   static const selectImage = "Select Image";
   static const customerList = "Customer List";
-  static const phoneNumber = "Phone number";
+  static const phoneNumber = "Phone Number";
   static const idType = "ID Type";
   static const idNo = "ID No";
   static const idNum = "Identity Number";
   static const search = "Search";
   static const tags = "Tags";
   static const update = "Update";
+  static const updateCompanyProfile = "Update Company Profile";
   static const backOnline = "Back Online.";
   static const reasonForAddingProduct = "Reason for adding product";
   static const noInternetConnection = "Please check your internet connection";
@@ -21,10 +22,12 @@ class AppStrings {
   static const add = "Add";
   static const totalOrdersSaved = "Total Orders Saved";
   static const addImage = "Add Image";
-  static const topDeliveryMan = "Top delivery man";
+  static const topDeliveryMan = "Top Delivery Man";
   static const profile = "Profile";
-  static const loginToYourStore = "Login in to your store";
+  static const companyProfile = "Company Profile";
+  static const loginToYourStore = "Log in to your store";
   static const login = "Login";
+  static const parentCatQuest = "Is This A Parent Category?";
   static const editQty = "Edit qty";
   static const mobileNumber = "Mobile Number";
   static const manageStore = "Manage Store";
@@ -35,10 +38,14 @@ class AppStrings {
   static const acceptOrder = "Accept Orders";
   static const details = "Details";
   static const changePassword = "Change Password";
-  static const contactUs = "Contact us";
+  static const currentPassword = "Current Password";
+  static const newPassword = "New Password";
+  static const retypeNewPassword = "Re-type New Password";
+  static const contactUs = "Contact Us";
   static const logOut = "Logout";
-  static const deleteAccount = "Delete account";
+  static const deleteAccount = "Delete Account";
   static const catalogue = "Catalogue";
+  static const cancel = "Cancel";
   static const shareYourStore = "Share your store";
   static const categories = "Categories";
   static const addProductDesc = "Add Product to your online store";
@@ -49,14 +56,19 @@ class AppStrings {
   static const createCategoryDescSub =
       "Showcase your products or service to the customers by creating beautiful categories";
 
-  static const addNewProduct = "Add new product";
-  static const addProduct = "Add product";
+  static const addNewProduct = "Add New Product";
+  static const addProduct = "Add Product";
+  static const parentCat = "Parent Category";
+  static const deleteHead = "Are you sure ?";
+  static const deleteMsg = "Are you sure ?";
+  static const yes = "Yes";
+  static const no = "No";
   static const requestConfirm = "Request confirmation";
-  static const editOrder = "Edit order";
+  static const editOrder = "Edit Order";
   static const editPrd = "Edit Products";
   static const edit = "Edit";
   static const editCategory = "Edit Category";
-  static const moveTop = "Move to top";
+  static const moveTop = "Move To Top";
   static const editFee = "Edit Fee";
   static const editQuantity = "Edit Quantity";
   static const editDeliveryCharge = "Edit delivery charge";
@@ -65,23 +77,27 @@ class AppStrings {
   static const placeOrders = "Place Orders";
   static const rejectOrder = "Reject Order";
   static const itemTotal = "Item Total";
-  static const delivery = "Delivery";
-  static const deliveryMan = "Delivery men";
-  static const newDeliveryMan = "New delivery men";
+  static const delivery = "Delivery Area";
+  static const deliveryMan = "Delivery Men";
+  static const newDeliveryMan = "New delivery Men";
   static const grandTotal = "Grand Total";
   static const addAnotherSize = "Add another size";
+  static const forgotPass = "Forgot your password?";
+  static const reasonForEditing = "Reason for editing";
   static const delete = "Delete";
   static const deleteCategory = "Delete Category";
-  static const productUnit = "Product Unit";
+  static const productUnit = "Total Stock";
   static const myCustomer = "My Customers";
 
-  static const piece = "Piece";
+  static const piece = "Unit";
   static const unit = "Unit";
 
-  static const productDetails = "Product Details";
+  static const productDetails = "Product Description";
   static const addVariant = "Add Variant";
   static const addTags = "Add Tags";
   static const price = "Price";
+  static const privacyPolicy = "Privacy Policy";
+  static const terms = "Terms & Conditions";
   static const sellingPrice = "Selling Price";
   static const discountPrice = "Discount Price";
   static const addNewCategory = "Add new category";
@@ -108,9 +124,9 @@ class AppStrings {
   static const String addColor = "Add color";
   static const String addAnotherColor = "Add another color";
 
-  static const String uploadProductImage = "Choose image";
+  static const String uploadProductImage = "Choose Image";
 
-  static const String camara = "Camara";
+  static const String camara = "Camera";
   static const String gallery = "Gallery";
   static const String goOnlineAfter = "Go online after";
   static const String allOrders = "All orders";
@@ -150,8 +166,7 @@ class AppStrings {
   static const String readyToDeliver = "Ready to deliver";
   static const String onTheWay = "On the way";
   static const String receipt = "Receipt";
-  static const String yes = "Yes";
-  static const String no = "No";
+
   static const String areYouSure = "Are you sure ?";
   static const String selectAction =
       "If you need to proceed with your action select 'Yes'.";

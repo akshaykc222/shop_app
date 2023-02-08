@@ -208,7 +208,7 @@ class CustomerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.cardLightGrey,
+      color: AppColors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
@@ -228,17 +228,14 @@ class CustomerCard extends StatelessWidget {
               ],
             ),
             spacer9,
-            model.address == null
-                ? const SizedBox()
-                : Row(
-                    children: [
-                      Text(
-                        model.address ?? "",
-                        style: const TextStyle(
-                            fontSize: 13, color: AppColors.black),
-                      )
-                    ],
-                  ),
+            Row(
+              children: [
+                Text(
+                  "Phone : ${model.phone}\nE-mail : ${model.email}",
+                  style: const TextStyle(fontSize: 13, color: AppColors.black),
+                )
+              ],
+            ),
             spacer20,
             Row(
               children: const [
@@ -255,12 +252,12 @@ class CustomerCard extends StatelessWidget {
                 ))
               ],
             ),
-            spacer10,
+            spacer5,
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    "${model.totalOrders} AED",
+                    "${model.totalOrders}",
                     style: const TextStyle(
                         color: AppColors.skyBlue,
                         fontSize: 19,

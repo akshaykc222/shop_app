@@ -77,7 +77,7 @@ class TagListScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                     color: controller.selectedTags.contains(e)
-                                        ? AppColors.green
+                                        ? AppColors.primaryColor
                                         : AppColors.lightGrey,
                                   )),
                               child: Padding(
@@ -87,8 +87,8 @@ class TagListScreen extends StatelessWidget {
                                   e.tagName,
                                   style: TextStyle(
                                       color: controller.selectedTags.contains(e)
-                                          ? AppColors.green
-                                          : AppColors.lightGrey),
+                                          ? AppColors.primaryColor
+                                          : AppColors.black),
                                 ),
                               ),
                             ),

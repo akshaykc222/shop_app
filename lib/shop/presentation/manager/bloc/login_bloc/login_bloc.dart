@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/core/response_classify.dart';
 import 'package:shop_app/core/usecase.dart';
@@ -42,10 +43,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         response = ResponseClassify<LoginResponse>.completed(await loginUseCase
             .call(email: event.email, password: event.password));
         emit(LoginDataFetchedState(response.data!));
+
         GetStorage storage = GetStorage();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(LocalStorageNames.token, response.data!.token);
         storage.write(LocalStorageNames.token, response.data!.token);
-        storage.write(
-            LocalStorageNames.userData, response.data!.userData.toJson());
+        await prefs.setString(LocalStorageNames.userData,
+            jsonEncode(response.data!.userData.toJson()));
         event.onSuccess();
       } on UnauthorisedException {
         Map<String, dynamic> data = jsonDecode(response.error ?? "{}");
@@ -110,10 +114,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   String image = "";
   bool showPassWord = false;
 
-  logOut(BuildContext context) {
-    GetStorage storage = GetStorage();
-    storage.remove('token');
-    storage.remove(LocalStorageNames.userData);
-    GoRouter.of(context).replaceNamed(AppPages.initial);
+  logOut(BuildContext context) async {
+    SharedPreferences.getInstance().then((value) {
+      value.clear();
+      GetStorage storage = GetStorage();
+      storage.remove(LocalStorageNames.token);
+      storage.remove(LocalStorageNames.userData);
+      GoRouter.of(context).replaceNamed(AppPages.login);
+    });
   }
 }

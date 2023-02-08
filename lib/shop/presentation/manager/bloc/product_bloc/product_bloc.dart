@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -51,24 +50,24 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<ProductFetchEvent>((event, emit) async {
       emit(ProductFetching());
-      try {
-        currentPage = 1;
-        final data = await productUseCase.call(ProductListRequest(
-          page: 1,
-        ));
-        lastPage = data.products.totalPages;
-        productList.clear();
-        productList.addAll(data.products.products);
+      // try {
+      currentPage = 1;
+      final data = await productUseCase.call(ProductListRequest(
+        page: 1,
+      ));
+      lastPage = data.products.totalPages;
+      productList.clear();
+      productList.addAll(data.products.products);
 
-        emit(ProductFetched(data.products.products, data.tags));
-      } on UnauthorisedException {
-        event.onUnAuthorized();
-        emit(ProductFetchError("UnAuthorized"));
-      } catch (e) {
-        prettyPrint(e.toString());
-
-        emit(ProductFetchError(e.toString()));
-      }
+      emit(ProductFetched(data.products.products, data.tags));
+      // } on UnauthorisedException {
+      //   event.onUnAuthorized();
+      //   emit(ProductFetchError("UnAuthorized"));
+      // } catch (e) {
+      //   prettyPrint(e.toString());
+      //
+      //   emit(ProductFetchError(e.toString()));
+      // }
     });
     on<ProductSearchEvent>((event, emit) async {
       emit(ProductFetching());
@@ -115,7 +114,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         selectedTags = data.tags ?? [];
         productNameController.text = data.name;
         priceController.text = data.price.toString();
-        discountPriceController.text = data.discount.toString();
+        discountPriceController.text =
+            ((data.price ?? 0.0) - (data.discount ?? 0.0)).toString();
         prettyPrint("product details ${data.categoryIds?.toJson().toString()}");
         categoryController.text = data.categoryIds?.category.name ?? "";
         selectedCategory = data.categoryIds?.category;
@@ -212,7 +212,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
             categoryId: int.parse(selectedCategory!.id),
             subCategoryId: int.parse(selectedSubCategory!.id),
             price: double.parse(priceController.text),
-            discount: double.parse(discountPriceController.text),
+            discount: double.parse(priceController.text) -
+                double.parse(discountPriceController.text),
             discountType: "amount",
             stock: int.parse(productUnitController.text),
             unitId: selectedUnitEntity?.id ?? 0,

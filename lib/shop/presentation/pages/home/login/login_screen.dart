@@ -9,6 +9,7 @@ import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/bottom_navigation_bar.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 
+import '../../../manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
 import '../../../themes/app_colors.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -19,6 +20,7 @@ class LoginScreen extends StatelessWidget {
     final controller = LoginBloc.get(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -170,6 +172,11 @@ class LoginScreen extends StatelessWidget {
                                     password:
                                         controller.passwordController.text,
                                     onSuccess: () {
+                                      controller.emailController.clear();
+                                      controller.passwordController.clear();
+                                      var reset =
+                                          BottomNavigationCubit.get(context);
+                                      reset.changeBottomNav(0);
                                       GoRouter.of(context).go(
                                           AppRouteManager.home(
                                               CustomBottomNavigationItems
@@ -195,52 +202,58 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   spacer20,
-                  Row(
-                    children: const [
-                      Expanded(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Divider(
-                          height: 1.5,
-                        ),
-                      )),
-                      Text(AppStrings.or),
-                      Expanded(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Divider(
-                          height: 1.5,
-                        ),
-                      )),
-                    ],
-                  ),
-                  spacer20,
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: 55,
-                    child: OutlinedButton(
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              AppAssets.google,
-                              width: 25,
-                              height: 25,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            const Text(
-                              "Continue with Email",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        )),
-                  )
+                  TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        AppStrings.forgotPass,
+                        style: TextStyle(color: AppColors.greyText),
+                      ))
+                  // Row(
+                  //   children: const [
+                  //     Expanded(
+                  //         child: Padding(
+                  //       padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  //       child: Divider(
+                  //         height: 1.5,
+                  //       ),
+                  //     )),
+                  //     Text(AppStrings.or),
+                  //     Expanded(
+                  //         child: Padding(
+                  //       padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  //       child: Divider(
+                  //         height: 1.5,
+                  //       ),
+                  //     )),
+                  //   ],
+                  // ),
+                  // spacer20,
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * 0.8,
+                  //   height: 55,
+                  //   child: OutlinedButton(
+                  //       onPressed: () {},
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: [
+                  //           Image.asset(
+                  //             AppAssets.google,
+                  //             width: 25,
+                  //             height: 25,
+                  //           ),
+                  //           const SizedBox(
+                  //             width: 10,
+                  //           ),
+                  //           const Text(
+                  //             "Continue with Email",
+                  //             style: TextStyle(
+                  //                 color: Colors.black,
+                  //                 fontSize: 18,
+                  //                 fontWeight: FontWeight.w400),
+                  //           )
+                  //         ],
+                  //       )),
+                  // )
                 ],
               ),
             ),
