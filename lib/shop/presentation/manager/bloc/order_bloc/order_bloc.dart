@@ -93,16 +93,16 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
     on<GetOrderDetailEvent>((event, emit) async {
       emit(OrderLoadingState());
-      try {
-        final data = await getOrderDetailUseCase.call(event.id);
-        model = data;
-        emit(OrderDetailsLoaded(data));
-      } on UnauthorisedException {
-        handleUnAuthorizedError(event.context);
-      } catch (e) {
-        handleError(
-            event.context, e.toString(), () => Navigator.pop(event.context));
-      }
+      // try {
+      final data = await getOrderDetailUseCase.call(event.id);
+      model = data;
+      emit(OrderDetailsLoaded(data));
+      // } on UnauthorisedException {
+      //   handleUnAuthorizedError(event.context);
+      // } catch (e) {
+      //   handleError(
+      //       event.context, e.toString(), () => Navigator.pop(event.context));
+      // }
     });
     on<AddOrderProductEvent>((event, emit) {
       emit(OrderDetailsLoaded(model!));

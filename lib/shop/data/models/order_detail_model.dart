@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:shop_app/shop/data/models/status_model.dart';
 
 class OrderDetailModel {
   OrderDetailModel({
@@ -17,7 +18,7 @@ class OrderDetailModel {
 
   int orderId;
   DateTime orderDatetime;
-  String orderStatus;
+  StatusModel orderStatus;
   String receiptUrl;
   int itemCount;
   List<OrderProductModel> productDetails;
@@ -31,7 +32,7 @@ class OrderDetailModel {
       OrderDetailModel(
         orderId: json["order_id"],
         orderDatetime: DateTime.parse(json["order_datetime"]),
-        orderStatus: json["order_status"],
+        orderStatus: StatusModel.fromJson(json["order_status"]),
         receiptUrl: json["reciept_url"],
         itemCount: json["item_count"],
         productDetails: List<OrderProductModel>.from(

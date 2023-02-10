@@ -104,88 +104,92 @@ class _DeliveryManListState extends State<DeliveryManList>
                             blurRadius: 4.0,
                           )
                         ]),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        showSearchNotifier.value
-                            ? Row(
-                                children: [
-                                  Expanded(
-                                      flex: 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 8.0, bottom: 8),
-                                        child: SizedBox(
-                                          height: 55,
-                                          child: TextFormField(
-                                            // enabled: false,
-                                            controller: deliveryManBloc
-                                                .searchTextController,
-                                            onFieldSubmitted: (val) {
-                                              deliveryManBloc.add(
-                                                  GetDeliveryManListEvent(
-                                                      context: context,
-                                                      sort: "desc",
-                                                      search: val));
-                                            },
-                                            textInputAction:
-                                                TextInputAction.search,
-                                            decoration: const InputDecoration(
-                                                hintText: "Search ... ",
-                                                border: UnderlineInputBorder()),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          showSearchNotifier.value
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                        flex: 3,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, bottom: 8),
+                                          child: SizedBox(
+                                            height: 55,
+                                            child: TextFormField(
+                                              // enabled: false,
+                                              controller: deliveryManBloc
+                                                  .searchTextController,
+                                              onFieldSubmitted: (val) {
+                                                deliveryManBloc.add(
+                                                    GetDeliveryManListEvent(
+                                                        context: context,
+                                                        sort: "desc",
+                                                        search: val));
+                                              },
+                                              textInputAction:
+                                                  TextInputAction.search,
+                                              decoration: const InputDecoration(
+                                                  hintText: "Search ... ",
+                                                  border:
+                                                      UnderlineInputBorder()),
+                                            ),
                                           ),
-                                        ),
-                                      )),
-                                  Expanded(
-                                      child: IconButton(
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () {
-                                      showSearchNotifier.value = false;
-                                      deliveryManBloc.searchTextController
-                                          .clear();
-                                      deliveryManBloc.add(
-                                          GetDeliveryManListEvent(
-                                              context: context, sort: "asc"));
-                                    },
-                                  ))
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                      flex: 1,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          context.pop();
-                                        },
-                                        icon: const Icon(Icons.arrow_back),
-                                      )),
-                                  Expanded(
-                                      flex: 3,
-                                      child: Center(
-                                        child: Text(
-                                          AppStrings.deliveryMan,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge,
-                                        ),
-                                      )),
-                                  Expanded(
-                                      flex: 1,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          showSearchNotifier.value = true;
-                                          // showSearchNotifier.notifyListeners();
-                                        },
-                                        icon: Image.asset(
-                                          AppAssets.search,
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                      ))
-                                ],
-                              ),
-                      ],
+                                        )),
+                                    Expanded(
+                                        child: IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () {
+                                        showSearchNotifier.value = false;
+                                        deliveryManBloc.searchTextController
+                                            .clear();
+                                        deliveryManBloc.add(
+                                            GetDeliveryManListEvent(
+                                                context: context, sort: "asc"));
+                                      },
+                                    ))
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                        flex: 1,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            context.pop();
+                                          },
+                                          icon: const Icon(Icons.arrow_back),
+                                        )),
+                                    Expanded(
+                                        flex: 3,
+                                        child: Center(
+                                          child: Text(
+                                            AppStrings.deliveryMan,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge,
+                                          ),
+                                        )),
+                                    Expanded(
+                                        flex: 1,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            showSearchNotifier.value = true;
+                                            // showSearchNotifier.notifyListeners();
+                                          },
+                                          icon: Image.asset(
+                                            AppAssets.search,
+                                            width: 20,
+                                            height: 20,
+                                          ),
+                                        ))
+                                  ],
+                                ),
+                        ],
+                      ),
                     ),
                   );
                 });
@@ -205,7 +209,7 @@ class _DeliveryManListState extends State<DeliveryManList>
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            spacer26,
+            spacer5,
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -217,15 +221,24 @@ class _DeliveryManListState extends State<DeliveryManList>
                 //       fontWeight: FontWeight.w600),
                 // ),
                 PopupMenuButton<int>(
-                    child: Row(
-                      children: const [
-                        Text(
-                          AppStrings.sort,
-                          style: TextStyle(
-                              fontSize: 15, color: AppColors.greyText),
-                        ),
-                        Icon(Icons.keyboard_arrow_down_rounded)
-                      ],
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: const [
+                          Text(
+                            AppStrings.sort,
+                            style:
+                                TextStyle(fontSize: 15, color: AppColors.black),
+                          ),
+                          Icon(Icons.keyboard_arrow_down_rounded)
+                        ],
+                      ),
                     ),
                     onSelected: (val) {
                       switch (val) {
@@ -249,7 +262,7 @@ class _DeliveryManListState extends State<DeliveryManList>
                         ]),
               ],
             ),
-            spacer24,
+            spacer5,
             Expanded(child: BlocBuilder<DeliveryManBloc, DeliveryManState>(
               builder: (context, state) {
                 if (state is DeliveryManLoading) {
@@ -295,112 +308,123 @@ class DeliverManListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.white,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 20.0, bottom: 5, left: 20, right: 20),
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.contain,
-                          onError: (err, r) => Image.asset(AppAssets.error),
-                          image: CachedNetworkImageProvider(model.image))),
+    return GestureDetector(
+      onTap: () {
+        GoRouter.of(context).pushNamed(AppPages.deliverymanEdit,
+            params: {"id": model.id.toString()});
+      },
+      child: Card(
+        color: AppColors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 20.0, bottom: 5, left: 20, right: 20),
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.contain,
+                            onError: (err, r) => Image.asset(AppAssets.error),
+                            image: CachedNetworkImageProvider(model.image))),
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      model.name,
-                      style: const TextStyle(
-                          color: AppColors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    spacer10,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          model.email,
-                          style: const TextStyle(
-                              fontSize: 13, color: AppColors.black),
-                        ),
-                        const SizedBox(
-                          width: 40,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            GoRouter.of(context).pushNamed(
-                                AppPages.deliverymanEdit,
-                                params: {"id": model.id.toString()});
-                          },
-                          child: Padding(
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        model.name,
+                        style: const TextStyle(
+                            color: AppColors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      spacer10,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(
+                            Icons.email_outlined,
+                            size: 15,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            model.email,
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.black),
+                          ),
+                          const SizedBox(
+                            width: 40,
+                          ),
+                          Padding(
                             padding: const EdgeInsets.only(right: 15.0),
                             child: Image.asset(
                               AppAssets.edit,
                               width: 20,
                               height: 20,
                             ),
+                          )
+                        ],
+                      ),
+                      spacer5,
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone,
+                            size: 15,
                           ),
-                        )
-                      ],
-                    ),
-                    spacer5,
-                    Row(
-                      children: [
-                        Text(
-                          model.phone,
-                          style: const TextStyle(
-                              fontSize: 13, color: AppColors.black),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: Divider(
-              color: Colors.grey,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Text(
-                  "${AppStrings.totalOrdersSaved} :",
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.black),
-                ),
-                Text(
-                  "${model.totalOrderCount}",
-                  style: const TextStyle(
-                      color: AppColors.skyBlue, fontWeight: FontWeight.w600),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            model.phone,
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
-          )
-        ],
+            Container(
+              padding: const EdgeInsets.all(5),
+              margin: const EdgeInsets.only(left: 10.0, bottom: 5, right: 10),
+              decoration: BoxDecoration(
+                  color: AppColors.offWhite1,
+                  borderRadius: BorderRadius.circular(15)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "${AppStrings.totalOrdersSaved} :",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.black),
+                  ),
+                  Text(
+                    "${model.totalOrderCount}",
+                    style: const TextStyle(
+                        color: AppColors.skyBlue, fontWeight: FontWeight.w600),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

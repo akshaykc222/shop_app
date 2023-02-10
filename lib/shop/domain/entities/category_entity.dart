@@ -16,7 +16,7 @@ class CategoryEntity extends Equatable {
       required this.subCatCount});
 
   String id;
-  String name;
+  String? name;
   String image;
   int parentId;
   int position;

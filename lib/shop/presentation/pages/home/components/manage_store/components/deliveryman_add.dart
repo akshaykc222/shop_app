@@ -52,7 +52,9 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                     borderRadius: BorderRadius.circular(19)),
                 child: data == ""
                     ? logo != null
-                        ? CachedNetworkImage(imageUrl: logo)
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(19),
+                            child: CachedNetworkImage(imageUrl: logo))
                         : const Center(
                             child: Icon(
                               Icons.camera_alt_outlined,
@@ -60,7 +62,9 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                               color: AppColors.lightGrey,
                             ),
                           )
-                    : Image.file(File(image.value)),
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(19),
+                        child: Image.file(File(image.value))),
               );
             },
             valueListenable: image,
@@ -96,12 +100,15 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                 width: 65,
                 height: 65,
                 decoration: BoxDecoration(
-                    // color: AppColors.lightGrey,
-                    border: Border.all(color: AppColors.lightGrey),
-                    borderRadius: BorderRadius.circular(19)),
+                  // color: AppColors.lightGrey,
+                  border: Border.all(color: AppColors.lightGrey),
+                  borderRadius: BorderRadius.circular(19),
+                ),
                 child: data == ""
                     ? logo != null
-                        ? CachedNetworkImage(imageUrl: logo)
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(19),
+                            child: CachedNetworkImage(imageUrl: logo))
                         : const Center(
                             child: Icon(
                               Icons.camera_alt_outlined,
@@ -109,13 +116,16 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                               color: AppColors.lightGrey,
                             ),
                           )
-                    : Image.file(
-                        File(proofImage.value),
-                        fit: BoxFit.fill,
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(19),
+                        child: Image.file(
+                          File(proofImage.value),
+                          fit: BoxFit.fill,
+                        ),
                       ),
               );
             },
-            valueListenable: image,
+            valueListenable: proofImage,
           )),
     );
   }
@@ -138,6 +148,11 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
       deliveryBloc.add(RefreshDeliveryManEvent());
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -267,25 +282,51 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                       ),
                     ),
                     spacer10,
-                    ValueListenableBuilder(
-                        valueListenable: deliveryBloc.initialCountryCode,
-                        builder: (context, data, child) {
-                          prettyPrint("Rebuilding initial countryCode");
-                          return IntlPhoneField(
-                            controller: deliveryBloc.phone,
-                            decoration: const InputDecoration(
-                              labelText: 'Phone Number',
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(),
-                              ),
-                            ),
-                            initialCountryCode: "AE",
-                            onChanged: (phone) {
-                              // print(phone.completeNumber);
-                              // deliveryBloc.phone.text = phone.completeNumber;
-                            },
-                          );
-                        }),
+                    widget.id == null
+                        ? ValueListenableBuilder(
+                            valueListenable: deliveryBloc.initialCountryCode,
+                            builder: (context, data, child) {
+                              prettyPrint("Rebuilding initial countryCode");
+                              return IntlPhoneField(
+                                controller: deliveryBloc.phone,
+                                decoration: const InputDecoration(
+                                  labelText: 'Phone Number',
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(),
+                                  ),
+                                ),
+                                initialCountryCode: "AE",
+                                onChanged: (phone) {
+                                  // print(phone.completeNumber);
+                                  deliveryBloc.completePhone.text =
+                                      phone.completeNumber;
+                                },
+                              );
+                            })
+                        : ValueListenableBuilder(
+                            valueListenable: deliveryBloc.initialCountryCode,
+                            builder: (context, data, child) {
+                              prettyPrint(
+                                  "Rebuilding initial countryCode $data");
+
+                              return data == null
+                                  ? const SizedBox()
+                                  : IntlPhoneField(
+                                      controller: deliveryBloc.phone,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Phone Number',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                        ),
+                                      ),
+                                      initialCountryCode: data,
+                                      onChanged: (phone) {
+                                        // print(phone.completeNumber);
+                                        deliveryBloc.completePhone.text =
+                                            phone.completeNumber;
+                                      },
+                                    );
+                            }),
                   ],
                 ),
                 // spacer5,
@@ -325,7 +366,8 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                         BlocBuilder<DeliveryManBloc, DeliveryManState>(
                           builder: (context, state) {
                             return state is DeliveryManDetailLoaded
-                                ? buildProofImageWidget(logo: state.model.image)
+                                ? buildProofImageWidget(
+                                    logo: state.model.identityImage)
                                 : buildProofImageWidget();
                           },
                         ),

@@ -10,18 +10,20 @@ class CustomException implements Exception {
 }
 
 class FetchDataException extends CustomException {
-  FetchDataException([String? message]) : super(message ?? "internetError");
+  FetchDataException([String? message]) : super(message ?? "No Internet Found");
 }
 
 class BadRequestException extends CustomException {
-  BadRequestException([String? message]) : super(message ?? "internetError");
+  BadRequestException([String? message])
+      : super(message ?? "No Internet Found");
 }
 
 class DeleteConflictException extends CustomException {
   DeleteConflictException([String? message])
-      : super(message ?? "internetError");
+      : super(message ?? "No Internet Found");
 }
 
 class UnauthorisedException extends CustomException {
-  UnauthorisedException([String? message]) : super(message ?? "internetError");
+  UnauthorisedException([String? message])
+      : super(message ?? "No Internet Found");
 }

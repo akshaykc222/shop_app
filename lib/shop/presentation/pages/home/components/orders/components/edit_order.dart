@@ -311,7 +311,7 @@ class EditOrder extends StatelessWidget {
                                 Row(
                                   children: const [
                                     Text(
-                                      AppStrings.delivery,
+                                      AppStrings.deliveryArea,
                                       style: TextStyle(
                                           color: AppColors.offWhiteTextColor,
                                           fontSize: 15),
@@ -538,7 +538,7 @@ class _OrderProductsState extends State<OrderProducts> {
       padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 18),
       child: Container(
         decoration: const BoxDecoration(
-            color: AppColors.offWhite1,
+            color: AppColors.white,
             borderRadius: BorderRadius.all(Radius.circular(20))),
         child: Padding(
           padding: const EdgeInsets.only(right: 20.0),

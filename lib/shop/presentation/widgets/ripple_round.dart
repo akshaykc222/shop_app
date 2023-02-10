@@ -101,3 +101,11 @@ Color? getColor(String status, List<StatusModel> statusList) {
     return Color(int.parse(ccw));
   }
 }
+
+Color? getColorFormStatus(StatusModel? model) {
+  if (model != null) {
+    String ccw = model.colorCode!.replaceAll("#", "0xFF");
+    return Color(int.parse(ccw));
+  }
+  return null;
+}

@@ -72,8 +72,8 @@ class _OrderScreenState extends State<OrderScreen>
         .animate(CurvedAnimation(
             parent: expandingAnimationController, curve: Curves.easeIn));
     colorAnimation =
-        ColorTween(begin: AppColors.primaryColor, end: AppColors.white).animate(
-            CurvedAnimation(
+        ColorTween(begin: AppColors.primaryColor, end: AppColors.offWhite1)
+            .animate(CurvedAnimation(
                 parent: expandingAnimationController, curve: Curves.easeIn));
 
     super.didChangeDependencies();
@@ -264,7 +264,7 @@ class _OrderScreenState extends State<OrderScreen>
                               margin: const EdgeInsets.only(
                                   left: 5, right: 5, bottom: 6, top: 6),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
+                                  horizontal: 12, vertical: 4),
                               decoration: BoxDecoration(
                                   color: controller.selectedFilter ==
                                           controller.statusList[index]

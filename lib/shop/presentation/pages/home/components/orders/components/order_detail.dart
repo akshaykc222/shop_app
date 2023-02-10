@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -103,7 +104,7 @@ class _OrderDetailsState extends State<OrderDetails> {
               BlocBuilder<OrderBloc, OrderState>(
                 builder: (context, state) {
                   if (state is OrderDetailsLoaded) {
-                    if (state.model.orderStatus.toLowerCase() !=
+                    if (state.model.orderStatus.statusName?.toLowerCase() !=
                         "Canceled".toLowerCase()) {
                       return IconButton(
                           onPressed: () {
@@ -130,7 +131,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
           if (state is OrderDetailsLoaded) {
-            if (state.model.orderStatus.toLowerCase() !=
+            if (state.model.orderStatus.statusName?.toLowerCase() !=
                 "Canceled".toLowerCase()) {
               return Container(
                 height: 70,
@@ -175,7 +176,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(20)))),
-                            onPressed: state.model.orderStatus.toLowerCase() ==
+                            onPressed: state.model.orderStatus.statusName
+                                        ?.toLowerCase() ==
                                     "confirmed".toLowerCase()
                                 ? null
                                 : () {
@@ -224,7 +226,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Order # ${state.model.orderId}",
+                                    DateFormat.yMMMMd()
+                                        .format(state.model.orderDatetime),
                                     style: const TextStyle(
                                         color: AppColors.greyText,
                                         fontWeight: FontWeight.bold,
@@ -232,12 +235,16 @@ class _OrderDetailsState extends State<OrderDetails> {
                                   ),
                                   Row(
                                     children: [
-                                      const SizedBox(
+                                      SizedBox(
                                           width: 20,
                                           height: 20,
-                                          child: RippleButton()),
+                                          child: RippleButton(
+                                            color: getColorFormStatus(
+                                                state.model.orderStatus),
+                                          )),
                                       Text(
-                                        state.model.orderStatus,
+                                        state.model.orderStatus.statusName ??
+                                            "",
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w400),
                                       )

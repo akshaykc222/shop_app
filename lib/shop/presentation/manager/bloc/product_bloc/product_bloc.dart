@@ -349,13 +349,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   changeSelectedCategory(CategoryEntity entity) {
     selectedCategory = entity;
-    categoryController.text = entity.name;
+    categoryController.text = entity.name ?? "";
     add(RefreshDetailsEvent());
   }
 
   changeSelectedSubCategory(CategoryEntity entity) {
     selectedSubCategory = entity;
-    subCategoryController.text = entity.name;
+    subCategoryController.text = entity.name ?? "";
     add(RefreshDetailsEvent());
   }
 

@@ -28,7 +28,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     controller.add(GetSubCategoryEvent(
         context: context,
         request: CategoryRequestModel(
-            name: widget.categoryEntity.name,
+            name: widget.categoryEntity.name ?? "",
             image: widget.categoryEntity.image,
             parentId: int.parse(widget.categoryEntity.id))));
     scrollController.addListener(pagination);
@@ -41,7 +41,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
       controller.add(GetSubCategoryPaginatedEvent(
           context: context,
           request: CategoryRequestModel(
-              name: widget.categoryEntity.name,
+              name: widget.categoryEntity.name ?? "",
               image: widget.categoryEntity.image,
               parentId: int.tryParse(widget.categoryEntity.id))));
     }
@@ -67,7 +67,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
               Expanded(
                   flex: 3,
                   child: Text(
-                    widget.categoryEntity.name,
+                    widget.categoryEntity.name ?? "",
                     style: Theme.of(context).textTheme.bodyLarge,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

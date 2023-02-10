@@ -18,7 +18,7 @@ class StatusModel {
 
   factory StatusModel.fromJson(Map<String, dynamic> json) => StatusModel(
       status: json["status"],
-      statusName: json["status_name"],
+      statusName: json["status_name"] ?? json["name"],
       colorCode: json["color_code"]);
 
   Map<String, dynamic> toJson() => {

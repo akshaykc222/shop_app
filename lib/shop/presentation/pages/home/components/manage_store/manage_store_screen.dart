@@ -113,7 +113,7 @@ class ManageStoreScreen extends StatelessWidget {
                 Expanded(
                     child: cardItem(
                         image: AppAssets.delivery,
-                        title: AppStrings.delivery,
+                        title: AppStrings.deliveryArea,
                         onTap: () {})),
               ],
             ),

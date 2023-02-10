@@ -14,7 +14,7 @@ Future<CroppedFile?> selectImageAndCropImage(
       context: context,
       builder: (context) => Dialog(
             child: SizedBox(
-              height: 160,
+              height: 170,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -54,7 +54,7 @@ Future<CroppedFile?> selectImageAndCropImage(
                                       await ImageCropper().cropImage(
                                     sourcePath: photo.path,
                                     aspectRatioPresets: [
-                                      CropAspectRatioPreset.ratio4x3,
+                                      CropAspectRatioPreset.square,
                                     ],
                                     uiSettings: [
                                       AndroidUiSettings(
@@ -62,7 +62,7 @@ Future<CroppedFile?> selectImageAndCropImage(
                                           toolbarColor: AppColors.primaryColor,
                                           toolbarWidgetColor: Colors.white,
                                           initAspectRatio:
-                                              CropAspectRatioPreset.original,
+                                              CropAspectRatioPreset.square,
                                           lockAspectRatio: true),
                                     ],
                                   );
@@ -122,7 +122,7 @@ Future<CroppedFile?> selectImageAndCropImage(
                               ))),
                     ],
                   ),
-                  // spacer20,
+                  spacer20,
                 ],
               ),
             ),

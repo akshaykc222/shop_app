@@ -60,60 +60,76 @@ class _CustomerListState extends State<CustomerList> {
     return Scaffold(
       appBar: getAppBar(
           context,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 1,
-                child: GestureDetector(
-                  onTap: () {
-                    GoRouter.of(context).pop();
-                  },
-                  child: const Icon(
-                    Icons.arrow_back,
-                    size: 30,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () {
+                      GoRouter.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Center(
-                  child: Text(
-                    AppStrings.customerList,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                Expanded(
+                  flex: 3,
+                  child: Center(
+                    child: Text(
+                      AppStrings.customerList,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
                 ),
-              ),
-              const Expanded(flex: 1, child: SizedBox())
-            ],
+                const Expanded(flex: 1, child: SizedBox())
+              ],
+            ),
           )),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            spacer20,
+            spacer5,
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 PopupMenuButton(
-                    child: Row(
-                      children: [
-                        ValueListenableBuilder(
-                          builder: (context, val, child) {
-                            return Text(sortValueListener.value == 0
-                                ? AppStrings.sort
-                                : sortValueListener.value == 1
-                                    ? AppStrings.sortByAscending
-                                    : sortValueListener.value == 2
-                                        ? AppStrings.sortByDescending
-                                        : sortValueListener.value == 3
-                                            ? AppStrings.sortByDateAscending
-                                            : AppStrings.sortByDateDescending);
-                          },
-                          valueListenable: sortValueListener,
-                        ),
-                        const Icon(Icons.keyboard_arrow_down)
-                      ],
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: [
+                          ValueListenableBuilder(
+                            builder: (context, val, child) {
+                              return Text(
+                                sortValueListener.value == 0
+                                    ? AppStrings.sort
+                                    : sortValueListener.value == 1
+                                        ? AppStrings.sortByAscending
+                                        : sortValueListener.value == 2
+                                            ? AppStrings.sortByDescending
+                                            : sortValueListener.value == 3
+                                                ? AppStrings.sortByDateAscending
+                                                : AppStrings
+                                                    .sortByDateDescending,
+                                style: const TextStyle(color: AppColors.black),
+                              );
+                            },
+                            valueListenable: sortValueListener,
+                          ),
+                          const Icon(Icons.keyboard_arrow_down)
+                        ],
+                      ),
                     ),
                     onSelected: (index) {
                       sortValueListener.value = index;
@@ -137,7 +153,7 @@ class _CustomerListState extends State<CustomerList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: const [
                                   Text(AppStrings.sortByAscending),
-                                  Icon(Icons.sort_by_alpha)
+                                  // Icon(Icons.sort_by_alpha)
                                 ],
                               )),
                           PopupMenuItem(
@@ -147,7 +163,7 @@ class _CustomerListState extends State<CustomerList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: const [
                                   Text(AppStrings.sortByDescending),
-                                  Icon(Icons.sort_by_alpha)
+                                  // Icon(Icons.sort_by_alpha)
                                 ],
                               )),
                           PopupMenuItem(
@@ -157,22 +173,23 @@ class _CustomerListState extends State<CustomerList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: const [
                                   Text(AppStrings.sortByDateAscending),
-                                  Icon(Icons.sort)
+                                  // Icon(Icons.sort)
                                 ],
                               )),
                           PopupMenuItem(
-                              value: 3,
+                              value: 4,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: const [
                                   Text(AppStrings.sortByDateDescending),
-                                  Icon(Icons.sort)
+                                  // Icon(Icons.sort)
                                 ],
                               )),
                         ])
               ],
             ),
+            spacer5,
             Expanded(child: BlocBuilder<CustomerBloc, CustomerState>(
               builder: (context, state) {
                 if (state is CustomerLoadingState) {
@@ -212,69 +229,136 @@ class CustomerCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           children: [
+            Row(
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: const BoxDecoration(
+                            color: Colors.red, shape: BoxShape.circle),
+                      ),
+                    )),
+                Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 8),
+                      child: Column(
+                        children: [
+                          spacer10,
+                          Row(
+                            children: [
+                              Text(
+                                "${model.fName} ${model.lName}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                    color: AppColors.black),
+                              ),
+                            ],
+                          ),
+                          spacer10,
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.phone_android,
+                                size: 15,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                model.phone == "" ? "-" : model.phone,
+                                style: const TextStyle(
+                                    fontSize: 13, color: AppColors.black),
+                              )
+                            ],
+                          ),
+                          spacer5,
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.email_outlined,
+                                size: 15,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  model.email,
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                      fontSize: 13, color: AppColors.black),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ))
+              ],
+            ),
             spacer10,
-            Row(
-              children: [
-                Text(
-                  "${model.fName} ${model.lName}",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: AppColors.black),
-                ),
-              ],
-            ),
-            spacer9,
-            Row(
-              children: [
-                Text(
-                  "Phone : ${model.phone}\nE-mail : ${model.email}",
-                  style: const TextStyle(fontSize: 13, color: AppColors.black),
-                )
-              ],
-            ),
-            spacer20,
-            Row(
-              children: const [
-                Expanded(
-                  child: Text(
-                    "Total Orders",
-                    style: TextStyle(fontSize: 15),
+            Container(
+              decoration: BoxDecoration(
+                  color: AppColors.offWhite1,
+                  borderRadius: BorderRadius.circular(15)),
+              padding: const EdgeInsets.only(left: 15, right: 8, top: 5),
+              child: Column(
+                children: [
+                  Row(
+                    children: const [
+                      Expanded(
+                        child: Text(
+                          "Total Orders",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                      Expanded(
+                          child: Text(
+                        "Total Sales",
+                        style: TextStyle(fontSize: 15),
+                      ))
+                    ],
                   ),
-                ),
-                Expanded(
-                    child: Text(
-                  "Total Sales",
-                  style: TextStyle(fontSize: 15),
-                ))
-              ],
+                  // spacer5,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${model.totalOrders}",
+                          style: const TextStyle(
+                              color: AppColors.skyBlue,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Expanded(
+                        child: FutureBuilder(
+                            future: getUserData(),
+                            builder: (context, data) {
+                              return Text(
+                                "${data.data?.currency.position == "left" ? data.data?.currency.symbol : ""}" +
+                                    " ${model.totalSales} ${data.data?.currency.position == "left" ? "" : data.data?.currency.symbol}",
+                                style: const TextStyle(
+                                    color: AppColors.skyBlue,
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600),
+                              );
+                            }),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-            spacer5,
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "${model.totalOrders}",
-                    style: const TextStyle(
-                        color: AppColors.skyBlue,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    "${model.totalSales} AED",
-                    style: const TextStyle(
-                        color: AppColors.skyBlue,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w600),
-                  ),
-                )
-              ],
-            )
           ],
         ),
       ),

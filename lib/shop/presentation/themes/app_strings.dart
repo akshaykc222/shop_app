@@ -20,7 +20,7 @@ class AppStrings {
 
   static const address = "Address";
   static const add = "Add";
-  static const totalOrdersSaved = "Total Orders Saved";
+  static const totalOrdersSaved = "Total Orders Deliverd";
   static const addImage = "Add Image";
   static const topDeliveryMan = "Top Delivery Man";
   static const profile = "Profile";
@@ -77,7 +77,8 @@ class AppStrings {
   static const placeOrders = "Place Orders";
   static const rejectOrder = "Reject Order";
   static const itemTotal = "Item Total";
-  static const delivery = "Delivery Area";
+  static const deliveryArea = "Delivery Area";
+  static const delivery = "Delivery Charge";
   static const deliveryMan = "Delivery Men";
   static const newDeliveryMan = "New delivery Men";
   static const grandTotal = "Grand Total";
@@ -111,10 +112,10 @@ class AppStrings {
 
   static const productName = "Product Name";
   static const firstName = "First Name";
-  static const secondName = "Second Name";
+  static const secondName = "Last Name";
   static const save = "Save";
   static const chooseProductUnit = "Choose Product Unit";
-  static const customerDetails = "Customer details";
+  static const customerDetails = "Customer Details";
   static const addProductDescSub =
       "It takes only few seconds to add your products and start selling to the customers.";
 
@@ -132,10 +133,10 @@ class AppStrings {
   static const String allOrders = "All orders";
   static const String lyfTym = "Life time";
   static const String sort = "Sort";
-  static const String sortByAscending = "Sort by Ascending";
-  static const String sortByDescending = "Sort by Descending";
-  static const String sortByDateDescending = "Sort by joining Descending";
-  static const String sortByDateAscending = "Sort by joining Ascending";
+  static const String sortByAscending = "Sort Name By ASC";
+  static const String sortByDescending = "Sort Name By DESC";
+  static const String sortByDateDescending = "Sort Date By DESC";
+  static const String sortByDateAscending = "Sort Date By ASC";
 
   static const String city = "City";
   static const String pinCode = "Pin code";

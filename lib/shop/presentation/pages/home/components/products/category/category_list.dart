@@ -294,7 +294,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                   children: [
                                     spacer22,
                                     Text(
-                                      widget.entity.name,
+                                      widget.entity.name ?? "",
                                       style: const TextStyle(
                                           color: AppColors.black,
                                           fontWeight: FontWeight.w600),

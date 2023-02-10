@@ -134,21 +134,32 @@ class ApiProvider {
     // try {
     final Map<String, dynamic> responseData =
         response.data as Map<String, dynamic>;
-
+    String errorMsg = "";
+    try {
+      // errorMsg=responseData["error"][""]
+      var error = responseData["errors"];
+      var allErrors = error!.map((item) => item["message"]);
+      String errorString = "";
+      for (var i in allErrors) {
+        errorString = "$errorString$i,";
+      }
+    } catch (e) {
+      errorMsg = responseData.toString();
+    }
     switch (response.statusCode) {
       case 200:
       case 201:
         return responseData;
       case 400:
-        throw BadRequestException(responseData.toString());
+        throw BadRequestException(errorMsg);
       case 404:
-        throw BadRequestException(responseData.toString());
+        throw BadRequestException(errorMsg);
       case 401:
-        throw UnauthorisedException(responseData.toString());
+        throw UnauthorisedException(errorMsg);
       case 403:
-        throw BadRequestException(responseData.toString());
+        throw BadRequestException(errorMsg);
       case 409:
-        throw DeleteConflictException(responseData.toString());
+        throw DeleteConflictException(errorMsg);
       case 500:
       default:
         throw FetchDataException(

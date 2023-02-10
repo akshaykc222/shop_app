@@ -199,8 +199,10 @@ class _ProductFormState extends State<ProductForm> {
                                                   context: context,
                                                   request: CategoryRequestModel(
                                                       name: cateBloc
-                                                          .categoryList[index]
-                                                          .name,
+                                                              .categoryList[
+                                                                  index]
+                                                              .name ??
+                                                          "",
                                                       image: "",
                                                       parentId: int.parse(
                                                           cateBloc
@@ -330,69 +332,100 @@ class _ProductFormState extends State<ProductForm> {
   buildTypeBottomSheet(BuildContext context) {
     return showModalBottomSheet(
         context: context,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         builder: (context) => SingleChildScrollView(
-              child: Wrap(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        AppStrings.chooseProductUnit,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 15),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(15)),
+                child: Wrap(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15.0, right: 8, top: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppStrings.chooseProductUnit,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              // padding: const EdgeInsets.all(10),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.close,
+                                  size: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.close),
-                      )
-                    ],
-                  ),
-                  Padding(
-                    //outer spacing
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: 8, // space between items
-                      children: controller.unitList
-                          .map((e) => InkWell(
-                                onTap: () {
-                                  controller.changeSelectedUnitEntity(e);
-                                  Navigator.pop(context);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                        // color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          color:
-                                              controller.selectedUnitEntity == e
-                                                  ? AppColors.green
-                                                  : AppColors.lightGrey,
-                                        )),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: Text(
-                                        e.unit,
-                                        style: TextStyle(
-                                          color:
-                                              controller.selectedUnitEntity == e
-                                                  ? AppColors.green
-                                                  : AppColors.black,
+                    ),
+                    Padding(
+                      //outer spacing
+                      padding: const EdgeInsets.all(8.0),
+                      child: Wrap(
+                        spacing: 8, // space between items
+                        children: controller.unitList
+                            .map((e) => InkWell(
+                                  onTap: () {
+                                    controller.changeSelectedUnitEntity(e);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                          // color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color:
+                                                controller.selectedUnitEntity ==
+                                                        e
+                                                    ? AppColors.green
+                                                    : AppColors.lightGrey,
+                                          )),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Text(
+                                          e.unit,
+                                          style: TextStyle(
+                                            color:
+                                                controller.selectedUnitEntity ==
+                                                        e
+                                                    ? AppColors.green
+                                                    : AppColors.black,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  )
-                ],
+                                ))
+                            .toList(),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ));
   }
@@ -406,13 +439,17 @@ class _ProductFormState extends State<ProductForm> {
           required: true,
           title: AppStrings.price,
           textInputType: const TextInputType.numberWithOptions(decimal: true),
-          prefix: const Padding(
-            padding: EdgeInsets.only(top: 10.0, left: 4),
-            child: Text(
-              "AED",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-            ),
+          prefix: Padding(
+            padding: const EdgeInsets.only(top: 10.0, left: 4),
+            child: FutureBuilder(
+                future: getUserData(),
+                builder: (context, snap) {
+                  return Text(
+                    snap.data?.currency.symbol ?? "",
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  );
+                }),
           ),
         )),
         const SizedBox(
@@ -433,13 +470,17 @@ class _ProductFormState extends State<ProductForm> {
             }
           },
           textInputType: const TextInputType.numberWithOptions(decimal: true),
-          prefix: const Padding(
-            padding: EdgeInsets.only(top: 10.0, left: 4),
-            child: Text(
-              "AED",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-            ),
+          prefix: Padding(
+            padding: const EdgeInsets.only(top: 10.0, left: 4),
+            child: FutureBuilder(
+                future: getUserData(),
+                builder: (context, snap) {
+                  return Text(
+                    snap.data?.currency.symbol ?? "",
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  );
+                }),
           ),
         ))
       ],

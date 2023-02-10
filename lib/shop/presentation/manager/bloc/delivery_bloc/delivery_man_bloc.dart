@@ -15,6 +15,7 @@ import '../../../../domain/use_cases/add_deliveryman_use_case.dart';
 import '../../../../domain/use_cases/deliveryman_listing_use_case.dart';
 import '../../../../domain/use_cases/edit_deliveryman_use_case.dart';
 import '../../../../domain/use_cases/get_delivery_man_detail_use_case.dart';
+import '../../../utils/countries.dart';
 
 part 'delivery_man_event.dart';
 part 'delivery_man_state.dart';
@@ -56,9 +57,10 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
     on<AddDeliveryManEvent>((event, emit) async {
       emit(DeliveryManLoading());
       try {
-        await addDeliveryManUseCase
-            .call(event.request)
-            .then((value) => GoRouter.of(event.context).pop());
+        await addDeliveryManUseCase.call(event.request).then((value) {
+          add(GetDeliveryManListEvent(context: event.context, sort: sort));
+          GoRouter.of(event.context).pop();
+        });
 
         emit(DeliveryManLoaded());
       } on UnauthorisedException {
@@ -73,22 +75,29 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
     on<GetDeliveryManDetailEvent>((event, emit) async {
       emit(DeliveryManLoading());
       try {
+        initialCountryCode.value = null;
         var data = await getDeliveryManDetailUseCase.call(event.id);
         fName.text = data.fName;
         lName.text = data.lName;
         email.text = data.email;
         initialCountryCode.value = data.phone;
+        completePhone.text = data.phone;
         // phone.text = data.phone;
-        // initialCountryCode.notifyListeners();
-        // var phoneNumber = seperatePhoneAndDialCode(data.phone);
-        //
-        // if (phoneNumber != null) {
-        //   phone.text = phoneNumber.phoneNumber;
-        //   prettyPrint("country code ${phoneNumber.countryCode}");
-        //   initialCountryCode.value = phoneNumber.countryCode;
-        //   initialCountryCode.notifyListeners();
-        // }
-        phone.text = data.phone;
+        initialCountryCode.notifyListeners();
+        var phoneNumber = seperatePhoneAndDialCode(data.phone);
+
+        if (phoneNumber != null) {
+          phone.text = phoneNumber.phoneNumber;
+          prettyPrint("country code ${phoneNumber.countryCode}");
+          initialCountryCode.value = phoneNumber.countryCode;
+          Future.delayed(
+              const Duration(
+                seconds: 1,
+              ), () {
+            initialCountryCode.notifyListeners();
+          });
+        }
+
         selectedDropDown.value = getIdentityTypeString(data.identityType);
         selectedDropDown.notifyListeners();
         identityNumber.text = data.identityNumber;
@@ -107,9 +116,10 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
     on<UpdateDeliveryManEvent>((event, emit) async {
       emit(DeliveryManLoading());
       try {
-        await updateDeliveryManUseCase
-            .call(event.request)
-            .then((value) => GoRouter.of(event.context).pop());
+        await updateDeliveryManUseCase.call(event.request).then((value) {
+          add(GetDeliveryManListEvent(context: event.context, sort: sort));
+          GoRouter.of(event.context).pop();
+        });
 
         emit(DeliveryManLoaded());
       } on UnauthorisedException {
@@ -157,6 +167,7 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
   final lName = TextEditingController();
   final email = TextEditingController();
   final phone = TextEditingController();
+  final completePhone = TextEditingController();
   final identityType = TextEditingController();
   final identityNumber = TextEditingController();
   final password = TextEditingController();
@@ -179,7 +190,7 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
             fName: fName.text,
             lName: lName.text,
             email: email.text,
-            phone: phone.text,
+            phone: completePhone.text,
             identityNumber: identityNumber.text,
             identityImage: identityImage,
             password: password.text,
@@ -195,7 +206,7 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
             fName: fName.text,
             lName: lName.text,
             email: email.text,
-            phone: phone.text,
+            phone: completePhone.text,
             identityNumber: identityNumber.text,
             identityImage: identityImage.contains(AppRemoteRoutes.baseUrl)
                 ? ""
@@ -226,6 +237,7 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
     lName.clear();
     email.clear();
     phone.clear();
+    completePhone.clear();
     identityType.clear();
     identityNumber.clear();
     password.clear();

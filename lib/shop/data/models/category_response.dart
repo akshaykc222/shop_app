@@ -50,7 +50,7 @@ class CategoryModel extends CategoryEntity {
       required this.subCatCount})
       : super(
             id: id,
-            name: name,
+            name: name ?? "",
             image: image,
             parentId: parentId,
             position: position,
@@ -65,7 +65,7 @@ class CategoryModel extends CategoryEntity {
   @HiveField(0)
   String id;
   @HiveField(1)
-  String name;
+  String? name;
   @HiveField(2)
   String image;
   @HiveField(3)

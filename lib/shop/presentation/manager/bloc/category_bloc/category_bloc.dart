@@ -272,10 +272,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   updateForEditing(CategoryEntity entity) {
     selectedChoice = entity.parentId == 0 ? AppStrings.yes : AppStrings.no;
     if (entity.parentId != 0) {
-      categoryNameController.text = entity.name;
+      categoryNameController.text = entity.name ?? "";
       changeSelectedCategory(entity);
     } else {
-      categoryNameController.text = entity.name;
+      categoryNameController.text = entity.name ?? "";
       selectedParentCat = null;
     }
   }
@@ -285,7 +285,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   changeSelectedCategory(CategoryEntity? cat) {
     selectedParentCat = cat;
     if (cat != null) {
-      categoryController.text = cat.name;
+      categoryController.text = cat.name ?? "";
       add(RefreshPageEvent());
     }
   }
