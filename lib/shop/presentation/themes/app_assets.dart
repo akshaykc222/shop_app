@@ -27,7 +27,8 @@ class AppAssets {
   static const email = "assets/images/gmail.png";
   static const password = "assets/images/password.png";
   static const menu = "assets/icons/menu.png";
-  static const delete = "assets/icons/delete.png";
+  static const delete = "assets/icons/trash.png";
+  static const trash = "assets/icons/delete.png";
   static const edit = "assets/icons/edit.png";
   static const sharedFilled = "assets/icons/share_filled.png";
   static const reorder = "assets/icons/reorder.png";

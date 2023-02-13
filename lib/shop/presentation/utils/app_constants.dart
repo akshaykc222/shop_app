@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -204,6 +205,16 @@ Future<UserDataShort> getUserData() async {
   return UserDataShort.fromJson(jsonDecode(userData ?? ""));
 }
 
+Future<String> getPositionedPrice(String price) async {
+  UserDataShort userDataShort = await getUserData();
+  prettyPrint(price);
+  if (userDataShort.currency.position.toString().toLowerCase() == "left") {
+    return " ${userDataShort.currency.symbol} $price";
+  } else {
+    return " $price ${userDataShort.currency.symbol} ";
+  }
+}
+
 class ConfirmationScreen extends StatelessWidget {
   const ConfirmationScreen({Key? key}) : super(key: key);
 
@@ -231,17 +242,17 @@ String getFormatedDate(DateTime date) {
   final now = DateTime.now();
 
   if (now.day == date.day && date.month == now.month && date.year == now.year) {
-    return "Today , ${DateFormat.Hm().format(date)}";
+    return "Today , ${DateFormat.EEEE().format(date)}";
   } else if (now.day + 1 == date.day &&
       date.month == now.month &&
       date.year == now.year) {
-    return "Tomorrow , ${DateFormat.Hm().format(date)}";
+    return "Tomorrow , ${DateFormat.EEEE().format(date)}";
   } else if (now.day - 1 == date.day &&
       date.month == now.month &&
       date.year == now.year) {
-    return "Yesterday , ${DateFormat.Hm().format(date)}";
+    return "Yesterday , ${DateFormat.EEEE().format(date)}";
   } else {
-    return "${date.day}-${date.month}-${date.year} , ${DateFormat.Hm().format(date)}";
+    return "${date.day.toString().padLeft(2, "0")}-${DateFormat.MMM().format(date)}-${date.year.toString().padLeft(2, "0")}, ${DateFormat.jm().format(date)}";
   }
 }
 

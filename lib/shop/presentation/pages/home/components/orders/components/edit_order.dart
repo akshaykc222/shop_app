@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
@@ -13,6 +14,7 @@ import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 
 import '../../../../../../data/models/order_detail_model.dart';
 import '../../../../../utils/app_constants.dart';
+import '../../../../../widgets/ripple_round.dart';
 import '../order_screen.dart';
 
 class EditOrder extends StatelessWidget {
@@ -22,7 +24,7 @@ class EditOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = OrderBloc.get(context);
     return Scaffold(
-      backgroundColor: AppColors.white,
+      // backgroundColor: AppColors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           GoRouter.of(context).pushNamed(AppPages.addNewOrderProduct);
@@ -217,10 +219,65 @@ class EditOrder extends StatelessWidget {
                 : state is OrderDetailsLoaded
                     ? Column(
                         children: [
-                          spacer30,
+                          // spacer30,
                           // TextButton(
                           //     onPressed: () {}, child: const Text(AppStrings.addNewProduct)),
                           // spacer10,
+                          spacer10,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // const Text(
+                                //   "Order #",
+                                //   style: TextStyle(
+                                //       color: AppColors.black,
+                                //       fontWeight: FontWeight.bold,
+                                //       fontSize: 18),
+                                // ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Order #',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                        color:
+                                            AppColors.black.withOpacity(0.43)),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: '${state.model.orderId}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.black)),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: RippleButton(
+                                          color: getColorFormStatus(
+                                              state.model.orderStatus),
+                                        )),
+                                    Text(
+                                      state.model.orderStatus.statusName ?? "",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w400),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 4),
+                            child: Divider(),
+                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 30.0),
@@ -229,7 +286,7 @@ class EditOrder extends StatelessWidget {
                               children: [
                                 RichText(
                                   text: TextSpan(
-                                    text: 'Items : ',
+                                    text: 'Item(s) : ',
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500,
@@ -243,7 +300,14 @@ class EditOrder extends StatelessWidget {
                                               color: AppColors.black)),
                                     ],
                                   ),
-                                )
+                                ),
+                                Text(
+                                  "${DateFormat.yMMMEd().format(state.model.orderDatetime)}\t${DateFormat.jm().format(state.model.orderDatetime)}",
+                                  style: const TextStyle(
+                                      color: AppColors.black,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 15),
+                                ),
                               ],
                             ),
                           ),
@@ -272,11 +336,15 @@ class EditOrder extends StatelessWidget {
                             ],
                           ),
                           spacer20,
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Divider(
-                              thickness: 0.5,
-                              color: Colors.grey,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.circular(15)),
                             ),
                           ),
                           spacer26,
@@ -289,15 +357,22 @@ class EditOrder extends StatelessWidget {
                                 const Text(
                                   AppStrings.itemTotal,
                                   style: TextStyle(
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.offWhiteTextColor,
                                       fontSize: 15),
                                 ),
-                                Text(
-                                  '${controller.getGrandTotal()} AED',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.offWhiteTextColor),
-                                )
+                                FutureBuilder(
+                                    future: getPositionedPrice(controller
+                                        .getGrandTotal()
+                                        .toStringAsFixed(2)),
+                                    builder: (context, data) {
+                                      return Text(
+                                        data.data ?? "",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.black),
+                                      );
+                                    })
                               ],
                             ),
                           ),
@@ -311,8 +386,9 @@ class EditOrder extends StatelessWidget {
                                 Row(
                                   children: const [
                                     Text(
-                                      AppStrings.deliveryArea,
+                                      AppStrings.delivery,
                                       style: TextStyle(
+                                          fontWeight: FontWeight.w600,
                                           color: AppColors.offWhiteTextColor,
                                           fontSize: 15),
                                     ),
@@ -355,16 +431,25 @@ class EditOrder extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18),
                                 ),
-                                Text(
-                                  '${controller.getGrandTotal()} AED',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: AppColors.primaryColor),
-                                )
+                                FutureBuilder(
+                                    future: getPositionedPrice(controller
+                                        .getGrandTotal()
+                                        .toStringAsFixed(2)),
+                                    builder: (context, data) {
+                                      return Text(
+                                        data.data ?? "",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: AppColors.primaryColor),
+                                      );
+                                    })
                               ],
                             ),
                           ),
+                          const SizedBox(
+                            height: 100,
+                          )
                         ],
                       )
                     : const SizedBox();
@@ -535,7 +620,11 @@ class _OrderProductsState extends State<OrderProducts> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 18),
+      padding: const EdgeInsets.only(
+        left: 20.0,
+        right: 20,
+        bottom: 20,
+      ),
       child: Container(
         decoration: const BoxDecoration(
             color: AppColors.white,
@@ -590,7 +679,7 @@ class _OrderProductsState extends State<OrderProducts> {
                                         width: 23,
                                         height: 23,
                                         decoration: BoxDecoration(
-                                            color: AppColors.white,
+                                            color: AppColors.offWhite1,
                                             borderRadius:
                                                 BorderRadius.circular(6)),
                                         child: Center(
@@ -635,7 +724,7 @@ class _OrderProductsState extends State<OrderProducts> {
                                         width: 23,
                                         height: 23,
                                         decoration: BoxDecoration(
-                                            color: AppColors.white,
+                                            color: AppColors.offWhite1,
                                             borderRadius:
                                                 BorderRadius.circular(6)),
                                         child: Center(
@@ -651,7 +740,8 @@ class _OrderProductsState extends State<OrderProducts> {
                                   ],
                                 );
                               })
-                          : Container()
+                          : Container(),
+                      spacer10
                     ],
                   ),
                   const SizedBox(
@@ -691,53 +781,53 @@ class _OrderProductsState extends State<OrderProducts> {
                                         : Container()
                                   ],
                                 ),
-                                spacer10,
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'Size : ',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black
-                                                .withOpacity(0.52)),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: widget.model.unit,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.black)),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox()
-                                    // Row(
-                                    //   children: [
-                                    //     Text("Colour : ",
-                                    //         style: TextStyle(
-                                    //             fontSize: 15,
-                                    //             fontWeight: FontWeight.w600,
-                                    //             color: AppColors.black
-                                    //                 .withOpacity(0.52))),
-                                    //     const SizedBox(
-                                    //       width: 8,
-                                    //     ),
-                                    //     Container(
-                                    //       width: 18,
-                                    //       height: 18,
-                                    //       decoration: BoxDecoration(
-                                    //           color: Colors.red,
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(2)),
-                                    //     )
-                                    //   ],
-                                    // ),
-                                  ],
-                                ),
+                                // spacer10,
+                                // Row(
+                                //   mainAxisAlignment:
+                                //       MainAxisAlignment.spaceBetween,
+                                //   mainAxisSize: MainAxisSize.max,
+                                //   children: [
+                                //     RichText(
+                                //       text: TextSpan(
+                                //         text: 'Size : ',
+                                //         style: TextStyle(
+                                //             fontSize: 15,
+                                //             fontWeight: FontWeight.w600,
+                                //             color: AppColors.black
+                                //                 .withOpacity(0.52)),
+                                //         children: <TextSpan>[
+                                //           TextSpan(
+                                //               text: widget.model.unit,
+                                //               style: const TextStyle(
+                                //                   fontWeight: FontWeight.bold,
+                                //                   color: AppColors.black)),
+                                //         ],
+                                //       ),
+                                //     ),
+                                //     const SizedBox()
+                                //     // Row(
+                                //     //   children: [
+                                //     //     Text("Colour : ",
+                                //     //         style: TextStyle(
+                                //     //             fontSize: 15,
+                                //     //             fontWeight: FontWeight.w600,
+                                //     //             color: AppColors.black
+                                //     //                 .withOpacity(0.52))),
+                                //     //     const SizedBox(
+                                //     //       width: 8,
+                                //     //     ),
+                                //     //     Container(
+                                //     //       width: 18,
+                                //     //       height: 18,
+                                //     //       decoration: BoxDecoration(
+                                //     //           color: Colors.red,
+                                //     //           borderRadius:
+                                //     //               BorderRadius.circular(2)),
+                                //     //     )
+                                //     //   ],
+                                //     // ),
+                                //   ],
+                                // ),
                                 spacer10,
                                 Row(
                                   mainAxisAlignment:
@@ -760,23 +850,30 @@ class _OrderProductsState extends State<OrderProducts> {
                                         ],
                                       ),
                                     ),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'Price : ',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black
-                                                .withOpacity(0.52)),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: '${widget.model.price}',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.black)),
-                                        ],
-                                      ),
-                                    ),
+                                    FutureBuilder(
+                                        future: getPositionedPrice(
+                                            '${widget.model.price}'),
+                                        builder: (context, data) {
+                                          return RichText(
+                                            text: TextSpan(
+                                              text: 'Price : ',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.black
+                                                      .withOpacity(0.52)),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text: data.data,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            AppColors.black)),
+                                              ],
+                                            ),
+                                          );
+                                        }),
                                   ],
                                 ),
                                 spacer10,
@@ -786,27 +883,32 @@ class _OrderProductsState extends State<OrderProducts> {
                                   children: [
                                     ValueListenableBuilder(
                                       builder: (context, data, child) {
-                                        return RichText(
-                                          text: TextSpan(
-                                            text: ' Total Price : ',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: AppColors.black
-                                                    .withOpacity(0.52)),
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                  text:
-                                                      '${widget.model.price * qtyValueNotifier.value} AED',
-                                                  style: const TextStyle(
-                                                      fontSize: 19,
+                                        return FutureBuilder(
+                                            future: getPositionedPrice(
+                                                '${widget.model.price * qtyValueNotifier.value}'),
+                                            builder: (context, data) {
+                                              return RichText(
+                                                text: TextSpan(
+                                                  text: ' Total Price : ',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
                                                       fontWeight:
-                                                          FontWeight.bold,
-                                                      color: AppColors
-                                                          .primaryColor)),
-                                            ],
-                                          ),
-                                        );
+                                                          FontWeight.w600,
+                                                      color: AppColors.black
+                                                          .withOpacity(0.52)),
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                        text: data.data,
+                                                        style: const TextStyle(
+                                                            fontSize: 19,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: AppColors
+                                                                .primaryColor)),
+                                                  ],
+                                                ),
+                                              );
+                                            });
                                       },
                                       valueListenable: qtyValueNotifier,
                                     ),

@@ -153,6 +153,9 @@ class _OrderDetailsState extends State<OrderDetails> {
                           onPressed: () => {
                                 showModalBottomSheet(
                                     context: context,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(19)),
                                     builder: (context) => RejectOrder(
                                           ctx: _context,
                                         ))
@@ -183,6 +186,9 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 : () {
                                     showModalBottomSheet(
                                         context: context,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
                                         builder: (context) =>
                                             AcceptOrder(ctx: _context));
                                   },
@@ -226,12 +232,11 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    DateFormat.yMMMMd()
-                                        .format(state.model.orderDatetime),
+                                    "${DateFormat.yMMMEd().format(state.model.orderDatetime)}\t${DateFormat.jm().format(state.model.orderDatetime)}",
                                     style: const TextStyle(
-                                        color: AppColors.greyText,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                        color: AppColors.black,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 15),
                                   ),
                                   Row(
                                     children: [
@@ -267,7 +272,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 children: [
                                   RichText(
                                     text: TextSpan(
-                                      text: 'Items : ',
+                                      text: 'Item(s) : ',
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w500,
@@ -335,17 +340,56 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    AppStrings.itemTotal,
+                                    AppStrings.paymentMethod,
                                     style: TextStyle(
+                                        fontWeight: FontWeight.w600,
                                         color: AppColors.offWhiteTextColor,
                                         fontSize: 15),
                                   ),
-                                  Text(
-                                    '${state.model.grandTotal.toStringAsFixed(2)} AED',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.offWhiteTextColor),
-                                  )
+                                  Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4, horizontal: 14),
+                                      decoration: BoxDecoration(
+                                          color: Colors.deepOrangeAccent
+                                              .withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Text(
+                                        state.model.paymentMethod,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.deepOrangeAccent),
+                                      )),
+                                ],
+                              ),
+                            ),
+                            spacer18,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    AppStrings.itemTotal,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.offWhiteTextColor,
+                                        fontSize: 15),
+                                  ),
+                                  FutureBuilder(
+                                      future: getPositionedPrice(state
+                                          .model.grandTotal
+                                          .toStringAsFixed(2)),
+                                      builder: (context, data) {
+                                        return Text(
+                                          data.data ?? "",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.black),
+                                        );
+                                      })
                                 ],
                               ),
                             ),
@@ -362,6 +406,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                       Text(
                                         AppStrings.delivery,
                                         style: TextStyle(
+                                            fontWeight: FontWeight.w600,
                                             color: AppColors.offWhiteTextColor,
                                             fontSize: 15),
                                       ),
@@ -407,243 +452,273 @@ class _OrderDetailsState extends State<OrderDetails> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),
                                   ),
-                                  Text(
-                                    '${state.model.grandTotal.toStringAsFixed(2)} AED',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: AppColors.skyBlue),
-                                  )
+                                  FutureBuilder(
+                                      future: getPositionedPrice(state
+                                          .model.grandTotal
+                                          .toStringAsFixed(2)),
+                                      builder: (context, data) {
+                                        return Text(
+                                          data.data ?? "",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: AppColors.skyBlue),
+                                        );
+                                      })
                                 ],
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              child: Divider(
-                                thickness: 1,
-                              ),
-                            ),
+                            // const Padding(
+                            //   padding: EdgeInsets.symmetric(horizontal: 30),
+                            //   child: Divider(
+                            //     thickness: 1,
+                            //   ),
+                            // ),
                             spacer10,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            Container(
+                              decoration: const BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(50),
+                                      topRight: Radius.circular(50))),
+                              child: Column(
                                 children: [
-                                  const Text(
-                                    AppStrings.customerDetails,
-                                    style: TextStyle(
-                                        color: AppColors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Share.share("demo");
-                                    },
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
                                     child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Icon(
-                                          Icons.share,
-                                          color: Colors.blue,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          AppStrings.share.toUpperCase(),
-                                          style: const TextStyle(
-                                              color: AppColors.skyBlue,
-                                              fontSize: 15,
+                                        const Text(
+                                          AppStrings.customerDetails,
+                                          style: TextStyle(
+                                              color: AppColors.greyText,
+                                              fontSize: 20,
                                               fontWeight: FontWeight.bold),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Share.share("demo");
+                                          },
+                                          child: Row(
+                                            children: const [
+                                              Icon(
+                                                Icons.share,
+                                                color: Colors.blue,
+                                                size: 25,
+                                              ),
+                                              // const SizedBox(
+                                              //   width: 5,
+                                              // ),
+                                              // Text(
+                                              //   AppStrings.share.toUpperCase(),
+                                              //   style: const TextStyle(
+                                              //       color: AppColors.skyBlue,
+                                              //       fontSize: 15,
+                                              //       fontWeight:
+                                              //           FontWeight.bold),
+                                              // )
+                                            ],
+                                          ),
                                         )
                                       ],
                                     ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        state.model.customerDetails.name,
-                                        style: const TextStyle(
-                                            fontSize: 15,
-                                            color: AppColors.black,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      Text(
-                                        "+91-${state.model.customerDetails.phone}",
-                                        style: const TextStyle(
-                                            fontSize: 15,
-                                            color: AppColors.black,
-                                            fontWeight: FontWeight.w600),
-                                      )
-                                    ],
                                   ),
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          _makingPhoneCall(state
-                                              .model.customerDetails.phone);
-                                        },
-                                        child: Image.asset(
-                                          AppAssets.phone,
-                                          width: 30,
-                                          height: 30,
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              state.model.customerDetails.name,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            state.model.customerDetails.phone ==
+                                                        null ||
+                                                    state.model.customerDetails
+                                                            .phone ==
+                                                        ""
+                                                ? const SizedBox()
+                                                : Text(
+                                                    state.model.customerDetails
+                                                            .phone ??
+                                                        "",
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        color: AppColors.black,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                          ],
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        width: 30,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          if (await canLaunchUrl(Uri.parse(
-                                              'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'))) {
-                                            await launchUrl(Uri.parse(
-                                                'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'));
-                                          } else {
-                                            throw 'Could not launch ';
-                                          }
-                                        },
-                                        child: Image.asset(
-                                          AppAssets.whatsApp,
-                                          width: 30,
-                                          height: 30,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        AppStrings.address,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                            color: AppColors.offWhiteTextColor),
-                                      ),
-                                      Text(state.model.customerDetails.address,
+                                        state.model.customerDetails.phone ==
+                                                    null ||
+                                                state.model.customerDetails
+                                                        .phone ==
+                                                    ""
+                                            ? const SizedBox()
+                                            : Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _makingPhoneCall(state
+                                                              .model
+                                                              .customerDetails
+                                                              .phone ??
+                                                          "");
+                                                    },
+                                                    child: Image.asset(
+                                                      AppAssets.phone,
+                                                      width: 30,
+                                                      height: 30,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 30,
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      if (await canLaunchUrl(
+                                                          Uri.parse(
+                                                              'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'))) {
+                                                        await launchUrl(Uri.parse(
+                                                            'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'));
+                                                      } else {
+                                                        throw 'Could not launch ';
+                                                      }
+                                                    },
+                                                    child: Image.asset(
+                                                      AppAssets.whatsApp,
+                                                      width: 30,
+                                                      height: 30,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              )
+                                      ],
+                                    ),
+                                  ),
+                                  Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 30.0),
+                                        child: Text(
+                                          state.model.customerDetails.email,
                                           style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
                                               fontSize: 15,
-                                              color: AppColors.black))
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  ItemCard(
-                                      title: AppStrings.localityArea,
-                                      value: state.model.customerDetails.city),
-                                  const SizedBox(
-                                    width: 50,
-                                  ),
-                                  ItemCard(
-                                      title: AppStrings.landMark,
-                                      value:
-                                          state.model.customerDetails.locality),
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  ItemCard(
-                                      title: AppStrings.city,
-                                      value: state.model.customerDetails.city),
-                                  const SizedBox(
-                                    width: 120,
-                                  ),
-                                  ItemCard(
-                                      title: AppStrings.pinCode,
-                                      value: state.model.customerDetails.zip),
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                children: [
-                                  ItemCard(
-                                      title: AppStrings.state,
-                                      value: state.model.customerDetails.state),
-                                ],
-                              ),
-                            ),
-                            spacer20,
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    AppStrings.payment,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.offWhiteTextColor,
-                                        fontSize: 15),
-                                  ),
-                                  Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 14),
-                                      decoration: BoxDecoration(
-                                          color: Colors.deepOrangeAccent
-                                              .withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Text(
-                                        state.model.paymentMethod,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.deepOrangeAccent),
+                                              color: AppColors.black,
+                                              fontWeight: FontWeight.w600),
+                                        ),
                                       )),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              AppStrings.address,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                                  color: AppColors
+                                                      .offWhiteTextColor),
+                                            ),
+                                            Text(
+                                                state.model.customerDetails
+                                                    .address,
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 15,
+                                                    color: AppColors.black))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        ItemCard(
+                                            title: AppStrings.localityArea,
+                                            value: state
+                                                .model.customerDetails.city),
+                                        const SizedBox(
+                                          width: 50,
+                                        ),
+                                        ItemCard(
+                                            title: AppStrings.landMark,
+                                            value: state.model.customerDetails
+                                                .locality),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        ItemCard(
+                                            title: AppStrings.city,
+                                            value: state
+                                                .model.customerDetails.city),
+                                        const SizedBox(
+                                          width: 120,
+                                        ),
+                                        ItemCard(
+                                            title: AppStrings.pinCode,
+                                            value: state
+                                                .model.customerDetails.zip),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      children: [
+                                        ItemCard(
+                                            title: AppStrings.state,
+                                            value: state
+                                                .model.customerDetails.state),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+
+                                  // spacer20
                                 ],
                               ),
                             ),
-                            spacer20
                           ],
                         ),
                       ],
@@ -722,7 +797,11 @@ class AcceptOrder extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.close))
+                    icon: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                            color: AppColors.lightGrey, shape: BoxShape.circle),
+                        child: const Icon(Icons.close)))
               ],
             ),
             spacer20,
@@ -785,10 +864,15 @@ class RejectOrder extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.close))
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                          color: AppColors.lightGrey, shape: BoxShape.circle),
+                      child: const Icon(Icons.close)),
+                ),
               ],
             ),
             spacer20,

@@ -597,7 +597,7 @@ class _ProfileViewState extends State<ProfileView> {
                               }),
                           sideCard(
                               title: AppStrings.deleteAccount,
-                              image: AppAssets.delete,
+                              image: AppAssets.trash,
                               onTap: () {
                                 deleteAlert();
                               }),

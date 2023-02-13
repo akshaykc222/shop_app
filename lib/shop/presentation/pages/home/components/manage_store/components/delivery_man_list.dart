@@ -337,7 +337,7 @@ class DeliverManListCard extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -350,7 +350,7 @@ class DeliverManListCard extends StatelessWidget {
                       ),
                       spacer10,
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const Icon(
                             Icons.email_outlined,
@@ -359,22 +359,17 @@ class DeliverManListCard extends StatelessWidget {
                           const SizedBox(
                             width: 5,
                           ),
-                          Text(
-                            model.email,
-                            style: const TextStyle(
-                                fontSize: 13, color: AppColors.black),
+                          Flexible(
+                            child: Text(
+                              model.email,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 13, color: AppColors.black),
+                            ),
                           ),
                           const SizedBox(
                             width: 40,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 15.0),
-                            child: Image.asset(
-                              AppAssets.edit,
-                              width: 20,
-                              height: 20,
-                            ),
-                          )
                         ],
                       ),
                       spacer5,
@@ -396,30 +391,54 @@ class DeliverManListCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             Container(
               padding: const EdgeInsets.all(5),
               margin: const EdgeInsets.only(left: 10.0, bottom: 5, right: 10),
-              decoration: BoxDecoration(
-                  color: AppColors.offWhite1,
-                  borderRadius: BorderRadius.circular(15)),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "${AppStrings.totalOrdersSaved} :",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      height: 35,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                          color: AppColors.offWhite1,
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "${AppStrings.totalOrdersSaved} :",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.black),
+                          ),
+                          Text(
+                            " ${model.totalOrderCount}",
+                            style: const TextStyle(
+                                color: AppColors.skyBlue,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  Text(
-                    "${model.totalOrderCount}",
-                    style: const TextStyle(
-                        color: AppColors.skyBlue, fontWeight: FontWeight.w600),
-                  )
+                  Container(
+                    height: 35,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: AppColors.offWhite1,
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Image.asset(
+                      AppAssets.edit,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                 ],
               ),
             )

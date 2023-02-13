@@ -74,7 +74,7 @@ class CustomerDetailsModel {
       this.id});
 
   String name;
-  String phone;
+  String? phone;
   String email;
   int? id;
   String address;

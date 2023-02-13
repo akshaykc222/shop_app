@@ -32,7 +32,7 @@ class _ShopAppState extends State<ShopApp> {
 
   @override
   void initState() {
-    // getToken();
+    getToken();
     super.initState();
   }
 

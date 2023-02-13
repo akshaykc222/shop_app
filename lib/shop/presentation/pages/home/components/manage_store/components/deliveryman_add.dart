@@ -179,7 +179,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                     child: Text(
                       widget.id == null
                           ? AppStrings.newDeliveryMan
-                          : AppStrings.edit,
+                          : AppStrings.editDeliveryMan,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   )),

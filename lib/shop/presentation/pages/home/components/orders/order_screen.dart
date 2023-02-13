@@ -274,15 +274,17 @@ class _OrderScreenState extends State<OrderScreen>
                                   border: Border.all(
                                       color: AppColors.primaryColor,
                                       width: 1.2)),
-                              child: Text(
-                                controller.statusList[index].statusName ?? "",
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: controller.selectedFilter ==
-                                            controller.statusList[index]
-                                        ? AppColors.white
-                                        : AppColors.primaryColor),
+                              child: Center(
+                                child: Text(
+                                  controller.statusList[index].statusName ?? "",
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: controller.selectedFilter ==
+                                              controller.statusList[index]
+                                          ? AppColors.white
+                                          : AppColors.primaryColor),
+                                ),
                               ),
                             ),
                           )),
@@ -481,7 +483,7 @@ class OrderListCard extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'Total Items :',
+                        text: 'Total Items : ',
                         style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
@@ -495,23 +497,30 @@ class OrderListCard extends StatelessWidget {
                       ),
                     ),
                     spacer10,
-                    RichText(
-                      text: TextSpan(
-                        text: 'Total Price :',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: AppColors.black),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: '${model.orderTotal} AED',
-                              style: const TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryColor)),
-                        ],
-                      ),
-                    ),
+                    FutureBuilder(
+                        future: getPositionedPrice("${model.orderTotal}"),
+                        builder: (context, data) {
+                          // prettyPrint("POSITION :$data");
+                          return data.hasData
+                              ? RichText(
+                                  text: TextSpan(
+                                    text: 'Total Price :',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                        color: AppColors.black),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: data.data ?? "",
+                                          style: const TextStyle(
+                                              fontSize: 19,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.primaryColor)),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox();
+                        }),
                   ],
                 ),
                 const SizedBox(

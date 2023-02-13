@@ -35,6 +35,7 @@ class AppStrings {
   static const yesRejecttOrder = "Yes, Reject Order";
   static const orders = "Orders";
   static const payment = "Payment";
+  static const paymentMethod = "Payment Method";
   static const acceptOrder = "Accept Orders";
   static const details = "Details";
   static const changePassword = "Change Password";
@@ -67,6 +68,7 @@ class AppStrings {
   static const editOrder = "Edit Order";
   static const editPrd = "Edit Products";
   static const edit = "Edit";
+  static const editDeliveryMan = "Edit Delivery Men";
   static const editCategory = "Edit Category";
   static const moveTop = "Move To Top";
   static const editFee = "Edit Fee";
@@ -76,7 +78,7 @@ class AppStrings {
   static const landMark = "Landmark";
   static const placeOrders = "Place Orders";
   static const rejectOrder = "Reject Order";
-  static const itemTotal = "Item Total";
+  static const itemTotal = "Item(s) Total";
   static const deliveryArea = "Delivery Area";
   static const delivery = "Delivery Charge";
   static const deliveryMan = "Delivery Men";
