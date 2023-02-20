@@ -1,12 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
 
 class NotificationService {
   Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
-    debugPrint('Handling a background message ${message.messageId}');
+    debugPrint('Handling a background message ${message.data}');
 
     flutterLocalNotificationsPlugin.show(
       notification.hashCode,
@@ -51,23 +53,57 @@ class NotificationService {
         sound: true,
       );
     }
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
+      // print(notification.android.)
       AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null && !kIsWeb) {
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              icon: 'launch_background',
+      if (message.notification?.android?.imageUrl == null) {
+        if (notification != null && android != null && !kIsWeb) {
+          flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                icon: 'launch_background',
+              ),
             ),
-          ),
-        );
+          );
+        }
+      } else {
+        if (notification != null && android != null && !kIsWeb) {
+          var attachmentPicturePath = await _downloadAndSaveFile(
+              message.notification!.android!.imageUrl!, "attachment_img.jpg");
+          var bigPictureStyleInformation = BigPictureStyleInformation(
+            FilePathAndroidBitmap(attachmentPicturePath),
+            contentTitle: '<b>Attached Image</b>',
+            htmlFormatContentTitle: true,
+            summaryText: 'Test Image',
+            htmlFormatSummaryText: true,
+          );
+          flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(channel.id, channel.name,
+                  icon: 'launch_background',
+                  largeIcon: FilePathAndroidBitmap(attachmentPicturePath),
+                  styleInformation: bigPictureStyleInformation),
+            ),
+          );
+        }
       }
     });
+  }
+
+  _downloadAndSaveFile(String url, String fileName) async {
+    var directory = await getApplicationDocumentsDirectory();
+    var filePath = '${directory.path}/$fileName';
+    await Dio().download(url, filePath);
+
+    return filePath;
   }
 }

@@ -34,6 +34,7 @@ class _ProductScreenState extends State<ProductScreen>
     _tabController = TabController(length: 2, vsync: this);
 
     tabValueNotifier = ValueNotifier(_tabController.index);
+
     showSearchNotifier = ValueNotifier(false);
     WidgetsBinding.instance.addObserver(this);
     _tabController.addListener(() {

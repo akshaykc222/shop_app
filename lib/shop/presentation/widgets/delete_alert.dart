@@ -44,11 +44,19 @@ class DeleteAlert extends StatelessWidget {
               ),
             ),
             GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
                 child: Container(
-                    decoration: const BoxDecoration(color: AppColors.offWhite1),
-                    child: const Icon(
-                      Icons.close,
-                      color: AppColors.black,
+                    decoration: const BoxDecoration(
+                        color: AppColors.lightGrey, shape: BoxShape.circle),
+                    child: const Padding(
+                      padding: EdgeInsets.all(1.0),
+                      child: Icon(
+                        Icons.close,
+                        color: AppColors.black,
+                        size: 20,
+                      ),
                     )))
           ],
         ),
@@ -57,27 +65,51 @@ class DeleteAlert extends StatelessWidget {
             ? const SizedBox()
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  desc ?? "",
-                  style: const TextStyle(color: AppColors.offWhite1),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    desc ?? "",
+                    style: const TextStyle(color: AppColors.black),
+                  ),
                 ),
               ),
         spacer10,
         Row(
           children: [
             Expanded(
-                child: ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: cancelButtonColor),
-              onPressed: () {},
-              child: Text(cancelText ?? "Cancel"),
+                child: SizedBox(
+              height: 55,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    backgroundColor: cancelButtonColor),
+                onPressed: () => onCancel(),
+                child: Text(cancelText ?? "Cancel"),
+              ),
             )),
+            const SizedBox(
+              width: 10,
+            ),
             Expanded(
-                child: ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: submitButtonColor),
-              onPressed: () {},
-              child: Text(submitTxt ?? "Submit"),
+                child: SizedBox(
+              height: 55,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: submitButtonColor ?? Colors.red),
+                onPressed: () {
+                  onDelete();
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.delete),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(submitTxt ?? "Delete"),
+                  ],
+                ),
+              ),
             )),
           ],
         )
@@ -102,8 +134,22 @@ showDeleteAlert(
   if (dialogType == null || dialogType == DialogType.bottomSheet) {
     showModalBottomSheet(
         context: context,
-        builder: (context) =>
-            DeleteAlert(title: title, onDelete: onDelete, onCancel: onCancel));
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
+        builder: (context) => Wrap(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DeleteAlert(
+                    title: title,
+                    onDelete: onDelete,
+                    onCancel: onCancel,
+                    desc: desc,
+                    cancelText: cancelText,
+                    submitTxt: submitTxt,
+                  ),
+                ),
+              ],
+            ));
   } else {
     showDialog(
         context: context,

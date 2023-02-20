@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/core/pretty_printer.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
+import 'package:shop_app/shop/presentation/widgets/delete_alert.dart';
 
 import '../../../../../../domain/entities/category_entity.dart';
 import '../../../../../themes/app_assets.dart';
@@ -175,17 +176,19 @@ class _CategoryListState extends State<CategoryList>
                               entity: controller.categoryList[index],
                               edit: () {},
                               delete: () {
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => Wrap(
-                                          children: const [
-                                            Text(AppStrings.addProduct)
-                                          ],
-                                        ));
-                                controller.add(DeleteCategoryEvent(
-                                    context: context,
-                                    id: int.parse(
-                                        controller.categoryList[index].id)));
+                            showDeleteAlert(context: context,
+                                title: "Are you sure?",
+                                onDelete: (){
+                                  controller.add(DeleteCategoryEvent(
+                                      context: context,
+                                      id: int.parse(
+                                          controller.categoryList[index].id)));
+                                },
+                                onCancel: (){
+                              Navigator.pop(context);
+                                }
+                            );
+
                               },
                             ));
         },

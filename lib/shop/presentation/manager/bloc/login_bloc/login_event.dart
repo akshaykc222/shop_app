@@ -7,11 +7,13 @@ abstract class LoginEvent extends Equatable {
 class LoginWithPassword extends LoginEvent {
   final String email;
   final String password;
+  final int type;
   final Function(String) onError;
   final Function onSuccess;
   const LoginWithPassword({
     required this.email,
     required this.password,
+    required this.type,
     required this.onError,
     required this.onSuccess,
   });

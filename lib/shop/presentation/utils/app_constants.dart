@@ -214,6 +214,10 @@ Future<String> getPositionedPrice(String price) async {
     return " $price ${userDataShort.currency.symbol} ";
   }
 }
+Future<int?> getType() async{
+  SharedPreferences pref =await SharedPreferences.getInstance();
+  return pref.getInt(LocalStorageNames.type);
+}
 
 class ConfirmationScreen extends StatelessWidget {
   const ConfirmationScreen({Key? key}) : super(key: key);

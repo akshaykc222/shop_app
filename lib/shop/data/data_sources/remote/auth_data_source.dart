@@ -9,7 +9,7 @@ import '../../models/account_detail_model.dart';
 
 abstract class AuthDataSource {
   Future<LoginResponse> login(
-      {required String email, required String password});
+      {required String email, required String password, int? type});
 
   Future<void> forgotPassword();
   Future<String> changePassword(String password);
@@ -38,9 +38,9 @@ class AuthDataSourceImpl extends AuthDataSource {
 
   @override
   Future<LoginResponse> login(
-      {required String email, required String password}) async {
-    final data = await apiProvider
-        .post(AppRemoteRoutes.login, {'email': email, 'password': password});
+      {required String email, required String password, int? type}) async {
+    final data = await apiProvider.post(AppRemoteRoutes.login,
+        {'email': email, 'password': password, 'user_type': type});
     return LoginResponse.fromJson(data);
   }
 

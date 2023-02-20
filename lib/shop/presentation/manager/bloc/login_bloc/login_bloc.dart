@@ -40,8 +40,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       var response = ResponseClassify<LoginResponse>.loading();
       emit(LoginLoadingState());
       try {
-        response = ResponseClassify<LoginResponse>.completed(await loginUseCase
-            .call(email: event.email, password: event.password));
+        response = ResponseClassify<LoginResponse>.completed(
+            await loginUseCase.call(
+                email: event.email,
+                password: event.password,
+                type: event.type));
         emit(LoginDataFetchedState(response.data!));
 
         GetStorage storage = GetStorage();
@@ -50,6 +53,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         storage.write(LocalStorageNames.token, response.data!.token);
         await prefs.setString(LocalStorageNames.userData,
             jsonEncode(response.data!.userData.toJson()));
+        await prefs.setInt(LocalStorageNames.type, event.type);
         event.onSuccess();
       } on UnauthorisedException {
         Map<String, dynamic> data = jsonDecode(response.error ?? "{}");

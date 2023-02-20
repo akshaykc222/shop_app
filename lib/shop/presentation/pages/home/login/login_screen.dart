@@ -18,6 +18,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = LoginBloc.get(context);
+    ValueNotifier<bool> selectedItem = ValueNotifier(true);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -38,7 +39,70 @@ class LoginScreen extends StatelessWidget {
                             fit: BoxFit.contain,
                             image: AssetImage(AppAssets.loginBg))),
                   ),
-
+                  ValueListenableBuilder(
+                      valueListenable: selectedItem,
+                      builder: (context, data, child) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    selectedItem.value = !selectedItem.value,
+                                child: Container(
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: selectedItem.value
+                                              ? AppColors.primaryColor
+                                              : AppColors.lightGrey)),
+                                  child: Center(
+                                    child: Text(
+                                      AppStrings.storeAdmin,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: selectedItem.value
+                                              ? AppColors.primaryColor
+                                              : AppColors.lightGrey),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    selectedItem.value = !selectedItem.value,
+                                child: Container(
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: selectedItem.value
+                                              ? AppColors.lightGrey
+                                              : AppColors.primaryColor)),
+                                  child: Center(
+                                    child: Text(
+                                      AppStrings.deliveryMan,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: selectedItem.value
+                                              ? AppColors.lightGrey
+                                              : AppColors.primaryColor),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                  spacer37,
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -187,7 +251,8 @@ class LoginScreen extends StatelessWidget {
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   "wrong Username or password !")));
-                                    }));
+                                    },
+                                    type: selectedItem.value ? 1 : 2));
                               }
                             },
                             child: state is LoginLoadingState

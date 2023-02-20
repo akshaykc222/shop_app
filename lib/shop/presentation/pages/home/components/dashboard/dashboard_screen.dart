@@ -323,10 +323,12 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   late DashboardBloc dashboardBloc;
   final storeStatus = ValueNotifier(true);
+
   @override
   void initState() {
     dashboardBloc = DashboardBloc.get(context);
     dashboardBloc.add(DashBoardGetEvent(context));
+
     super.initState();
   }
 
@@ -417,18 +419,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           height: 80),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      Column(
-                        children: [
-                          spacer26,
-                          Row(
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: BlocBuilder<DashboardBloc, DashboardState>(
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    Column(
+                      children: [
+                        spacer26,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
@@ -452,8 +454,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                       [PopupMenuItem(child: Container())]),
                             ],
                           ),
-                          spacer24,
-                          Row(
+                        ),
+                        spacer24,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
                             children: [
                               Expanded(
                                 child: overViewCard(
@@ -478,8 +483,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ),
                             ],
                           ),
-                          spacer18,
-                          Row(
+                        ),
+                        spacer18,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
                             children: [
                               Expanded(
                                 child: overViewCard(
@@ -504,14 +512,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ),
                             ],
                           ),
-                          (dashboardBloc.model?.data.topDeliveryMan.length ??
-                                      0) ==
-                                  0
-                              ? const SizedBox()
-                              : Column(
-                                  children: [
-                                    spacer24,
-                                    Row(
+                        ),
+                        (dashboardBloc.model?.data.topDeliveryMan.length ??
+                                    0) ==
+                                0
+                            ? const SizedBox()
+                            : Column(
+                                children: [
+                                  spacer24,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: const [
@@ -524,47 +536,49 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                         ),
                                       ],
                                     ),
-                                    spacer20,
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      height: 170,
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          shrinkWrap: true,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          itemCount: dashboardBloc.model?.data
-                                                  .topDeliveryMan.length ??
-                                              0,
-                                          itemBuilder: (context, index) =>
-                                              deliveryBoyCard(
-                                                  title: dashboardBloc
-                                                      .model!
-                                                      .data
-                                                      .topDeliveryMan[index]
-                                                      .name,
-                                                  image: dashboardBloc
-                                                      .model!
-                                                      .data
-                                                      .topDeliveryMan[index]
-                                                      .image,
-                                                  orders: dashboardBloc
-                                                      .model!
-                                                      .data
-                                                      .topDeliveryMan[index]
-                                                      .ordersCount
-                                                      .toString())),
-                                    ),
-                                    spacer20,
-                                  ],
-                                ),
-                          (dashboardBloc.model?.data.topSellingItems.length ??
-                                      0) ==
-                                  0
-                              ? const SizedBox()
-                              : Column(
-                                  children: [
-                                    Row(
+                                  ),
+                                  spacer20,
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 170,
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        padding:
+                                            const EdgeInsets.only(left: 20),
+                                        physics: const BouncingScrollPhysics(),
+                                        itemCount: dashboardBloc.model?.data
+                                                .topDeliveryMan.length ??
+                                            0,
+                                        itemBuilder: (context, index) =>
+                                            deliveryBoyCard(
+                                                title: dashboardBloc.model!.data
+                                                    .topDeliveryMan[index].name,
+                                                image: dashboardBloc
+                                                    .model!
+                                                    .data
+                                                    .topDeliveryMan[index]
+                                                    .image,
+                                                orders: dashboardBloc
+                                                    .model!
+                                                    .data
+                                                    .topDeliveryMan[index]
+                                                    .ordersCount
+                                                    .toString())),
+                                  ),
+                                  spacer20,
+                                ],
+                              ),
+                        (dashboardBloc.model?.data.topSellingItems.length ??
+                                    0) ==
+                                0
+                            ? const SizedBox()
+                            : Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Row(
                                       children: const [
                                         Text(
                                           "Top selling items",
@@ -575,42 +589,40 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                         ),
                                       ],
                                     ),
-                                    spacer20,
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      height: 150,
-                                      child: ListView.builder(
-                                        physics: const BouncingScrollPhysics(),
-                                        itemCount: dashboardBloc.model?.data
-                                                .topSellingItems.length ??
-                                            0,
-                                        scrollDirection: Axis.horizontal,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index) =>
-                                            topSellingItems(
-                                                title: dashboardBloc
-                                                    .model!
-                                                    .data
-                                                    .topSellingItems[index]
-                                                    .name,
-                                                image: dashboardBloc
-                                                    .model!
-                                                    .data
-                                                    .topSellingItems[index]
-                                                    .image,
-                                                sold: dashboardBloc
-                                                    .model!
-                                                    .data
-                                                    .topSellingItems[index]
-                                                    .orderCount
-                                                    .toString()),
-                                      ),
+                                  ),
+                                  spacer20,
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 150,
+                                    child: ListView.builder(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.only(left: 20),
+                                      itemCount: dashboardBloc.model?.data
+                                              .topSellingItems.length ??
+                                          0,
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) =>
+                                          topSellingItems(
+                                              title: dashboardBloc.model!.data
+                                                  .topSellingItems[index].name,
+                                              image: dashboardBloc.model!.data
+                                                  .topSellingItems[index].image,
+                                              sold: dashboardBloc
+                                                  .model!
+                                                  .data
+                                                  .topSellingItems[index]
+                                                  .orderCount
+                                                  .toString()),
                                     ),
-                                    spacer24,
-                                  ],
-                                ),
-                          spacer10,
-                          Row(
+                                  ),
+                                  spacer24,
+                                ],
+                              ),
+                        spacer10,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
                               Text(
@@ -622,8 +634,11 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ),
                             ],
                           ),
-                          spacer20,
-                          Card(
+                        ),
+                        spacer20,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Card(
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(19)),
@@ -703,13 +718,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                               ],
                             ),
                           ),
-                          spacer20
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
+                        ),
+                        spacer20
+                      ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           const Positioned(

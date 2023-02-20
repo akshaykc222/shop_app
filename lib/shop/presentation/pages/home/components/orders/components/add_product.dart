@@ -113,7 +113,7 @@ class _AddOrderProductScreenState extends State<AddOrderProductScreen>
               physics: const BouncingScrollPhysics(),
               itemCount: bloc.productList.length + 1,
               itemBuilder: (context, index) => bloc.productList.length == index
-                  ? bloc.currentPage < bloc.lastPage
+                  ? bloc.currentPage < bloc.lastPage && state is ProductFetching
                       ? Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
                           highlightColor: Colors.grey.shade100,

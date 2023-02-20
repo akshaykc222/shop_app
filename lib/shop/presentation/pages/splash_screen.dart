@@ -62,16 +62,20 @@ class _SplashScreenState extends State<SplashScreen>
     Timer(const Duration(seconds: 4), () async {
       var storage = GetStorage();
       SharedPreferences.getInstance().then((value) {
-        String? token = value.getString(LocalStorageNames.token);
-        String? userData = value.getString(LocalStorageNames.userData);
-        storage.write(LocalStorageNames.token, token);
-        if (userData != null) {
-          storage.write(LocalStorageNames.userData, jsonDecode(userData));
-        }
+        try {
+          String? token = value.getString(LocalStorageNames.token);
+          String? userData = value.getString(LocalStorageNames.userData);
+          storage.write(LocalStorageNames.token, token);
+          if (userData != null) {
+            storage.write(LocalStorageNames.userData, jsonDecode(userData));
+          }
 
-        if (token != null) {
-          return GoRouter.of(context).goNamed(AppPages.home);
-        } else {
+          if (token != null) {
+            return GoRouter.of(context).goNamed(AppPages.home);
+          } else {
+            return GoRouter.of(context).goNamed(AppPages.login);
+          }
+        } catch (e) {
           return GoRouter.of(context).goNamed(AppPages.login);
         }
       });

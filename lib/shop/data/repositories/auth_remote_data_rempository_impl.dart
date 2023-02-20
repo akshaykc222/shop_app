@@ -11,8 +11,8 @@ class AuthRemoteDataRepositoryImpl extends AuthRemoteDataRepository {
 
   @override
   Future<LoginResponse> login(
-      {required String email, required String password}) {
-    return dataSource.login(email: email, password: password);
+      {required String email, required String password, int? type}) {
+    return dataSource.login(email: email, password: password, type: type);
   }
 
   @override

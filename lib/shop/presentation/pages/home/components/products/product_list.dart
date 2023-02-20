@@ -8,6 +8,7 @@ import 'package:shop_app/shop/presentation/pages/home/components/products/catego
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
+import 'package:shop_app/shop/presentation/widgets/delete_alert.dart';
 
 import '../../../../../data/models/product_model.dart';
 import '../../../../themes/app_colors.dart';
@@ -144,8 +145,18 @@ class _ProductListState extends State<ProductList> {
                         : ProductListTile(
                             entity: controller.productList[index],
                             delete: () {
-                              controller.add(DeleteProductEvent(
-                                  context, controller.productList[index].id));
+                              showDeleteAlert(
+                                  context: context,
+                                  title: "Are you sure?",
+                                  desc:
+                                      "Do you want to delete ${controller.productList[index].name} ?",
+                                  onDelete: () {
+                                    controller.add(DeleteProductEvent(context,
+                                        controller.productList[index].id));
+                                  },
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  });
                             },
                           ));
           },

@@ -84,6 +84,7 @@ class AppStrings {
   static const deliveryMan = "Delivery Men";
   static const newDeliveryMan = "New delivery Men";
   static const grandTotal = "Grand Total";
+  static const storeAdmin = "Store Admin";
   static const addAnotherSize = "Add another size";
   static const forgotPass = "Forgot your password?";
   static const reasonForEditing = "Reason for editing";

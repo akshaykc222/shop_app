@@ -11,6 +11,7 @@ import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
+import 'package:shop_app/shop/presentation/widgets/delete_alert.dart';
 
 import '../../../../../../data/models/order_detail_model.dart';
 import '../../../../../utils/app_constants.dart';
@@ -201,6 +202,7 @@ class EditOrder extends StatelessWidget {
       //   ),
       // ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
             return state is OrderLoadingState
@@ -770,8 +772,18 @@ class _OrderProductsState extends State<OrderProducts> {
                                     widget.showEdit == true
                                         ? GestureDetector(
                                             onTap: () {
-                                              orderBloc
-                                                  .removeProduct(widget.model);
+                                              showDeleteAlert(
+                                                  context: context,
+                                                  title: 'Are you sure?',
+                                                  desc:
+                                                      "Do you want to remove ${widget.model.name}",
+                                                  onDelete: () {
+                                                    orderBloc.removeProduct(
+                                                        widget.model);
+                                                  },
+                                                  onCancel: () {
+                                                    Navigator.pop(context);
+                                                  });
                                             },
                                             child: Image.asset(
                                               AppAssets.delete,
