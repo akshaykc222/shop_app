@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +9,7 @@ import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
-import '../../../../../../domain/entities/deliveryman_entity.dart';
+import '../../../../../../data/models/new/delivery_men_model.dart';
 
 class DeliveryManList extends StatefulWidget {
   const DeliveryManList({Key? key}) : super(key: key);
@@ -303,15 +302,15 @@ class _DeliveryManListState extends State<DeliveryManList>
 }
 
 class DeliverManListCard extends StatelessWidget {
-  final DeliveryManEntity model;
+  final DeliveryMenResult model;
   const DeliverManListCard({Key? key, required this.model}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).pushNamed(AppPages.deliverymanEdit,
-            params: {"id": model.id.toString()});
+        // GoRouter.of(context).pushNamed(AppPages.deliverymanEdit,
+        //     params: {"id": model.id.toString()});
       },
       child: Card(
         color: AppColors.white,
@@ -328,12 +327,9 @@ class DeliverManListCard extends StatelessWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.contain,
-                            onError: (err, r) => Image.asset(AppAssets.error),
-                            image: CachedNetworkImageProvider(model.image))),
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -342,7 +338,7 @@ class DeliverManListCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        model.name,
+                        model.firstName,
                         style: const TextStyle(
                             color: AppColors.black,
                             fontSize: 15,
@@ -383,7 +379,7 @@ class DeliverManListCard extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            model.phone,
+                            model.phoneNumber,
                             style: const TextStyle(
                                 fontSize: 13, color: AppColors.black),
                           ),
@@ -407,10 +403,10 @@ class DeliverManListCard extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: AppColors.offWhite1,
                           borderRadius: BorderRadius.circular(15)),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             "${AppStrings.totalOrdersSaved} :",
                             style: TextStyle(
                                 fontSize: 14,
@@ -418,8 +414,8 @@ class DeliverManListCard extends StatelessWidget {
                                 color: AppColors.black),
                           ),
                           Text(
-                            " ${model.totalOrderCount}",
-                            style: const TextStyle(
+                            " 0",
+                            style: TextStyle(
                                 color: AppColors.skyBlue,
                                 fontWeight: FontWeight.w600),
                           ),

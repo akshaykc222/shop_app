@@ -5,9 +5,7 @@ import 'package:shop_app/shop/data/data_sources/remote/auth_data_source.dart';
 import 'package:shop_app/shop/data/data_sources/remote/deliveryman_data_source.dart';
 import 'package:shop_app/shop/data/data_sources/remote/product_remote_data_source.dart';
 import 'package:shop_app/shop/data/models/category_id.dart';
-import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/data/models/order_listing_model.dart';
-import 'package:shop_app/shop/data/models/product_model.dart';
 import 'package:shop_app/shop/data/models/status_model.dart';
 import 'package:shop_app/shop/data/models/store_timing_model.dart';
 import 'package:shop_app/shop/data/models/tag_model.dart';
@@ -19,13 +17,17 @@ import 'package:shop_app/shop/domain/repositories/auth_remote_data_repository.da
 import 'package:shop_app/shop/domain/repositories/deliveryman_repository.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
 import 'package:shop_app/shop/domain/use_cases/add_category_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/add_delivery_men_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/add_deliveryman_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/add_product_image_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/add_product_request_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/add_region_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/category_usecase.dart';
 import 'package:shop_app/shop/domain/use_cases/change_account_detail_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/change_order_status_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/change_password_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/delete_category_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/delete_delivery_men_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/delete_product_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/deliveryman_listing_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/edit_deliveryman_use_case.dart';
@@ -34,9 +36,11 @@ import 'package:shop_app/shop/domain/use_cases/get_account_details_use_case.dart
 import 'package:shop_app/shop/domain/use_cases/get_customer_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_dash_board_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_delivery_man_detail_use_case.dart';
+import 'package:shop_app/shop/domain/use_cases/get_delivery_men_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_order_detail_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_order_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_product_details_usecase.dart';
+import 'package:shop_app/shop/domain/use_cases/get_region_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_sub_categories.dart';
 import 'package:shop_app/shop/domain/use_cases/get_tag_use_case.dart';
 import 'package:shop_app/shop/domain/use_cases/get_timing_store_use_case.dart';
@@ -53,6 +57,7 @@ import 'package:shop_app/shop/presentation/manager/bloc/dashboard_bloc/dashboard
 import 'package:shop_app/shop/presentation/manager/bloc/delivery_bloc/delivery_man_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/customer_bloc/customer_bloc.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/delivery_area_bloc/delivery_area_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/hour_tile_cubit/cubit/store_timing_cubit.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
@@ -121,6 +126,8 @@ Future<void> init() async {
       () => UpdateTimingUseCase(sl()));
   sl.registerLazySingleton<DeleteProductUseCase>(
       () => DeleteProductUseCase(sl()));
+  sl.registerLazySingleton<GetRegionUseCase>(() => GetRegionUseCase(sl()));
+  sl.registerLazySingleton<AddRegionUseCase>(() => AddRegionUseCase(sl()));
   sl.registerLazySingleton<GetStoreTimingUseCase>(
       () => GetStoreTimingUseCase(sl()));
   sl.registerLazySingleton<DeleteCategoryUseCase>(
@@ -136,11 +143,17 @@ Future<void> init() async {
       () => ProductStatusUpdateUseCase(sl()));
   sl.registerLazySingleton<ChangeAccountDetailUseCase>(
       () => ChangeAccountDetailUseCase(sl()));
+  sl.registerLazySingleton<DeliveryMenDeleteUseCase>(
+      () => DeliveryMenDeleteUseCase(sl()));
+  sl.registerLazySingleton<GetDeliveryMenUseCase>(
+      () => GetDeliveryMenUseCase(sl()));
+  sl.registerLazySingleton<AddDeliveryMenUseCase>(
+      () => AddDeliveryMenUseCase(sl()));
   //bloc providers
   sl.registerLazySingleton<BottomNavigationCubit>(
       () => BottomNavigationCubit());
   sl.registerLazySingleton<ProductBloc>(
-      () => ProductBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl()));
+      () => ProductBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<VariantBloc>(() => VariantBloc());
   sl.registerLazySingleton<CategoryBloc>(
       () => CategoryBloc(sl(), sl(), sl(), sl(), sl()));
@@ -149,16 +162,23 @@ Future<void> init() async {
   sl.registerLazySingleton<StoreTimingCubit>(
       () => StoreTimingCubit(sl(), sl()));
   sl.registerLazySingleton<DashboardBloc>(() => DashboardBloc(sl(), sl()));
-  sl.registerLazySingleton<DeliveryManBloc>(
-      () => DeliveryManBloc(sl(), sl(), sl(), sl()));
+  sl.registerLazySingleton<DeliveryManBloc>(() => DeliveryManBloc(
+        sl(),
+        sl(),
+      ));
   sl.registerLazySingleton<CustomerBloc>(() => CustomerBloc(sl()));
+  sl.registerLazySingleton<DeliveryAreaBloc>(
+      () => DeliveryAreaBloc(sl(), sl()));
+  sl.registerLazySingleton<ProductImageUseCase>(() => ProductImageUseCase(
+        sl(),
+      ));
 
   //adapters
   Hive.registerAdapter(CategoryIdAdapter());
-  Hive.registerAdapter(CategoryModelAdapter());
+  // Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(StatusModelAdapter());
   Hive.registerAdapter(OrderModelAdapter());
-  Hive.registerAdapter(ProductModelAdapter());
+  // Hive.registerAdapter(ProductModelAdapter());
   Hive.registerAdapter(StoreTimingModelAdapter());
   // Hive.registerAdapter(SubCategoryModelAdapter());
   Hive.registerAdapter(TagModelAdapter());

@@ -1,17 +1,14 @@
 import '../../../core/usecase.dart';
-import '../../data/models/product_adding_request.dart';
+import '../entities/ProductEntity.dart';
 import '../repositories/product_repository.dart';
 
-class AddProductUseCase extends UseCase<String,ProductAddingRequest>{
- final ProductRepository repository;
+class AddProductUseCase extends UseCase<String, ProductEntity> {
+  final ProductRepository repository;
 
- AddProductUseCase(this.repository);
+  AddProductUseCase(this.repository);
 
   @override
-  Future<String> call(ProductAddingRequest params) {
+  Future<String> call(ProductEntity params) {
     return repository.addProducts(params);
   }
-
-
-
 }

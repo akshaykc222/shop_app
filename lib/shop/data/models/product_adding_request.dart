@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
 import '../routes/app_remote_routes.dart';
 
@@ -67,7 +66,7 @@ class ProductAddingRequest {
       "discount_type": discountType,
       "stock": stock,
       "unit_id": unitId,
-      "store_id": (await getUserData()).storeId,
+      "store_id": "",
       "description": description,
     };
     print(re);

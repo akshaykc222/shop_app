@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shop_app/shop/data/models/order_detail_model.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -113,23 +112,13 @@ class _AddOrderProductScreenState extends State<AddOrderProductScreen>
               physics: const BouncingScrollPhysics(),
               itemCount: bloc.productList.length + 1,
               itemBuilder: (context, index) => bloc.productList.length == index
-                  ? bloc.currentPage < bloc.lastPage && state is ProductFetching
+                  ? !bloc.lastPage && state is ProductFetching
                       ? Shimmer.fromColors(
                           baseColor: Colors.grey.shade300,
                           highlightColor: Colors.grey.shade100,
                           child: const ShimmerCategoryLoad())
                       : Container()
-                  : orderBloc.model?.productDetails.contains(OrderProductModel(
-                              id: bloc.productList[index].id,
-                              name: bloc.productList[index].name,
-                              image: bloc.productList[index].image,
-                              unit: bloc.productList[index].unit?.unit ?? "",
-                              qty: 1,
-                              price: bloc.productList[index].price ?? 0.0,
-                              discount: bloc.productList[index].discount ?? 0.0,
-                              totalPrice:
-                                  bloc.productList[index].price ?? 0.0)) ==
-                          true
+                  : orderBloc.model == null
                       ? const SizedBox()
                       : ProductListTile(
                           entity: bloc.productList[index],
@@ -177,7 +166,7 @@ class _AddOrderProductScreenState extends State<AddOrderProductScreen>
                           },
                           delete: () {
                             bloc.add(DeleteProductEvent(
-                                context, bloc.productList[index].id));
+                                context, bloc.productList[index].id!));
                           },
                         ));
         },

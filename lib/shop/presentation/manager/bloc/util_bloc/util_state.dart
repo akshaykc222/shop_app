@@ -15,6 +15,5 @@ class UtilTapState extends UtilState {
   const UtilTapState(this.isOpen);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [isOpen];
 }

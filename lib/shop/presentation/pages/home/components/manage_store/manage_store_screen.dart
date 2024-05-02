@@ -76,36 +76,36 @@ class ManageStoreScreen extends StatelessWidget {
         child: Column(
           children: [
             spacer37,
+            // Row(
+            //   children: [
+            //     Expanded(
+            //         child: cardItem(
+            //             image: AppAssets.storeTiming,
+            //             title: AppStrings.storeTiming,
+            //             onTap: () {
+            //               GoRouter.of(context).pushNamed(AppPages.storeTiming);
+            //             })),
+            //     const SizedBox(
+            //       width: 26,
+            //     ),
+            //     Expanded(
+            //         child: cardItem(
+            //             image: AppAssets.deliveryMan,
+            //             title: AppStrings.deliveryMan,
+            //             onTap: () {
+            //               GoRouter.of(context).pushNamed(AppPages.deliveryman);
+            //             })),
+            //   ],
+            // ),
+            spacer26,
             Row(
               children: [
-                Expanded(
-                    child: cardItem(
-                        image: AppAssets.storeTiming,
-                        title: AppStrings.storeTiming,
-                        onTap: () {
-                          GoRouter.of(context).pushNamed(AppPages.storeTiming);
-                        })),
-                const SizedBox(
-                  width: 26,
-                ),
                 Expanded(
                     child: cardItem(
                         image: AppAssets.deliveryMan,
                         title: AppStrings.deliveryMan,
                         onTap: () {
                           GoRouter.of(context).pushNamed(AppPages.deliveryman);
-                        })),
-              ],
-            ),
-            spacer26,
-            Row(
-              children: [
-                Expanded(
-                    child: cardItem(
-                        image: AppAssets.myCustomer,
-                        title: AppStrings.myCustomer,
-                        onTap: () {
-                          GoRouter.of(context).pushNamed(AppPages.customerList);
                         })),
                 const SizedBox(
                   width: 26,
@@ -114,7 +114,9 @@ class ManageStoreScreen extends StatelessWidget {
                     child: cardItem(
                         image: AppAssets.delivery,
                         title: AppStrings.deliveryArea,
-                        onTap: () {})),
+                        onTap: () {
+                          GoRouter.of(context).pushNamed(AppPages.deliveryArea);
+                        })),
               ],
             ),
           ],

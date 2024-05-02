@@ -17,7 +17,7 @@ class GetDeliveryManListEvent extends DeliveryManEvent {
 
 class AddDeliveryManEvent extends DeliveryManEvent {
   final BuildContext context;
-  final DeliveryManAddRequest request;
+  final DeliveryMenResult request;
 
   const AddDeliveryManEvent({required this.context, required this.request});
 
@@ -27,7 +27,7 @@ class AddDeliveryManEvent extends DeliveryManEvent {
 
 class UpdateDeliveryManEvent extends DeliveryManEvent {
   final BuildContext context;
-  final DeliveryManAddRequest request;
+  final DeliveryMenResult request;
   const UpdateDeliveryManEvent(this.context, this.request);
 
   @override

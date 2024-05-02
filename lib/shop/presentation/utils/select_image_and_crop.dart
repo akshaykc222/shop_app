@@ -55,6 +55,7 @@ Future<CroppedFile?> selectImageAndCropImage(
                                     sourcePath: photo.path,
                                     aspectRatioPresets: [
                                       CropAspectRatioPreset.square,
+                                      CropAspectRatioPreset.ratio16x9,
                                     ],
                                     uiSettings: [
                                       AndroidUiSettings(

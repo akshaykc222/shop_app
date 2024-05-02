@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class MandatoryText extends StatelessWidget {
   final String title;
-
-  const MandatoryText({Key? key, required this.title}) : super(key: key);
+  final bool? requiredTxt;
+  const MandatoryText({Key? key, required this.title, this.requiredTxt})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,18 +19,20 @@ class MandatoryText extends StatelessWidget {
               fontSize: 15,
               fontWeight: FontWeight.w600),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: const [
-            Text(
-              "*",
-              style: TextStyle(color: Colors.red),
-            ),
-            SizedBox(
-              height: 2,
-            )
-          ],
-        )
+        requiredTxt == false
+            ? const SizedBox()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: const [
+                  Text(
+                    "*",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  )
+                ],
+              )
       ],
     );
   }

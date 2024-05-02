@@ -30,7 +30,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
         request: CategoryRequestModel(
             name: widget.categoryEntity.name ?? "",
             image: widget.categoryEntity.image,
-            parentId: int.parse(widget.categoryEntity.id))));
+            parentId: null)));
     scrollController.addListener(pagination);
     super.initState();
   }
@@ -43,7 +43,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
           request: CategoryRequestModel(
               name: widget.categoryEntity.name ?? "",
               image: widget.categoryEntity.image,
-              parentId: int.tryParse(widget.categoryEntity.id))));
+              parentId: null)));
     }
   }
 
@@ -112,10 +112,8 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                         entity: controller.subCategoryList[index],
                         edit: () {},
                         delete: () {
-                          controller.add(DeleteCategoryEvent(
-                              context: context,
-                              id: int.parse(
-                                  controller.subCategoryList[index].id)));
+                          controller.add(
+                              DeleteCategoryEvent(context: context, id: 0));
                         },
                       ));
         },

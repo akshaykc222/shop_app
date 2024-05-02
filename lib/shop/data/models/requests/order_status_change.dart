@@ -1,5 +1,5 @@
 class OrderStatusChange {
-  final int id;
+  final String id;
   final String status;
 
   OrderStatusChange(this.id, this.status);

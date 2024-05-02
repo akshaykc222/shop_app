@@ -1,7 +1,6 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,20 +9,20 @@ import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 
-import '../../../core/custom_exception.dart';
-import '../../data/models/login_response.dart';
 import '../../data/routes/hive_storage_name.dart';
 import '../themes/app_assets.dart';
 
 class AppConstants {
   static const appName = "Shop App ";
+  static const mapKey = "AIzaSyDaGKjCFg-uQoU1p9OA0vUVdUczni4f0qA";
   static const phoneRegex =
       "^(?:\\+971|00971|0)?(?:50|51|52|55|56|2|3|4|6|7|9)\\d{7}\$";
   // static const passportRegex ="^(?!^0+\$)[a-zA-Z0-9]{3,20}\$";
   // static const
   static const emailRegex =
       "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$";
-  static const kEmailError = "Invalid email. please enter a valid email";
+  static const kMobileError =
+      "Invalid Phone number. please enter a valid number";
   static const kPasswordError = "Enter password";
   static const kProductNameError = "Enter Product Name";
   static const kSelectImageError = "choose a image";
@@ -193,29 +192,31 @@ commonErrorDialog(
   ));
 }
 
-Future<UserDataShort> getUserData() async {
-  GetStorage storage = GetStorage();
-  var sh = await SharedPreferences.getInstance();
-
-  String? userData = sh.getString(LocalStorageNames.userData);
-  if (userData == null) {
-    throw UnauthorisedException();
-  }
-
-  return UserDataShort.fromJson(jsonDecode(userData ?? ""));
-}
+// Future<UserDataShort> getUserData() async {
+//   GetStorage storage = GetStorage();
+//   var sh = await SharedPreferences.getInstance();
+//
+//   String? userData = sh.getString(LocalStorageNames.userData);
+//   if (userData == null) {
+//     throw UnauthorisedException();
+//   }
+//
+//   return UserDataShort.fromJson(jsonDecode(userData ?? ""));
+// }
 
 Future<String> getPositionedPrice(String price) async {
-  UserDataShort userDataShort = await getUserData();
+  // UserDataShort userDataShort = await getUserData();
   prettyPrint(price);
-  if (userDataShort.currency.position.toString().toLowerCase() == "left") {
-    return " ${userDataShort.currency.symbol} $price";
-  } else {
-    return " $price ${userDataShort.currency.symbol} ";
-  }
+  // if (userDataShort.currency.position.toString().toLowerCase() == "left") {
+  //   return " ${userDataShort.currency.symbol} $price";
+  // } else {
+  //   return " $price ${userDataShort.currency.symbol} ";
+  // }
+  return price;
 }
-Future<int?> getType() async{
-  SharedPreferences pref =await SharedPreferences.getInstance();
+
+Future<int?> getType() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
   return pref.getInt(LocalStorageNames.type);
 }
 
@@ -362,4 +363,17 @@ deleteDialog(
               ],
             ),
           ));
+}
+
+enum HomeTypes { day, month, year }
+
+Future<bool> isFilePath(String path) async {
+  try {
+    if (await File(path).exists()) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
 }

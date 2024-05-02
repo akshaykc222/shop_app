@@ -1,15 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graphic/graphic.dart';
-import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/dashboard_bloc/dashboard_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_switch.dart';
 
-import '../../../../../data/test_data.dart';
 import '../../../../themes/app_assets.dart';
 import '../../../../themes/app_strings.dart';
 import '../../../../widgets/no_internet_widget.dart';
@@ -163,7 +161,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(10)),
                   child: CachedNetworkImage(
-                    imageUrl: image,
+                    errorWidget: (context, data, child) =>
+                        Image.asset(AppAssets.shop),
+                    imageUrl: AppStrings.imgUrl + image,
                     fit: BoxFit.fill,
                   )),
               Expanded(
@@ -172,6 +172,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     const Spacer(),
                     Text(
                       title,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style:
                           const TextStyle(fontSize: 13, color: AppColors.black),
                     ),
@@ -353,30 +355,32 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         height: 20,
                         fit: BoxFit.fill,
                       ),
-                      Expanded(
-                        child: FutureBuilder(
-                            future: getUserData(),
-                            builder: (
-                              context,
-                              snap,
-                            ) {
-                              if (snap.hasData) {
-                                var d = snap.data as UserDataShort;
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 7.0, right: 10),
-                                  child: Text(
-                                    d.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                );
-                              } else {
-                                return const CircularProgressIndicator();
-                              }
-                            }),
-                      ),
+                      const Expanded(
+                          // child: FutureBuilder(
+                          //     // future: getUserData(),
+                          //     builder: (
+                          //   context,
+                          //   snap,
+                          // ) {
+                          //   if (snap.hasData) {
+                          //     // var d = snap.data as UserDataShort;
+                          //     return Padding(
+                          //       padding:
+                          //           const EdgeInsets.only(left: 7.0, right: 10),
+                          //       child: Text(
+                          //         "",
+                          //         overflow: TextOverflow.ellipsis,
+                          //         style: Theme.of(context).textTheme.bodyLarge,
+                          //       ),
+                          //     );
+                          //   } else {
+                          //     return const CircularProgressIndicator();
+                          //   }
+                          // }),
+                          child: Padding(
+                        padding: EdgeInsets.only(left: 8.0),
+                        child: Text(AppConstants.appName),
+                      )),
                       // const Spacer(),
                       Padding(
                         padding: const EdgeInsets.only(right: 27.0),
@@ -423,6 +427,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             physics: const BouncingScrollPhysics(),
             child: BlocBuilder<DashboardBloc, DashboardState>(
               builder: (context, state) {
+                // print(List<Map<dynamic, dynamic>>.from(
+                //     dashboardBloc.model!.revenueGraph.map((x) => x.toJson())));
                 return Column(
                   children: [
                     Column(
@@ -464,10 +470,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 child: overViewCard(
                                     title: "Pending",
                                     image: AppAssets.confirmed,
-                                    content: dashboardBloc.model?.data
-                                            .statusCount.processingOrders
-                                            .toString() ??
-                                        "0"),
+                                    content:
+                                        "${dashboardBloc.model?.pending ?? 0}"),
                               ),
                               const SizedBox(
                                 width: 14,
@@ -476,10 +480,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 child: overViewCard(
                                     title: "Accepted",
                                     image: AppAssets.processing,
-                                    content: dashboardBloc.model?.data
-                                            .statusCount.confirmedOrders
-                                            .toString() ??
-                                        "0"),
+                                    content:
+                                        "${dashboardBloc.model?.ordered ?? 0}"),
                               ),
                             ],
                           ),
@@ -493,88 +495,83 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 child: overViewCard(
                                     title: "Shipped",
                                     image: AppAssets.readyToDeliver,
-                                    content: dashboardBloc.model?.data
-                                            .statusCount.onthewayOrders
-                                            .toString() ??
-                                        "0"),
+                                    content:
+                                        "${dashboardBloc.model?.onTheWay ?? 0}"),
                               ),
                               const SizedBox(
                                 width: 14,
                               ),
                               Expanded(
                                 child: overViewCard(
-                                    title: "Cancelled",
+                                    title: "On the way",
                                     image: AppAssets.onTheWay,
-                                    content: dashboardBloc.model?.data
-                                            .statusCount.canceledOrders
-                                            .toString() ??
-                                        "0"),
+                                    content:
+                                        "${dashboardBloc.model?.onTheWay ?? 0}"),
                               ),
                             ],
                           ),
                         ),
-                        (dashboardBloc.model?.data.topDeliveryMan.length ??
-                                    0) ==
-                                0
+                        // (dashboardBloc.model?.data.topDeliveryMan.length ??
+                        //             0) ==
+                        //         0
+                        //     ? const SizedBox()
+                        //     : Column(
+                        //         children: [
+                        //           spacer24,
+                        //           Padding(
+                        //             padding: const EdgeInsets.symmetric(
+                        //                 horizontal: 20.0),
+                        //             child: Row(
+                        //               mainAxisAlignment:
+                        //                   MainAxisAlignment.spaceBetween,
+                        //               children: const [
+                        //                 Text(
+                        //                   AppStrings.topDeliveryMan,
+                        //                   style: TextStyle(
+                        //                       color: AppColors.black,
+                        //                       fontSize: 18,
+                        //                       fontWeight: FontWeight.w600),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ),
+                        //           spacer20,
+                        //           SizedBox(
+                        //             width: MediaQuery.of(context).size.width,
+                        //             height: 170,
+                        //             child: ListView.builder(
+                        //                 scrollDirection: Axis.horizontal,
+                        //                 shrinkWrap: true,
+                        //                 padding:
+                        //                     const EdgeInsets.only(left: 20),
+                        //                 physics: const BouncingScrollPhysics(),
+                        //                 itemCount: dashboardBloc.model?.data
+                        //                         .topDeliveryMan.length ??
+                        //                     0,
+                        //                 itemBuilder: (context, index) =>
+                        //                     deliveryBoyCard(
+                        //                         title: dashboardBloc.model!.data
+                        //                             .topDeliveryMan[index].name,
+                        //                         image: dashboardBloc
+                        //                             .model!
+                        //                             .data
+                        //                             .topDeliveryMan[index]
+                        //                             .image,
+                        //                         orders: dashboardBloc
+                        //                             .model!
+                        //                             .data
+                        //                             .topDeliveryMan[index]
+                        //                             .ordersCount
+                        //                             .toString())),
+                        //           ),
+                        //           spacer20,
+                        //         ],
+                        //       ),
+                        (dashboardBloc.model?.topProducts.length ?? 0) == 0
                             ? const SizedBox()
                             : Column(
                                 children: [
-                                  spacer24,
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: const [
-                                        Text(
-                                          AppStrings.topDeliveryMan,
-                                          style: TextStyle(
-                                              color: AppColors.black,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  spacer20,
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 170,
-                                    child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        shrinkWrap: true,
-                                        padding:
-                                            const EdgeInsets.only(left: 20),
-                                        physics: const BouncingScrollPhysics(),
-                                        itemCount: dashboardBloc.model?.data
-                                                .topDeliveryMan.length ??
-                                            0,
-                                        itemBuilder: (context, index) =>
-                                            deliveryBoyCard(
-                                                title: dashboardBloc.model!.data
-                                                    .topDeliveryMan[index].name,
-                                                image: dashboardBloc
-                                                    .model!
-                                                    .data
-                                                    .topDeliveryMan[index]
-                                                    .image,
-                                                orders: dashboardBloc
-                                                    .model!
-                                                    .data
-                                                    .topDeliveryMan[index]
-                                                    .ordersCount
-                                                    .toString())),
-                                  ),
-                                  spacer20,
-                                ],
-                              ),
-                        (dashboardBloc.model?.data.topSellingItems.length ??
-                                    0) ==
-                                0
-                            ? const SizedBox()
-                            : Column(
-                                children: [
+                                  spacer10,
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20.0),
@@ -597,22 +594,19 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                     child: ListView.builder(
                                       physics: const BouncingScrollPhysics(),
                                       padding: const EdgeInsets.only(left: 20),
-                                      itemCount: dashboardBloc.model?.data
-                                              .topSellingItems.length ??
+                                      itemCount: dashboardBloc
+                                              .model?.topProducts.length ??
                                           0,
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       itemBuilder: (context, index) =>
                                           topSellingItems(
-                                              title: dashboardBloc.model!.data
-                                                  .topSellingItems[index].name,
-                                              image: dashboardBloc.model!.data
-                                                  .topSellingItems[index].image,
-                                              sold: dashboardBloc
-                                                  .model!
-                                                  .data
-                                                  .topSellingItems[index]
-                                                  .orderCount
+                                              title: dashboardBloc.model!
+                                                  .topProducts[index].name,
+                                              image: dashboardBloc.model!
+                                                  .topProducts[index].thumbnail,
+                                              sold: dashboardBloc.model!
+                                                  .topProducts[index].ordered
                                                   .toString()),
                                     ),
                                   ),
@@ -670,49 +664,53 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   padding: const EdgeInsets.all(10),
                                   // width: 350,
                                   height: 300,
-                                  child: Chart(
-                                    data: basicData,
-                                    variables: {
-                                      'genre': Variable(
-                                        accessor: (Map map) =>
-                                            map['genre'] as String,
+                                  child: AspectRatio(
+                                    aspectRatio: 1.7,
+                                    child: LineChart(
+                                      LineChartData(
+                                        gridData: FlGridData(show: false),
+                                        titlesData: FlTitlesData(show: false),
+                                        borderData: FlBorderData(
+                                          show: true,
+                                          border: Border.all(
+                                            color: const Color(0xff37434d),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        minX: 0,
+                                        maxX: (dashboardBloc
+                                                    .model?.revenueGraph.length
+                                                    .toDouble() ??
+                                                0) -
+                                            1,
+                                        minY: 0,
+                                        maxY: 10,
+                                        lineBarsData: [
+                                          LineChartBarData(
+                                            spots: List<dynamic>.from(
+                                                    dashboardBloc
+                                                            .model?.revenueGraph
+                                                            .map((x) =>
+                                                                x.toJson()) ??
+                                                        [])
+                                                .asMap()
+                                                .entries
+                                                .map((entry) {
+                                              // print("entry:${entry.value}");
+                                              final x = entry.key.toDouble();
+                                              final y = entry.value['revenue']
+                                                  as double;
+                                              return FlSpot(x, y);
+                                            }).toList(),
+                                            isCurved: true,
+                                            color: Colors.blue,
+                                            dotData: FlDotData(show: false),
+                                            belowBarData:
+                                                BarAreaData(show: false),
+                                          ),
+                                        ],
                                       ),
-                                      'sold': Variable(
-                                        accessor: (Map map) =>
-                                            map['sold'] as num,
-                                      ),
-                                    },
-                                    elements: [
-                                      IntervalElement(
-                                        label: LabelAttr(
-                                            encoder: (tuple) => Label(
-                                                tuple['sold'].toString())),
-                                        elevation:
-                                            ElevationAttr(value: 0, updaters: {
-                                          'tap': {true: (_) => 5}
-                                        }),
-                                        color: ColorAttr(
-                                            value: Defaults.primaryColor,
-                                            updaters: {
-                                              'tap': {
-                                                false: (color) =>
-                                                    color.withAlpha(100)
-                                              }
-                                            }),
-                                        selected: {
-                                          'tap': {0}
-                                        },
-                                      )
-                                    ],
-                                    axes: [
-                                      Defaults.horizontalAxis,
-                                      Defaults.verticalAxis,
-                                    ],
-                                    selections: {
-                                      'tap': PointSelection(dim: Dim.x)
-                                    },
-                                    tooltip: TooltipGuide(),
-                                    crosshair: CrosshairGuide(),
+                                    ),
                                   ),
                                 ),
                               ],

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 
 import '../../data/models/status_model.dart';
 
@@ -90,19 +90,15 @@ class MyCustomPainter extends CustomPainter {
   }
 }
 
-Color? getColor(String status, List<StatusModel> statusList) {
-  var d = statusList.firstWhereOrNull(
-      (element) => element.statusName?.toLowerCase() == status.toLowerCase());
-  String? colorCode = d?.colorCode;
-  if (colorCode == null) {
-    return null;
-  } else {
-    String ccw = colorCode.replaceAll("#", "0xFF");
-    return Color(int.parse(ccw));
-  }
+Color? getColor(
+  String status,
+) {
+  OrderStatus sts =
+      OrderStatus.values.firstWhere((element) => element.name == status);
+  return Colors.red.shade400;
 }
 
-Color? getColorFormStatus(StatusModel? model) {
+Color? getColorFormStatus({StatusModel? model}) {
   if (model != null) {
     String ccw = model.colorCode!.replaceAll("#", "0xFF");
     return Color(int.parse(ccw));

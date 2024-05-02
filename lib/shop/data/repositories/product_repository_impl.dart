@@ -1,23 +1,23 @@
 import 'package:shop_app/shop/data/data_sources/remote/product_remote_data_source.dart';
-import 'package:shop_app/shop/data/models/category_request_model.dart';
-import 'package:shop_app/shop/data/models/category_response.dart';
-import 'package:shop_app/shop/data/models/dashboard_model.dart';
-import 'package:shop_app/shop/data/models/order_detail_model.dart';
-import 'package:shop_app/shop/data/models/order_listing_model.dart';
-import 'package:shop_app/shop/data/models/product_adding_request.dart';
+import 'package:shop_app/shop/data/models/new/delivery_men_model.dart';
 import 'package:shop_app/shop/data/models/product_listing_response.dart';
+import 'package:shop_app/shop/data/models/region_model.dart';
 import 'package:shop_app/shop/data/models/requests/customer_request_model.dart';
 import 'package:shop_app/shop/data/models/requests/edit_order_model.dart';
 import 'package:shop_app/shop/data/models/requests/order_status_change.dart';
 import 'package:shop_app/shop/data/models/status_request.dart';
+import 'package:shop_app/shop/domain/entities/ProductEntity.dart';
 import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
 
 import '../../domain/entities/order_entity_request.dart';
+import '../models/category_response.dart';
 import '../models/customer_model.dart';
-import '../models/product_model.dart';
+import '../models/dashboard_model.dart';
+import '../models/new/product_model.dart';
+import '../models/order_model_new.dart';
 
 class ProductRepositoryImpl extends ProductRepository {
   final ProductRemoteDataSource dataSource;
@@ -46,7 +46,7 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<String> addCategory(CategoryRequestModel model) {
+  Future<String> addCategory(CategoryModel model) {
     return dataSource.addCategory(model);
   }
 
@@ -73,7 +73,7 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<String> addProducts(ProductAddingRequest request) {
+  Future<String> addProducts(ProductEntity request) {
     return dataSource.addProducts(request);
   }
 
@@ -99,12 +99,12 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<OrderListModel> getOrders(OrderEntityRequest request) {
+  Future<OrderModelNew> getOrders(OrderEntityRequest request) {
     return dataSource.getOrder(request);
   }
 
   @override
-  Future<OrderDetailModel> getOrderDetail(int id) {
+  Future<OrderDataNew> getOrderDetail(String id) {
     return dataSource.getOrderDetail(id);
   }
 
@@ -129,7 +129,37 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<DashBoardModel> getDashBoard() {
-    return dataSource.getDashBoard();
+  Future<DashboardModel> getDashBoard(String type) {
+    return dataSource.getDashBoard(type);
+  }
+
+  @override
+  Future<RegionData> addRegion(RegionData data, {bool? update}) {
+    return dataSource.addRegion(data, update: update);
+  }
+
+  @override
+  Future<RegionModel> getRegions(int pageNumber) {
+    return dataSource.getRegions(pageNumber);
+  }
+
+  @override
+  Future<ImageEntity> addProductImages(ImageEntity entity) {
+    return dataSource.addProductImages(entity);
+  }
+
+  @override
+  Future<DeliveryMenResult> addDeliveryMen(DeliveryMenResult data) {
+    return dataSource.addDeliveryMen(data);
+  }
+
+  @override
+  Future<void> deleteDeliveryMen(int id) {
+    return dataSource.deleteDeliveryMen(id);
+  }
+
+  @override
+  Future<DeliveryMenModel> getDeliveryMen(int page) {
+    return dataSource.getDeliveryMen(page);
   }
 }

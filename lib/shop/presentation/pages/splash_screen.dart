@@ -66,10 +66,11 @@ class _SplashScreenState extends State<SplashScreen>
           String? token = value.getString(LocalStorageNames.token);
           String? userData = value.getString(LocalStorageNames.userData);
           storage.write(LocalStorageNames.token, token);
+
           if (userData != null) {
             storage.write(LocalStorageNames.userData, jsonDecode(userData));
           }
-
+          print("Token $token");
           if (token != null) {
             return GoRouter.of(context).goNamed(AppPages.home);
           } else {

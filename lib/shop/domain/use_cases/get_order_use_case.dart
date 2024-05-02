@@ -1,16 +1,16 @@
 import 'package:shop_app/core/usecase.dart';
-import 'package:shop_app/shop/data/models/order_listing_model.dart';
 import 'package:shop_app/shop/domain/repositories/product_repository.dart';
 
+import '../../data/models/order_model_new.dart';
 import '../entities/order_entity_request.dart';
 
-class GetOrderUseCase extends UseCase<OrderListModel, OrderEntityRequest> {
+class GetOrderUseCase extends UseCase<OrderModelNew, OrderEntityRequest> {
   final ProductRepository repository;
 
   GetOrderUseCase(this.repository);
 
   @override
-  Future<OrderListModel> call(OrderEntityRequest params) {
+  Future<OrderModelNew> call(OrderEntityRequest params) {
     return repository.getOrders(params);
   }
 }

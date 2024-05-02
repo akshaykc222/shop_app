@@ -3,24 +3,39 @@ import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../domain/entities/ProductEntity.dart';
+
 part 'variant_event.dart';
 part 'variant_state.dart';
 
 class VariantBloc extends Bloc<VariantEvent, VariantState> {
-  VariantBloc() : super(const VariantInitial(1)) {
+  VariantBloc() : super(VariantInitial(1, [QuantityVariant()])) {
     on<VariantEvent>((event, emit) {});
     on<VariantAdd>((event, emit) {
-      emit(VariantAddSate(state.count + 1));
+      var count = state.count + 1;
+      emit(VariantAddSate(count, [...state.variants, QuantityVariant()]));
     });
     on<VariantDecrement>((event, emit) {
-      emit(VariantDeleteState(state.count - 1));
+      var count = state.count - 1;
+      if (state.variants.isNotEmpty) {
+        state.variants.removeLast();
+
+        emit(VariantDeleteState(
+          count,
+          List.from(state.variants),
+        ));
+      }
     });
 
     on<VariantColorSelected>((event, emit) {
-      emit(VariantColorAdd(state.count, colorsList.last));
+      // emit(VariantColorAdd(state.count, colorsList.last));
     });
     on<DeleteColor>((event, emit) {
-      emit(VariantColorRemove(state.count, removedColor));
+      // emit(VariantColorRemove(state.count, removedColor));
+    });
+    on<VariantsBulkAdd>((event, emit) {
+      print("Adding events ${event.variants}");
+      emit(VariantAddSate(state.count, [...event.variants, ...state.variants]));
     });
   }
   static VariantBloc get(context) => BlocProvider.of(context);

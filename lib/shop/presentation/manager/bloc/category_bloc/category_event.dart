@@ -51,7 +51,7 @@ class GetSubCategoryEvent extends CategoryEvent {
 
 class UpdateCategoryEvent extends CategoryEvent {
   final BuildContext context;
-  final CategoryRequestModel request;
+  final CategoryModel request;
 
   UpdateCategoryEvent({required this.context, required this.request});
 }

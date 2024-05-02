@@ -340,20 +340,19 @@ class CustomerCard extends StatelessWidget {
                               fontWeight: FontWeight.w600),
                         ),
                       ),
-                      Expanded(
-                        child: FutureBuilder(
-                            future: getUserData(),
-                            builder: (context, data) {
-                              return Text(
-                                "${data.data?.currency.position == "left" ? data.data?.currency.symbol : ""}" +
-                                    " ${model.totalSales} ${data.data?.currency.position == "left" ? "" : data.data?.currency.symbol}",
-                                style: const TextStyle(
-                                    color: AppColors.skyBlue,
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w600),
-                              );
-                            }),
-                      )
+                      // Expanded(
+                      //   child: FutureBuilder(
+                      //       // future: getUserData(),
+                      //       builder: (context, data) {
+                      //     return const Text(
+                      //       "",
+                      //       style: TextStyle(
+                      //           color: AppColors.skyBlue,
+                      //           fontSize: 19,
+                      //           fontWeight: FontWeight.w600),
+                      //     );
+                      //   }),
+                      // )
                     ],
                   )
                 ],

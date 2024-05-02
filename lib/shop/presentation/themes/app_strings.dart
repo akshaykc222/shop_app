@@ -33,6 +33,7 @@ class AppStrings {
   static const manageStore = "Manage Store";
   static const yesAcceptOrder = "Yes, Accept Order";
   static const yesRejecttOrder = "Yes, Reject Order";
+  static const yesDispatchOrder = "Yes, Dispatch Order";
   static const orders = "Orders";
   static const payment = "Payment";
   static const paymentMethod = "Payment Method";
@@ -85,7 +86,7 @@ class AppStrings {
   static const newDeliveryMan = "New delivery Men";
   static const grandTotal = "Grand Total";
   static const storeAdmin = "Store Admin";
-  static const addAnotherSize = "Add another size";
+  static const addAnotherSize = "Add another Variant";
   static const forgotPass = "Forgot your password?";
   static const reasonForEditing = "Reason for editing";
   static const delete = "Delete";
@@ -144,6 +145,7 @@ class AppStrings {
   static const String city = "City";
   static const String pinCode = "Pin code";
   static const String state = "State";
+  static const String dispatch = "Dispatch Order";
 
   static const String close = "Close";
   static const String storeTiming = "Store Timings";
@@ -176,4 +178,5 @@ class AppStrings {
       "If you need to proceed with your action select 'Yes'.";
   static const String deleteAction =
       "Once deleted you can not undo the action.";
+  static const imgUrl = "https://vinodakash604.pythonanywhere.com/media/";
 }

@@ -54,3 +54,5 @@ class AppAssets {
   static const catCount = "assets/icons/cat_count.png";
   // static const search = "assets/icons/search.png";
 }
+
+enum OrderStatus { ORDERED, CANCELLED, PENDING, DELIVERED, ON_THE_WAY }

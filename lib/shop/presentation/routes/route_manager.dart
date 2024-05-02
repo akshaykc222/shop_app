@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_app/core/pretty_printer.dart';
+import 'package:shop_app/shop/data/models/region_model.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/customer_list.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_area.dart';
+import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_area_add.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/delivery_man_list.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/deliveryman_add.dart';
 import 'package:shop_app/shop/presentation/pages/home/components/manage_store/components/store_timing_screen.dart';
@@ -14,6 +17,7 @@ import 'package:shop_app/shop/presentation/pages/home/components/products/catego
 import 'package:shop_app/shop/presentation/pages/home/components/products/tag_list_screen.dart';
 import 'package:shop_app/shop/presentation/pages/home/login/login_screen.dart';
 import 'package:shop_app/shop/presentation/pages/splash_screen.dart';
+import 'package:shop_app/shop/presentation/utils/location_chooser.dart';
 
 import '../../data/models/category_response.dart';
 import '../../domain/entities/category_entity.dart';
@@ -164,6 +168,27 @@ class AppRouteManager {
             child: CategoryAddForm(
               entity: model,
             ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return ScaleTransition(
+                scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                child: child,
+              );
+              // return FadeTransition(
+              //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+              //   child: child,
+              // );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        name: AppPages.deliveryArea,
+        path: "/${AppPages.deliveryArea}",
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const DeliveryArea(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return ScaleTransition(
@@ -414,6 +439,72 @@ class AppRouteManager {
           );
         },
       ),
+      GoRoute(
+          path: "/${AppPages.deliveryAreaEdit}/:id",
+          name: AppPages.deliveryAreaEdit,
+          pageBuilder: (context, state) {
+            String? param = state.params['id'];
+
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const DeliveryAreaAdd(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return ScaleTransition(
+                  scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                  child: child,
+                );
+                // return FadeTransition(
+                //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+                //   child: child,
+                // );
+              },
+            );
+          }),
+      GoRoute(
+          path: "/${AppPages.locationSelect}",
+          name: AppPages.locationSelect,
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const LocationChooser(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return ScaleTransition(
+                  scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                  child: child,
+                );
+                // return FadeTransition(
+                //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+                //   child: child,
+                // );
+              },
+            );
+          }),
+      GoRoute(
+          path: "/${AppPages.deliveryAreaAdd}",
+          name: AppPages.deliveryAreaAdd,
+          pageBuilder: (context, state) {
+            var data = state.extra;
+
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: DeliveryAreaAdd(
+                id: data == null ? null : data as RegionData,
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return ScaleTransition(
+                  scale: CurveTween(curve: Curves.easeInOut).animate(animation),
+                  child: child,
+                );
+                // return FadeTransition(
+                //   opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+                //   child: child,
+                // );
+              },
+            );
+          }),
       GoRoute(
         name: AppPages.deliverymanEdit,
         path: "/${AppPages.deliverymanEdit}/:id",

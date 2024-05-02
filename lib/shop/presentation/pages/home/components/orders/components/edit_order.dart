@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shop_app/shop/domain/entities/cart_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -13,7 +14,6 @@ import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 import 'package:shop_app/shop/presentation/widgets/delete_alert.dart';
 
-import '../../../../../../data/models/order_detail_model.dart';
 import '../../../../../utils/app_constants.dart';
 import '../../../../../widgets/ripple_round.dart';
 import '../order_screen.dart';
@@ -148,8 +148,7 @@ class EditOrder extends StatelessWidget {
                                                             ChangeOrderProductsEvent(
                                                                 context,
                                                                 controller
-                                                                    .model!
-                                                                    .orderId
+                                                                    .model!.id
                                                                     .toString(),
                                                                 editController
                                                                     .text));
@@ -249,7 +248,7 @@ class EditOrder extends StatelessWidget {
                                             AppColors.black.withOpacity(0.43)),
                                     children: <TextSpan>[
                                       TextSpan(
-                                          text: '${state.model.orderId}',
+                                          text: '${state.model.id}',
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: AppColors.black)),
@@ -262,11 +261,10 @@ class EditOrder extends StatelessWidget {
                                         width: 20,
                                         height: 20,
                                         child: RippleButton(
-                                          color: getColorFormStatus(
-                                              state.model.orderStatus),
+                                          color: getColorFormStatus(),
                                         )),
                                     Text(
-                                      state.model.orderStatus.statusName ?? "",
+                                      state.model.status ?? "",
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w400),
                                     )
@@ -296,7 +294,8 @@ class EditOrder extends StatelessWidget {
                                             AppColors.black.withOpacity(0.43)),
                                     children: <TextSpan>[
                                       TextSpan(
-                                          text: '${state.model.itemCount}',
+                                          text:
+                                              '${state.model.cart.products.length}',
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: AppColors.black)),
@@ -304,7 +303,7 @@ class EditOrder extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  "${DateFormat.yMMMEd().format(state.model.orderDatetime)}\t${DateFormat.jm().format(state.model.orderDatetime)}",
+                                  "${DateFormat.yMMMEd().format(state.model.createdDate)}\t${DateFormat.jm().format(state.model.createdDate)}",
                                   style: const TextStyle(
                                       color: AppColors.black,
                                       fontWeight: FontWeight.normal,
@@ -325,12 +324,12 @@ class EditOrder extends StatelessWidget {
                                           physics:
                                               const NeverScrollableScrollPhysics(),
                                           itemCount:
-                                              state.model.productDetails.length,
+                                              state.model.cart.products.length,
                                           itemBuilder: (context, index) =>
                                               OrderProducts(
                                                 showEdit: true,
-                                                model: state.model
-                                                    .productDetails[index],
+                                                model: state
+                                                    .model.cart.products[index],
                                               ))
                                       : Container();
                                 },
@@ -363,18 +362,13 @@ class EditOrder extends StatelessWidget {
                                       color: AppColors.offWhiteTextColor,
                                       fontSize: 15),
                                 ),
-                                FutureBuilder(
-                                    future: getPositionedPrice(controller
-                                        .getGrandTotal()
-                                        .toStringAsFixed(2)),
-                                    builder: (context, data) {
-                                      return Text(
-                                        data.data ?? "",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.black),
-                                      );
-                                    })
+                                Text(
+                                  state.model.paymentRef.orderAmount
+                                      .toStringAsFixed(2),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.black),
+                                )
                               ],
                             ),
                           ),
@@ -433,19 +427,14 @@ class EditOrder extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18),
                                 ),
-                                FutureBuilder(
-                                    future: getPositionedPrice(controller
-                                        .getGrandTotal()
-                                        .toStringAsFixed(2)),
-                                    builder: (context, data) {
-                                      return Text(
-                                        data.data ?? "",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                            color: AppColors.primaryColor),
-                                      );
-                                    })
+                                Text(
+                                  state.model.cart.total?.toStringAsFixed(2) ??
+                                      "0",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: AppColors.primaryColor),
+                                )
                               ],
                             ),
                           ),
@@ -601,7 +590,7 @@ class EditDeliveryCharge extends StatelessWidget {
 
 class OrderProducts extends StatefulWidget {
   final bool? showEdit;
-  final OrderProductModel model;
+  final CartProduct model;
   const OrderProducts({Key? key, this.showEdit, required this.model})
       : super(key: key);
 
@@ -614,7 +603,7 @@ class _OrderProductsState extends State<OrderProducts> {
   late OrderBloc orderBloc;
   @override
   void initState() {
-    qtyValueNotifier = ValueNotifier(widget.model.qty);
+    qtyValueNotifier = ValueNotifier(widget.model.quantity);
     orderBloc = OrderBloc.get(context);
     super.initState();
   }
@@ -631,314 +620,296 @@ class _OrderProductsState extends State<OrderProducts> {
         decoration: const BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.all(Radius.circular(20))),
-        child: Padding(
-          padding: const EdgeInsets.only(right: 20.0),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Column(
+        child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: widget.model.qtyType.length,
+            itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 17.0),
-                        child: Container(
-                          width: 82,
-                          height: 82,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              // color: Colors.grey,
-                              image: DecorationImage(
-                                  onError: (
-                                    e,
-                                    s,
-                                  ) =>
-                                      Image.asset(AppAssets.errorImage),
-                                  image: CachedNetworkImageProvider(
-                                      widget.model.image))),
-                        ),
-                      ),
-                      spacer10,
-                      widget.showEdit == true
-                          ? ValueListenableBuilder(
-                              valueListenable: qtyValueNotifier,
-                              builder: (context, data, child) {
-                                return Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        if (qtyValueNotifier.value > 1) {
-                                          qtyValueNotifier.value--;
-                                          orderBloc.changeQty(
-                                              qty: qtyValueNotifier.value,
-                                              orderProductModel: widget.model);
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 23,
-                                        height: 23,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.offWhite1,
-                                            borderRadius:
-                                                BorderRadius.circular(6)),
-                                        child: Center(
-                                          child: Text(
-                                            "-",
-                                            style: TextStyle(
-                                                color: AppColors.black
-                                                    .withOpacity(0.52)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 7,
-                                    ),
-                                    Container(
-                                      width: 23,
-                                      height: 23,
-                                      decoration: BoxDecoration(
-                                          color: AppColors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Center(
-                                        child: Text(
-                                          qtyValueNotifier.value.toString(),
-                                          style: const TextStyle(
-                                              color: AppColors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 7,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        qtyValueNotifier.value++;
-                                        orderBloc.changeQty(
-                                            qty: qtyValueNotifier.value,
-                                            orderProductModel: widget.model);
-                                      },
-                                      child: Container(
-                                        width: 23,
-                                        height: 23,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.offWhite1,
-                                            borderRadius:
-                                                BorderRadius.circular(6)),
-                                        child: Center(
-                                          child: Text(
-                                            "+",
-                                            style: TextStyle(
-                                                color: AppColors.black
-                                                    .withOpacity(0.52)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              })
-                          : Container(),
-                      spacer10
-                    ],
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      widget.model.name,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    widget.showEdit == true
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              showDeleteAlert(
-                                                  context: context,
-                                                  title: 'Are you sure?',
-                                                  desc:
-                                                      "Do you want to remove ${widget.model.name}",
-                                                  onDelete: () {
-                                                    orderBloc.removeProduct(
-                                                        widget.model);
-                                                  },
-                                                  onCancel: () {
-                                                    Navigator.pop(context);
-                                                  });
-                                            },
-                                            child: Image.asset(
-                                              AppAssets.delete,
-                                              width: 16,
-                                              height: 21,
-                                            ))
-                                        : Container()
-                                  ],
-                                ),
-                                // spacer10,
-                                // Row(
-                                //   mainAxisAlignment:
-                                //       MainAxisAlignment.spaceBetween,
-                                //   mainAxisSize: MainAxisSize.max,
-                                //   children: [
-                                //     RichText(
-                                //       text: TextSpan(
-                                //         text: 'Size : ',
-                                //         style: TextStyle(
-                                //             fontSize: 15,
-                                //             fontWeight: FontWeight.w600,
-                                //             color: AppColors.black
-                                //                 .withOpacity(0.52)),
-                                //         children: <TextSpan>[
-                                //           TextSpan(
-                                //               text: widget.model.unit,
-                                //               style: const TextStyle(
-                                //                   fontWeight: FontWeight.bold,
-                                //                   color: AppColors.black)),
-                                //         ],
-                                //       ),
-                                //     ),
-                                //     const SizedBox()
-                                //     // Row(
-                                //     //   children: [
-                                //     //     Text("Colour : ",
-                                //     //         style: TextStyle(
-                                //     //             fontSize: 15,
-                                //     //             fontWeight: FontWeight.w600,
-                                //     //             color: AppColors.black
-                                //     //                 .withOpacity(0.52))),
-                                //     //     const SizedBox(
-                                //     //       width: 8,
-                                //     //     ),
-                                //     //     Container(
-                                //     //       width: 18,
-                                //     //       height: 18,
-                                //     //       decoration: BoxDecoration(
-                                //     //           color: Colors.red,
-                                //     //           borderRadius:
-                                //     //               BorderRadius.circular(2)),
-                                //     //     )
-                                //     //   ],
-                                //     // ),
-                                //   ],
-                                // ),
-                                spacer10,
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        text: 'Qty : ',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.black
-                                                .withOpacity(0.52)),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: '${widget.model.qty}',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.black)),
-                                        ],
-                                      ),
-                                    ),
-                                    FutureBuilder(
-                                        future: getPositionedPrice(
-                                            '${widget.model.price}'),
-                                        builder: (context, data) {
-                                          return RichText(
-                                            text: TextSpan(
-                                              text: 'Price : ',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: AppColors.black
-                                                      .withOpacity(0.52)),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                    text: data.data,
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            AppColors.black)),
-                                              ],
-                                            ),
-                                          );
-                                        }),
-                                  ],
-                                ),
-                                spacer10,
-                                Row(
-                                  // mainAxisAlignment:
-                                  //     MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ValueListenableBuilder(
-                                      builder: (context, data, child) {
-                                        return FutureBuilder(
-                                            future: getPositionedPrice(
-                                                '${widget.model.price * qtyValueNotifier.value}'),
-                                            builder: (context, data) {
-                                              return RichText(
-                                                text: TextSpan(
-                                                  text: ' Total Price : ',
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: AppColors.black
-                                                          .withOpacity(0.52)),
-                                                  children: <TextSpan>[
-                                                    TextSpan(
-                                                        text: data.data,
-                                                        style: const TextStyle(
-                                                            fontSize: 19,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: AppColors
-                                                                .primaryColor)),
-                                                  ],
-                                                ),
-                                              );
-                                            });
-                                      },
-                                      valueListenable: qtyValueNotifier,
-                                    ),
-                                  ],
-                                ),
-                                spacer20
-                              ],
-                            ),
+                          const SizedBox(
+                            width: 16,
                           ),
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 17.0),
+                                child: Container(
+                                  width: 82,
+                                  height: 82,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      // color: Colors.grey,
+                                      image: DecorationImage(
+                                          onError: (
+                                            e,
+                                            s,
+                                          ) =>
+                                              Image.asset(AppAssets.errorImage),
+                                          image: CachedNetworkImageProvider(
+                                              widget.model.qtyType[index]
+                                                      .variant.variantImage ??
+                                                  ""))),
+                                ),
+                              ),
+                              spacer10,
+                              widget.showEdit == true
+                                  ? ValueListenableBuilder(
+                                      valueListenable: qtyValueNotifier,
+                                      builder: (context, data, child) {
+                                        return Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                if (qtyValueNotifier.value >
+                                                    1) {
+                                                  qtyValueNotifier.value--;
+                                                  // orderBloc.changeQty(
+                                                  //     qty: qtyValueNotifier.value,
+                                                  //     orderProductModel: widget.model.product);
+                                                }
+                                              },
+                                              child: Container(
+                                                width: 23,
+                                                height: 23,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.offWhite1,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6)),
+                                                child: Center(
+                                                  child: Text(
+                                                    "-",
+                                                    style: TextStyle(
+                                                        color: AppColors.black
+                                                            .withOpacity(0.52)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 7,
+                                            ),
+                                            Container(
+                                              width: 23,
+                                              height: 23,
+                                              decoration: BoxDecoration(
+                                                  color: AppColors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6)),
+                                              child: Center(
+                                                child: Text(
+                                                  widget
+                                                          .model
+                                                          .qtyType[index]
+                                                          .variant
+                                                          .variantName ??
+                                                      "",
+                                                  style: const TextStyle(
+                                                      color: AppColors.black),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 7,
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                qtyValueNotifier.value++;
+                                                // orderBloc.changeQty(
+                                                //     qty: qtyValueNotifier.value,
+                                                //     orderProductModel: widget.model);
+                                              },
+                                              child: Container(
+                                                width: 23,
+                                                height: 23,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.offWhite1,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6)),
+                                                child: Center(
+                                                  child: Text(
+                                                    "+",
+                                                    style: TextStyle(
+                                                        color: AppColors.black
+                                                            .withOpacity(0.52)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      })
+                                  : Container(),
+                              spacer10
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              widget.model.product.name,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            widget.showEdit == true
+                                                ? GestureDetector(
+                                                    onTap: () {
+                                                      showDeleteAlert(
+                                                          context: context,
+                                                          title:
+                                                              'Are you sure?',
+                                                          desc:
+                                                              "Do you want to remove ${widget.model.product.name}",
+                                                          onDelete: () {
+                                                            // orderBloc.removeProduct(
+                                                            //     widget.model);
+                                                          },
+                                                          onCancel: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          });
+                                                    },
+                                                    child: Image.asset(
+                                                      AppAssets.delete,
+                                                      width: 16,
+                                                      height: 21,
+                                                    ))
+                                                : Container()
+                                          ],
+                                        ),
+                                        spacer10,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                text: 'Qty : ',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: AppColors.black
+                                                        .withOpacity(0.52)),
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                      text:
+                                                          '${widget.model.qtyType[index].qty}',
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              AppColors.black)),
+                                                ],
+                                              ),
+                                            ),
+                                            FutureBuilder(
+                                                future: getPositionedPrice(
+                                                    '${widget.model.qtyType[index].variant.price}'),
+                                                builder: (context, data) {
+                                                  return RichText(
+                                                    text: TextSpan(
+                                                      text: 'Price : ',
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: AppColors.black
+                                                              .withOpacity(
+                                                                  0.52)),
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                            text: data.data,
+                                                            style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: AppColors
+                                                                    .black)),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }),
+                                          ],
+                                        ),
+                                        spacer10,
+                                        Row(
+                                          // mainAxisAlignment:
+                                          //     MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            ValueListenableBuilder(
+                                              builder: (context, data, child) {
+                                                return FutureBuilder(
+                                                    future: getPositionedPrice(
+                                                        '${(widget.model.qtyType[index].variant.price ?? 0) * widget.model.qtyType[index].qty}'),
+                                                    builder: (context, data) {
+                                                      return RichText(
+                                                        text: TextSpan(
+                                                          text:
+                                                              ' Total Price : ',
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: AppColors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.52)),
+                                                          children: <TextSpan>[
+                                                            TextSpan(
+                                                                text: data.data,
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        19,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: AppColors
+                                                                        .primaryColor)),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    });
+                                              },
+                                              valueListenable: qtyValueNotifier,
+                                            ),
+                                          ],
+                                        ),
+                                        spacer20
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       ),
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
+                    ],
+                  ),
+                )),
       ),
     );
   }

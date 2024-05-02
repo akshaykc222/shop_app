@@ -176,19 +176,19 @@ class _CategoryListState extends State<CategoryList>
                               entity: controller.categoryList[index],
                               edit: () {},
                               delete: () {
-                            showDeleteAlert(context: context,
-                                title: "Are you sure?",
-                                onDelete: (){
-                                  controller.add(DeleteCategoryEvent(
-                                      context: context,
-                                      id: int.parse(
-                                          controller.categoryList[index].id)));
-                                },
-                                onCancel: (){
-                              Navigator.pop(context);
-                                }
-                            );
-
+                                showDeleteAlert(
+                                    context: context,
+                                    title: "Are you sure?",
+                                    onDelete: () {
+                                      controller.add(DeleteCategoryEvent(
+                                          context: context,
+                                          id: int.parse(controller
+                                                  .categoryList[index].id ??
+                                              "")));
+                                    },
+                                    onCancel: () {
+                                      Navigator.pop(context);
+                                    });
                               },
                             ));
         },
@@ -224,7 +224,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
   @override
   void initState() {
     controller = CategoryBloc.get(context);
-    _notifier = ValueNotifier(widget.entity.status);
+    _notifier = ValueNotifier(false);
     super.initState();
   }
 
@@ -242,12 +242,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
         onTap: () {
           if (widget.selectable == true) {
             widget.select!();
-          } else {
-            if (widget.entity.parentId == 0) {
-              GoRouter.of(context).pushNamed(AppPages.subCategory,
-                  params: {'model': jsonEncode(widget.entity.toJson())});
-            }
-          }
+          } else {}
         },
         child: Row(
           children: [
@@ -323,7 +318,7 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                               children: [
                                                 Container(
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       horizontal: 5,
                                                       vertical: 2),
                                                   decoration: BoxDecoration(
@@ -347,51 +342,36 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                               ],
                                             ),
                                           ),
-                                          widget.entity.parentId != 0
-                                              ? const SizedBox()
-                                              : Container(
-                                                  width: 70,
+                                          Container(
+                                            width: 70,
+                                            decoration: BoxDecoration(
+                                                color: AppColors.offWhite1,
+                                                border: Border.all(
+                                                    color: AppColors.offWhite1,
+                                                    width: 2),
+                                                borderRadius:
+                                                    BorderRadius.circular(15)),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 2),
                                                   decoration: BoxDecoration(
-                                                      color:
-                                                          AppColors.offWhite1,
-                                                      border: Border.all(
-                                                          color: AppColors
-                                                              .offWhite1,
-                                                          width: 2),
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              15)),
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal: 5,
-                                                                vertical: 2),
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                            color: AppColors
-                                                                .white),
-                                                        child: Image.asset(
-                                                          AppAssets.catCount,
-                                                          width: 20,
-                                                          height: 20,
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                          child: Center(
-                                                              child: Text(widget
-                                                                      .entity
-                                                                      .subCatCount
-                                                                      .toString() ??
-                                                                  "0")))
-                                                    ],
+                                                              15),
+                                                      color: AppColors.white),
+                                                  child: Image.asset(
+                                                    AppAssets.catCount,
+                                                    width: 20,
+                                                    height: 20,
                                                   ),
                                                 ),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -436,8 +416,11 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                                     controller.add(
                                                         ChangeCategoryEvent(
                                                             context,
-                                                            int.parse(widget
-                                                                .entity.id),
+                                                            int.tryParse(widget
+                                                                        .entity
+                                                                        .id ??
+                                                                    "") ??
+                                                                0,
                                                             _notifier.value));
                                                   },
                                                   height: 27,
@@ -466,8 +449,11 @@ class _CategoryListTileState extends State<CategoryListTile> {
                                     GoRouter.of(context).pushNamed(
                                         AppPages.editCategory,
                                         params: {
-                                          'model':
-                                              jsonEncode(widget.entity.toJson())
+                                          'model': jsonEncode({
+                                            "id": widget.entity.id,
+                                            "name": widget.entity.name,
+                                            "icon": widget.entity.image,
+                                          })
                                         });
                                     break;
                                   case 3:

@@ -15,7 +15,8 @@ class CommonTextField extends StatefulWidget {
   final Function(String)? validator;
   final bool? passwordField;
   final int? lines;
-
+  final int? maxLength;
+  final Function(String)? onChange;
   // final FocusNode focusNode;
   const CommonTextField(
       {Key? key,
@@ -30,7 +31,9 @@ class CommonTextField extends StatefulWidget {
       this.validator,
       this.textInputType,
       this.passwordField,
-      this.lines})
+      this.lines,
+      this.maxLength,
+      this.onChange})
       : super(key: key);
 
   @override
@@ -56,7 +59,10 @@ class _CommonTextFieldState extends State<CommonTextField> {
           padding: const EdgeInsets.only(left: 4.0),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: MandatoryText(title: widget.title),
+            child: MandatoryText(
+              title: widget.title,
+              requiredTxt: widget.required,
+            ),
           ),
         ),
         spacer10,
@@ -70,6 +76,9 @@ class _CommonTextFieldState extends State<CommonTextField> {
               }
             });
           },
+          onChanged:
+              widget.onChange == null ? null : (val) => widget.onChange!(val),
+          maxLength: widget.maxLength,
           controller: widget.controller,
           validator: widget.validator == null
               ? null
@@ -94,7 +103,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
               label: widget.widgetLabel ??
                   Text(
                     widget.title,
-                    style: TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey),
                   ),
               enabled: widget.enable ?? true),
         ),

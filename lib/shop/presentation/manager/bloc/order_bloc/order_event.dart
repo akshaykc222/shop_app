@@ -52,7 +52,7 @@ class SearchOrderEvent extends OrderEvent {
 
 class GetOrderDetailEvent extends OrderEvent {
   final BuildContext context;
-  final int id;
+  final String id;
 
   GetOrderDetailEvent(this.context, this.id);
 
@@ -79,7 +79,11 @@ class ChangeOrderProductsEvent extends OrderEvent {
 class ChangeStatusProductEvent extends OrderEvent {
   final BuildContext context;
   final String status;
-  ChangeStatusProductEvent(this.context, this.status);
+
+  ChangeStatusProductEvent(
+    this.context,
+    this.status,
+  );
 
   @override
   List<Object?> get props => [];

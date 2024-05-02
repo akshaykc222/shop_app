@@ -5,6 +5,7 @@ import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 class AppTheme {
   static ThemeData getTheme() {
     return ThemeData(
+      useMaterial3: false,
         // bottomSheetTheme: BottomSheetThemeData(
         //   elevation: 0,Ra
         // ),
@@ -49,7 +50,7 @@ class AppTheme {
         textTheme: TextTheme(
           bodyLarge: const TextStyle(
               fontWeight: FontWeight.w600,
-              fontSize: 23,
+              fontSize: 20,
               color: AppColors.black),
           // headline5: const TextStyle(
           //     color: AppColors.black,

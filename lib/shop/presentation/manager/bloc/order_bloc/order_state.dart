@@ -25,7 +25,7 @@ class OrderMoreLoadedState extends OrderState {}
 class OrderErrorState extends OrderState {}
 
 class SelectedTagState extends OrderState {
-  final StatusModel? tag;
+  final OrderStatus? tag;
 
   SelectedTagState(this.tag);
 }
@@ -49,7 +49,7 @@ class AddOrderProductsState extends OrderState {
 }
 
 class OrderDetailsLoaded extends OrderState {
-  final OrderDetailModel model;
+  final OrderDataNew model;
 
   OrderDetailsLoaded(this.model);
 }

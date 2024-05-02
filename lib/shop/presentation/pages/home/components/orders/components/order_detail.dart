@@ -7,6 +7,9 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/shop/data/routes/app_remote_routes.dart';
+import 'package:shop_app/shop/domain/enums.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
@@ -15,6 +18,7 @@ import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 import 'package:shop_app/shop/presentation/widgets/ripple_round.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../data/routes/hive_storage_name.dart';
 import '../../../../../manager/bloc/order_bloc/order_bloc.dart';
 import 'edit_order.dart';
 
@@ -45,20 +49,25 @@ class _OrderDetailsState extends State<OrderDetails> {
     }
   }
 
+  Future<bool> getType() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getBool(LocalStorageNames.type) ?? false;
+  }
+
   late BuildContext _context;
   final ReceivePort _port = ReceivePort();
   @override
   void initState() {
     _context = context;
     controller = OrderBloc.get(context);
-    controller.add(GetOrderDetailEvent(context, int.parse(widget.id)));
+    controller.add(GetOrderDetailEvent(context, widget.id));
     IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
     _port.listen((dynamic data) {
       setState(() {});
     });
 
-    FlutterDownloader.registerCallback(downloadCallback);
+    // FlutterDownloader.registerCallback(downloadCallback);
     super.initState();
   }
 
@@ -91,11 +100,14 @@ class _OrderDetailsState extends State<OrderDetails> {
                       ? Align(
                           alignment: Alignment.center,
                           child: Text(
-                            "Order #${state.model.orderId}",
+                            "Order #${state.model.id}",
                             maxLines: 1,
                             textWidthBasis: null,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontSize: 12),
                           ),
                         )
                       : const SizedBox();
@@ -104,7 +116,7 @@ class _OrderDetailsState extends State<OrderDetails> {
               BlocBuilder<OrderBloc, OrderState>(
                 builder: (context, state) {
                   if (state is OrderDetailsLoaded) {
-                    if (state.model.orderStatus.statusName?.toLowerCase() !=
+                    if (state.model.status.toLowerCase() !=
                         "Canceled".toLowerCase()) {
                       return IconButton(
                           onPressed: () {
@@ -128,87 +140,203 @@ class _OrderDetailsState extends State<OrderDetails> {
               )
             ],
           )),
-      bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
-        builder: (context, state) {
-          if (state is OrderDetailsLoaded) {
-            if (state.model.orderStatus.statusName?.toLowerCase() !=
-                "Canceled".toLowerCase()) {
-              return Container(
-                height: 70,
-                decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius:
-                        const BorderRadius.only(topLeft: Radius.circular(20)),
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 4,
-                          color: Colors.grey.shade300,
-                          offset: const Offset(0, -1))
-                    ]),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                          onPressed: () => {
-                                showModalBottomSheet(
-                                    context: context,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(19)),
-                                    builder: (context) => RejectOrder(
-                                          ctx: _context,
-                                        ))
-                              },
-                          child: const Text(
-                            AppStrings.rejectOrder,
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600),
-                          )),
-                    ),
-                    Expanded(
-                      child: SizedBox(
-                        height: 70,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                disabledForegroundColor: Colors.white,
-                                disabledBackgroundColor: Colors.grey,
-                                backgroundColor: Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20)))),
-                            onPressed: state.model.orderStatus.statusName
-                                        ?.toLowerCase() ==
-                                    "confirmed".toLowerCase()
-                                ? null
-                                : () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        builder: (context) =>
-                                            AcceptOrder(ctx: _context));
-                                  },
-                            child: const Text(
-                              AppStrings.acceptOrder,
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            )),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }
-          }
-          return const SizedBox(
-            height: 1,
-          );
-        },
-      ),
+      bottomNavigationBar: FutureBuilder(
+          future: getType(),
+          builder: (context, data) {
+            return !data.hasData
+                ? const SizedBox()
+                : BlocBuilder<OrderBloc, OrderState>(
+                    builder: (context, state) {
+                      if (state is OrderDetailsLoaded) {
+                        if (data.data == true &&
+                            state.model.status.toLowerCase() ==
+                                ProductStatus.ON_THE_WAY.name.toLowerCase()) {
+                          return Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 4,
+                                      color: Colors.grey.shade300,
+                                      offset: const Offset(0, -1))
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 70,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            disabledForegroundColor:
+                                                Colors.white,
+                                            disabledBackgroundColor:
+                                                Colors.grey,
+                                            backgroundColor: Colors.green,
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(20)))),
+                                        onPressed:
+                                            state.model.status.toLowerCase() ==
+                                                    "confirmed".toLowerCase()
+                                                ? null
+                                                : () {
+                                                    showModalBottomSheet(
+                                                        context: context,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20)),
+                                                        builder: (context) =>
+                                                            CompleteOrder(
+                                                                ctx: _context));
+                                                  },
+                                        child: const Text(
+                                          "Complete Order",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600),
+                                        )),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        } else if (state.model.status.toLowerCase() ==
+                            ProductStatus.ORDERED.name.toLowerCase()) {
+                          return Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 4,
+                                      color: Colors.grey.shade300,
+                                      offset: const Offset(0, -1))
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                      onPressed: () => {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            19)),
+                                                builder: (context) =>
+                                                    RejectOrder(
+                                                      ctx: _context,
+                                                    ))
+                                          },
+                                      child: const Text(
+                                        AppStrings.rejectOrder,
+                                        style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w600),
+                                      )),
+                                ),
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 70,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            disabledForegroundColor:
+                                                Colors.white,
+                                            disabledBackgroundColor:
+                                                Colors.grey,
+                                            backgroundColor: Colors.green,
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(20)))),
+                                        onPressed:
+                                            state.model.status.toLowerCase() ==
+                                                    "confirmed".toLowerCase()
+                                                ? null
+                                                : () {
+                                                    showModalBottomSheet(
+                                                        context: context,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20)),
+                                                        builder: (context) =>
+                                                            AcceptOrder(
+                                                                ctx: _context));
+                                                  },
+                                        child: const Text(
+                                          AppStrings.acceptOrder,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600),
+                                        )),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        } else if (state.model.status.toLowerCase() ==
+                            ProductStatus.ORDERED.name.toLowerCase()) {
+                          return Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 4,
+                                      color: Colors.grey.shade300,
+                                      offset: const Offset(0, -1))
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                      onPressed: () => {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            19)),
+                                                builder: (context) =>
+                                                    DispatchOrder(
+                                                      ctx: _context,
+                                                    ))
+                                          },
+                                      child: const Text(
+                                        AppStrings.dispatch,
+                                        style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w600),
+                                      )),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                      return const SizedBox(
+                        height: 1,
+                      );
+                    },
+                  );
+          }),
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
           return state is OrderLoadingState
@@ -232,7 +360,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "${DateFormat.yMMMEd().format(state.model.orderDatetime)}\t${DateFormat.jm().format(state.model.orderDatetime)}",
+                                    "${DateFormat.yMMMEd().format(state.model.createdDate)}\t${DateFormat.jm().format(state.model.createdDate)}",
                                     style: const TextStyle(
                                         color: AppColors.black,
                                         fontWeight: FontWeight.normal,
@@ -244,12 +372,10 @@ class _OrderDetailsState extends State<OrderDetails> {
                                           width: 20,
                                           height: 20,
                                           child: RippleButton(
-                                            color: getColorFormStatus(
-                                                state.model.orderStatus),
+                                            color: getColorFormStatus(),
                                           )),
                                       Text(
-                                        state.model.orderStatus.statusName ??
-                                            "",
+                                        state.model.status ?? "",
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w400),
                                       )
@@ -280,7 +406,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                               .withOpacity(0.43)),
                                       children: <TextSpan>[
                                         TextSpan(
-                                            text: '${state.model.itemCount}',
+                                            text:
+                                                '${state.model.cart.products.length}',
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: AppColors.black)),
@@ -293,7 +420,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                           await getApplicationDocumentsDirectory();
 
                                       await FlutterDownloader.enqueue(
-                                        url: state.model.receiptUrl,
+                                        url:
+                                            "${AppRemoteRoutes.baseUrl}api/v1/download_pdf/${widget.id}/",
                                         headers: {},
                                         savedDir: path.path,
                                         showNotification: true,
@@ -327,9 +455,9 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 padding: EdgeInsets.zero,
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: state.model.productDetails.length,
+                                itemCount: state.model.cart.products.length,
                                 itemBuilder: (context, index) => OrderProducts(
-                                      model: state.model.productDetails[index],
+                                      model: state.model.cart.products[index],
                                     )),
                             spacer26,
                             Padding(
@@ -355,7 +483,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                           borderRadius:
                                               BorderRadius.circular(8)),
                                       child: Text(
-                                        state.model.paymentMethod,
+                                        state.model.paymentRef.status,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.deepOrangeAccent),
@@ -380,7 +508,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                   ),
                                   FutureBuilder(
                                       future: getPositionedPrice(state
-                                          .model.grandTotal
+                                          .model.paymentRef.orderAmount
                                           .toStringAsFixed(2)),
                                       builder: (context, data) {
                                         return Text(
@@ -401,8 +529,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: const [
+                                  const Row(
+                                    children: [
                                       Text(
                                         AppStrings.delivery,
                                         style: TextStyle(
@@ -429,9 +557,11 @@ class _OrderDetailsState extends State<OrderDetails> {
                                       // )
                                     ],
                                   ),
-                                  const Text(
-                                    'Free',
-                                    style: TextStyle(
+                                  Text(
+                                    state.model.region?.deliveryCharge
+                                            .toStringAsFixed(2) ??
+                                        "0",
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.normal,
                                         color: Colors.green),
                                   )
@@ -454,7 +584,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                   ),
                                   FutureBuilder(
                                       future: getPositionedPrice(state
-                                          .model.grandTotal
+                                          .model.paymentRef.orderAmount
                                           .toStringAsFixed(2)),
                                       builder: (context, data) {
                                         return Text(
@@ -491,6 +621,219 @@ class _OrderDetailsState extends State<OrderDetails> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Transaction Id",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              state.model.paymentRef
+                                                  .transactionId,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Type",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              state.model.paymentRef.type,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Status",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              state.model.paymentRef.status,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Status",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              state.model.paymentRef.status,
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            spacer10,
+                            Container(
+                              decoration: const BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(50),
+                                      topRight: Radius.circular(50))),
+                              child: Column(
+                                children: [
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Selected Date",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              DateFormat("dd/MM/yyyy").format(
+                                                  state.model.orderDate),
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Slot",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                            Text(
+                                              "${state.model.slot!.startTime}-${state.model.slot!.endTime}",
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  spacer20,
+                                ],
+                              ),
+                            ),
+                            spacer10,
+                            Container(
+                              decoration: const BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(50),
+                                      topRight: Radius.circular(50))),
+                              child: Column(
+                                children: [
+                                  spacer20,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
                                         const Text(
                                           AppStrings.customerDetails,
                                           style: TextStyle(
@@ -502,8 +845,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                                           onTap: () {
                                             Share.share("demo");
                                           },
-                                          child: Row(
-                                            children: const [
+                                          child: const Row(
+                                            children: [
                                               Icon(
                                                 Icons.share,
                                                 color: Colors.blue,
@@ -539,93 +882,76 @@ class _OrderDetailsState extends State<OrderDetails> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              state.model.customerDetails.name,
+                                              state.model.address.name,
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   color: AppColors.black,
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            state.model.customerDetails.phone ==
-                                                        null ||
-                                                    state.model.customerDetails
-                                                            .phone ==
-                                                        ""
-                                                ? const SizedBox()
-                                                : Text(
-                                                    state.model.customerDetails
-                                                            .phone ??
-                                                        "",
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        color: AppColors.black,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  )
+                                            Text(
+                                              state.model.address.phoneNumber ??
+                                                  "",
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            )
                                           ],
                                         ),
-                                        state.model.customerDetails.phone ==
-                                                    null ||
-                                                state.model.customerDetails
-                                                        .phone ==
-                                                    ""
-                                            ? const SizedBox()
-                                            : Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _makingPhoneCall(state
-                                                              .model
-                                                              .customerDetails
-                                                              .phone ??
-                                                          "");
-                                                    },
-                                                    child: Image.asset(
-                                                      AppAssets.phone,
-                                                      width: 30,
-                                                      height: 30,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 30,
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () async {
-                                                      if (await canLaunchUrl(
-                                                          Uri.parse(
-                                                              'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'))) {
-                                                        await launchUrl(Uri.parse(
-                                                            'https://wa.me/=+91${state.model.customerDetails.phone}?text=hi'));
-                                                      } else {
-                                                        throw 'Could not launch ';
-                                                      }
-                                                    },
-                                                    child: Image.asset(
-                                                      AppAssets.whatsApp,
-                                                      width: 30,
-                                                      height: 30,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                ],
-                                              )
+                                        Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                _makingPhoneCall(state.model
+                                                        .address.phoneNumber ??
+                                                    "");
+                                              },
+                                              child: Image.asset(
+                                                AppAssets.phone,
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 30,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                if (await canLaunchUrl(Uri.parse(
+                                                    'https://wa.me/=+91${state.model.address.phoneNumber}?text=hi'))) {
+                                                  await launchUrl(Uri.parse(
+                                                      'https://wa.me/=+91${state.model.address.phoneNumber}?text=hi'));
+                                                } else {
+                                                  throw 'Could not launch ';
+                                                }
+                                              },
+                                              child: Image.asset(
+                                                AppAssets.whatsApp,
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                          ],
+                                        )
                                       ],
                                     ),
                                   ),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 30.0),
-                                        child: Text(
-                                          state.model.customerDetails.email,
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              color: AppColors.black,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      )),
+                                  // Align(
+                                  //     alignment: Alignment.centerLeft,
+                                  //     child: Padding(
+                                  //       padding:
+                                  //           const EdgeInsets.only(left: 30.0),
+                                  //       child: Text(
+                                  //         state.model.address.,
+                                  //         style: const TextStyle(
+                                  //             fontSize: 15,
+                                  //             color: AppColors.black,
+                                  //             fontWeight: FontWeight.w600),
+                                  //       ),
+                                  //     )),
                                   spacer20,
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -644,9 +970,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                                   color: AppColors
                                                       .offWhiteTextColor),
                                             ),
-                                            Text(
-                                                state.model.customerDetails
-                                                    .address,
+                                            Text(state.model.address.address,
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 15,
@@ -666,37 +990,36 @@ class _OrderDetailsState extends State<OrderDetails> {
                                       children: [
                                         ItemCard(
                                             title: AppStrings.localityArea,
-                                            value: state
-                                                .model.customerDetails.city),
+                                            value: state.model.address.address),
                                         const SizedBox(
                                           width: 50,
                                         ),
-                                        ItemCard(
-                                            title: AppStrings.landMark,
-                                            value: state.model.customerDetails
-                                                .locality),
+                                        // ItemCard(
+                                        //     title: AppStrings.landMark,
+                                        //     value: state.model.customerDetails
+                                        //         .locality),
                                       ],
                                     ),
                                   ),
                                   spacer20,
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30.0),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 30.0),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        ItemCard(
-                                            title: AppStrings.city,
-                                            value: state
-                                                .model.customerDetails.city),
-                                        const SizedBox(
-                                          width: 120,
-                                        ),
-                                        ItemCard(
-                                            title: AppStrings.pinCode,
-                                            value: state
-                                                .model.customerDetails.zip),
+                                        // ItemCard(
+                                        //     title: AppStrings.city,
+                                        //     value: state
+                                        //         .model.customerDetails.city),
+                                        // const SizedBox(
+                                        //   width: 120,
+                                        // ),
+                                        // ItemCard(
+                                        //     title: AppStrings.pinCode,
+                                        //     value: state
+                                        //         .model.customerDetails.zip),
                                       ],
                                     ),
                                   ),
@@ -706,10 +1029,10 @@ class _OrderDetailsState extends State<OrderDetails> {
                                         horizontal: 30.0),
                                     child: Row(
                                       children: [
-                                        ItemCard(
-                                            title: AppStrings.state,
-                                            value: state
-                                                .model.customerDetails.state),
+                                        // ItemCard(
+                                        //     title: AppStrings.state,
+                                        //     value: state
+                                        //         .model.customerDetails.state),
                                       ],
                                     ),
                                   ),
@@ -815,11 +1138,83 @@ class AcceptOrder extends StatelessWidget {
                 height: 45,
                 child: ElevatedButton(
                     onPressed: () {
-                      orderBloc.add(ChangeStatusProductEvent(ctx, "confirmed"));
+                      orderBloc.add(ChangeStatusProductEvent(
+                          ctx, ProductStatus.ON_THE_WAY.name.toUpperCase()));
                       Navigator.pop(context);
                     },
                     child: const Text(
                       AppStrings.yesAcceptOrder,
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 18),
+                    ))),
+            spacer10
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class CompleteOrder extends StatelessWidget {
+  final BuildContext ctx;
+
+  const CompleteOrder({Key? key, required this.ctx}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final orderBloc = OrderBloc.get(context);
+    return Wrap(
+      children: [
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Image.asset(
+                  AppAssets.smiley,
+                  width: 20,
+                  height: 20,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Complete Order",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                            color: AppColors.lightGrey, shape: BoxShape.circle),
+                        child: const Icon(Icons.close)))
+              ],
+            ),
+            spacer20,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Text(AppStrings.acceptDesc),
+            ),
+            spacer20,
+            SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: 45,
+                child: ElevatedButton(
+                    onPressed: () {
+                      orderBloc.add(ChangeStatusProductEvent(
+                          ctx, ProductStatus.DELIVERED.name.toUpperCase()));
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Complete Order",
                       style: TextStyle(
                           fontWeight: FontWeight.normal, fontSize: 18),
                     ))),
@@ -886,13 +1281,88 @@ class RejectOrder extends StatelessWidget {
                 height: 45,
                 child: ElevatedButton(
                     onPressed: () {
-                      orderBloc.add(ChangeStatusProductEvent(ctx, "canceled"));
+                      orderBloc.add(ChangeStatusProductEvent(
+                          ctx, OrderStatus.ON_THE_WAY.name.toUpperCase()));
                       Navigator.pop(context);
                     },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     child: const Text(
                       AppStrings.yesRejecttOrder,
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 18),
+                    ))),
+            spacer10
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class DispatchOrder extends StatelessWidget {
+  final BuildContext ctx;
+
+  const DispatchOrder({Key? key, required this.ctx}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final orderBloc = OrderBloc.get(context);
+    return Wrap(
+      children: [
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Image.asset(
+                  AppAssets.onTheWay,
+                  width: 20,
+                  height: 20,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  AppStrings.dispatch,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                          color: AppColors.lightGrey, shape: BoxShape.circle),
+                      child: const Icon(Icons.close)),
+                ),
+              ],
+            ),
+            spacer20,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Text(AppStrings.rejectDesc),
+            ),
+            spacer20,
+            SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: 45,
+                child: ElevatedButton(
+                    onPressed: () {
+                      orderBloc.add(ChangeStatusProductEvent(
+                          ctx, OrderStatus.ON_THE_WAY.name.toUpperCase()));
+                      Navigator.pop(context);
+                    },
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: const Text(
+                      AppStrings.yesDispatchOrder,
                       style: TextStyle(
                           fontWeight: FontWeight.normal, fontSize: 18),
                     ))),

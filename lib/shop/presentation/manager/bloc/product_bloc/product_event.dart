@@ -119,8 +119,13 @@ class RefreshDetailsEvent extends ProductEvent {
 class AddProductEvent extends ProductEvent {
   final BuildContext context;
   final int? id;
+  final String? path;
 
-  const AddProductEvent({required this.context, this.id});
+  const AddProductEvent({
+    required this.context,
+    this.id,
+    this.path,
+  });
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -143,4 +148,23 @@ class GetPaginatedProducts extends ProductEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class ChangeVariantEvent extends ProductEvent {
+  final List<QuantityVariant> variants;
+
+  const ChangeVariantEvent(this.variants);
+
+  @override
+  List<Object?> get props => [variants];
+}
+
+class UploadMoreImagesEvent extends ProductEvent{
+  final ImageEntity entity;
+
+  const UploadMoreImagesEvent(this.entity);
+
+  @override
+
+  List<Object?> get props => [entity];
 }

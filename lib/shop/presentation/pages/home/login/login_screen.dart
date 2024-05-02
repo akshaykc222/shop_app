@@ -12,9 +12,14 @@ import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
 import '../../../manager/bloc/bottom_navigation_bloc/bottom_navigation_cubit.dart';
 import '../../../themes/app_colors.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = LoginBloc.get(context);
@@ -151,28 +156,27 @@ class LoginScreen extends StatelessWidget {
                   // ),
 
                   CommonTextField(
-                    title: AppStrings.email,
-                    controller: controller.emailController,
-                    prefix: SizedBox(
+                    title: AppStrings.mobileNumber,
+                    controller: controller.phoneController,
+                    textInputType: TextInputType.phone,
+                    prefix: const SizedBox(
                       width: 15,
                       height: 15,
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          AppAssets.email,
-                          color: Colors.black,
-                          width: 15,
-                          height: 15,
+                        padding: EdgeInsets.all(10.0),
+                        child: Icon(
+                          Icons.phone_android_outlined,
+                          color: Colors.grey,
+                          size: 30,
                         ),
                       ),
                     ),
                     showSuffixIcon: true,
                     validator: (val) {
                       if (val.isEmpty) {
-                        return AppConstants.kEmailError;
-                      } else if (!RegExp(AppConstants.emailRegex)
-                          .hasMatch(val)) {
-                        return AppConstants.kEmailError;
+                        return AppConstants.kMobileError;
+                      } else if (val.length != 10) {
+                        return AppConstants.kMobileError;
                       }
                       return null;
                     },
@@ -215,7 +219,7 @@ class LoginScreen extends StatelessWidget {
                     validator: (val) {
                       if (val.isEmpty) {
                         return AppConstants.kPasswordError;
-                      } else if (val.length < 6) {
+                      } else if (val.length < 4) {
                         return AppConstants.kPasswordInvalidError;
                       }
                       return null;
@@ -232,11 +236,11 @@ class LoginScreen extends StatelessWidget {
                               if (controller.formKey.currentState!.validate()) {
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 controller.add(LoginWithPassword(
-                                    email: controller.emailController.text,
+                                    email: controller.phoneController.text,
                                     password:
                                         controller.passwordController.text,
                                     onSuccess: () {
-                                      controller.emailController.clear();
+                                      controller.phoneController.clear();
                                       controller.passwordController.clear();
                                       var reset =
                                           BottomNavigationCubit.get(context);

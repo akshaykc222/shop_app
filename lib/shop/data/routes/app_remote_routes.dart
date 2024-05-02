@@ -1,18 +1,19 @@
 class AppRemoteRoutes {
-  static const baseUrl = "https://groceryprovider.retrostacks.com/";
-  static const login = "api/v1/auth/vendor/login";
-  static const categories = "api/v1/vendor/categories";
+  static const baseUrl = "https://vinodakash604.pythonanywhere.com/";
+  // static const baseUrl = "http://192.168.1.75:8000/";
+  static const login = "api/v1/login/";
+  static const categories = "api/v1/categories_new/";
   static const unit = "api/v1/vendor/units";
   static const tags = "api/v1/vendor/tags";
-  static const addProduct = "api/v1/vendor/item/store";
-  static const deleteProduct = "api/v1/vendor/item/";
+  static const addProduct = "api/v1/products_new/";
+  static const deleteProduct = "api/v1/products_new/";
   static const storeTiming = "api/v1/vendor/store_timing";
   static const updateStoreTiming = "api/v1/vendor/store_timing/store";
   static const updateCategoryStatus = "api/v1/vendor/categories/status";
-  static const orders = "api/v1/vendor/orders";
-  static const products = "api/v1/vendor/item/list?";
+  static const orders = "api/v1/orders/";
+  static const products = "api/v1/products_new/";
   static const productStatusUpdate = "api/v1/vendor/item/update-status";
-  static const getDetailProduct = "api/v1/vendor/item/details/";
+  static const getDetailProduct = "api/v1/products_new/";
   static const addCategory = "api/v1/vendor/categories/create";
   static const storeOffline = "api/v1/vendor/update-status";
   static const customers = "api/v1/vendor/customer-listing";
@@ -23,5 +24,8 @@ class AppRemoteRoutes {
   static const accountDetails = "api/v1/vendor/account-details";
   static const changePassword = "api/v1/vendor/change-password";
   static const changeAccountDetail = "api/v1/vendor/account-details";
-  static const dashBoard = "api/v1/vendor/dashboard";
+  static const dashBoard = "api/shop/dashboard/";
+  static const region = "api/v1/regions/";
+  static const productImages = "api/v1/product_images_add/";
+  static const deliveryMen = "api/v1/staff-users/";
 }

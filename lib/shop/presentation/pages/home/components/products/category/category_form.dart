@@ -4,13 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shop_app/shop/data/models/category_request_model.dart';
+import 'package:shop_app/shop/data/models/category_response.dart';
 import 'package:shop_app/shop/domain/entities/category_entity.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/category_bloc/category_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_colors.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/common_text_field.dart';
-import 'package:shop_app/shop/presentation/widgets/mandatory_text.dart';
 
 import '../../../../../themes/app_strings.dart';
 import '../../../../../utils/select_image_and_crop.dart';
@@ -243,22 +242,15 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
                           controller.add(AddCategoryEvent(
                               name: controller.categoryNameController.text,
                               filePath: imagePickerResult.value,
-                              parentId: controller.selectedParentCat?.id == null
-                                  ? null
-                                  : int.parse(controller.selectedParentCat!.id),
+                              parentId: null,
                               context: context));
                         } else {
                           controller.add(UpdateCategoryEvent(
                               context: context,
-                              request: CategoryRequestModel(
+                              request: CategoryModel(
                                   name: controller.categoryNameController.text,
                                   image: imagePickerResult.value,
-                                  parentId:
-                                      controller.selectedParentCat?.id == null
-                                          ? null
-                                          : int.parse(
-                                              controller.selectedParentCat!.id),
-                                  id: int.tryParse(widget.entity!.id))));
+                                  id: widget.entity!.id)));
                         }
                       },
                 style: ElevatedButton.styleFrom(
@@ -289,45 +281,45 @@ class _CategoryAddFormState extends State<CategoryAddForm> {
                 height: 20,
               ),
               buildTextField(),
-              spacer20,
-              const MandatoryText(
-                title: AppStrings.parentCatQuest,
-              ),
-              BlocBuilder<CategoryBloc, CategoryState>(
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          const Text(AppStrings.yes),
-                          Radio(
-                              value: AppStrings.yes,
-                              groupValue: controller.selectedChoice,
-                              onChanged: (val) {
-                                if (widget.entity == null) {
-                                  controller.changeSelectedChoice(
-                                      val ?? AppStrings.yes);
-                                }
-                              }),
-                          const Text(AppStrings.no),
-                          Radio(
-                              value: AppStrings.no,
-                              groupValue: controller.selectedChoice,
-                              onChanged: (val) {
-                                if (widget.entity == null) {
-                                  controller.changeSelectedChoice(
-                                      val ?? AppStrings.yes);
-                                }
-                              }),
-                        ],
-                      ),
-                      controller.selectedChoice == AppStrings.no
-                          ? buildTextFieldCategory()
-                          : const SizedBox()
-                    ],
-                  );
-                },
-              )
+              // spacer20,
+              // const MandatoryText(
+              //   title: AppStrings.parentCatQuest,
+              // ),
+              // BlocBuilder<CategoryBloc, CategoryState>(
+              //   builder: (context, state) {
+              //     return Column(
+              //       children: [
+              //         Row(
+              //           children: [
+              //             const Text(AppStrings.yes),
+              //             Radio(
+              //                 value: AppStrings.yes,
+              //                 groupValue: controller.selectedChoice,
+              //                 onChanged: (val) {
+              //                   if (widget.entity == null) {
+              //                     controller.changeSelectedChoice(
+              //                         val ?? AppStrings.yes);
+              //                   }
+              //                 }),
+              //             const Text(AppStrings.no),
+              //             Radio(
+              //                 value: AppStrings.no,
+              //                 groupValue: controller.selectedChoice,
+              //                 onChanged: (val) {
+              //                   if (widget.entity == null) {
+              //                     controller.changeSelectedChoice(
+              //                         val ?? AppStrings.yes);
+              //                   }
+              //                 }),
+              //           ],
+              //         ),
+              //         controller.selectedChoice == AppStrings.no
+              //             ? buildTextFieldCategory()
+              //             : const SizedBox()
+              //       ],
+              //     );
+              //   },
+              // )
             ],
           ),
         ),

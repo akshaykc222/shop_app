@@ -21,5 +21,9 @@ class AppPages {
   static const customerList = "customer_list";
   static const reOrder = "reOrder";
   static const tagSelect = "tagSelect";
+  static const locationSelect = "locationSelect";
+  static const deliveryArea = "deliveryArea";
+  static const deliveryAreaAdd = "deliveryAreaAdd";
+  static const deliveryAreaEdit = "deliveryAreaEdit";
   static const addNewOrderProduct = "addNewProduct";
 }

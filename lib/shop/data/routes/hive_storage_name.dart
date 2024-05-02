@@ -1,6 +1,6 @@
 class LocalStorageNames {
   static const token = "token";
-  static const type = "token";
+  static const type = "type";
   static const userData = "userData";
   static const tags = "tags";
   static const products = "products";

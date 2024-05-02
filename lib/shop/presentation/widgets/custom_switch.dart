@@ -55,9 +55,8 @@ class _CustomSwitchState extends State<CustomSwitch>
             } else {
               _animationController.forward();
             }
-            widget.value == false
-                ? widget.onChanged(true)
-                : widget.onChanged(false);
+            widget.onChanged(
+                _circleAnimation.value == Alignment.centerLeft ? true : false);
           },
           child: Container(
             width: widget.width ?? 48.0,
@@ -72,8 +71,7 @@ class _CustomSwitchState extends State<CustomSwitch>
               padding: const EdgeInsets.only(
                   top: 2.0, bottom: 2.0, right: 2.0, left: 2.0),
               child: Container(
-                alignment:
-                    widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                alignment: _circleAnimation.value,
                 child: Container(
                   width: widget.switchWidth ?? 20.0,
                   height: widget.switchHeight ?? 20.0,

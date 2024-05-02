@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shop_app/shop/data/models/order_model_new.dart';
+import 'package:shop_app/shop/data/routes/hive_storage_name.dart';
 import 'package:shop_app/shop/domain/entities/order_entity_request.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/routes/app_pages.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 import 'package:shop_app/shop/presentation/widgets/ripple_round.dart';
 
-import '../../../../../data/models/order_listing_model.dart';
 import '../../../../themes/app_assets.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../themes/app_strings.dart';
@@ -47,8 +49,13 @@ class _OrderScreenState extends State<OrderScreen>
           request: OrderEntityRequest(
               pageNo: '0',
               search: searchController.text,
-              status: controller.selectedFilter?.status)));
+              status: controller.selectedFilter?.name)));
     }
+  }
+
+  Future<bool> getType() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getBool(LocalStorageNames.type) ?? false;
   }
 
   @override
@@ -245,49 +252,77 @@ class _OrderScreenState extends State<OrderScreen>
                 return SizedBox(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.only(left: 20),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: controller.statusList.length,
-                      itemBuilder: (context, index) => GestureDetector(
-                            onTap: () {
-                              controller.add(SearchOrderEvent(
-                                  searchController.text,
-                                  context: context,
-                                  status: controller.statusList[index].status));
-                              controller.changeSelectedFilter(
-                                  controller.statusList[index]);
-                              controller.add(ChangeTagEvent());
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  left: 5, right: 5, bottom: 6, top: 6),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                  color: controller.selectedFilter ==
-                                          controller.statusList[index]
-                                      ? AppColors.primaryColor
-                                      : null,
-                                  borderRadius: BorderRadius.circular(25),
-                                  border: Border.all(
-                                      color: AppColors.primaryColor,
-                                      width: 1.2)),
-                              child: Center(
-                                child: Text(
-                                  controller.statusList[index].statusName ?? "",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: controller.selectedFilter ==
-                                              controller.statusList[index]
-                                          ? AppColors.white
-                                          : AppColors.primaryColor),
-                                ),
-                              ),
-                            ),
-                          )),
+                  child: FutureBuilder(
+                      future: getType(),
+                      builder: (context, data) {
+                        return !data.hasData
+                            ? SizedBox()
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.only(left: 20),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: data.data == true
+                                    ? OrderStatus.values
+                                        .where((element) =>
+                                            element == OrderStatus.DELIVERED ||
+                                            element == OrderStatus.ON_THE_WAY)
+                                        .length
+                                    : OrderStatus.values.length,
+                                itemBuilder: (context, index) {
+                                  var d = OrderStatus.values
+                                      .where((element) =>
+                                          element == OrderStatus.DELIVERED ||
+                                          element == OrderStatus.ON_THE_WAY)
+                                      .toList();
+                                  return GestureDetector(
+                                    onTap: () {
+                                      controller.add(SearchOrderEvent(
+                                          searchController.text,
+                                          context: context,
+                                          status: data.data == true
+                                              ? d[index].name
+                                              : OrderStatus.values[index].name
+                                                  .toUpperCase()));
+                                      controller.changeSelectedFilter(
+                                          data.data == true
+                                              ? d[index]
+                                              : OrderStatus.values[index]);
+                                      controller.add(ChangeTagEvent());
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 5, right: 5, bottom: 6, top: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 4),
+                                      decoration: BoxDecoration(
+                                          color: controller.selectedFilter ==
+                                                  OrderStatus.values[index]
+                                              ? AppColors.primaryColor
+                                              : null,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                          border: Border.all(
+                                              color: AppColors.primaryColor,
+                                              width: 1.2)),
+                                      child: Center(
+                                        child: Text(
+                                          data.data == true
+                                              ? d[index].name
+                                              : OrderStatus.values[index].name,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color: controller
+                                                          .selectedFilter ==
+                                                      OrderStatus.values[index]
+                                                  ? AppColors.white
+                                                  : AppColors.primaryColor),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
+                      }),
                 );
               },
             ),
@@ -429,7 +464,7 @@ class _OrderScreenState extends State<OrderScreen>
 }
 
 class OrderListCard extends StatelessWidget {
-  final OrderModel model;
+  final OrderDataNew model;
   const OrderListCard({Key? key, required this.model}) : super(key: key);
 
   @override
@@ -437,8 +472,8 @@ class OrderListCard extends StatelessWidget {
     final controller = OrderBloc.get(context);
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).pushNamed(AppPages.detail,
-            params: {'id': model.orderId.toString()});
+        GoRouter.of(context)
+            .pushNamed(AppPages.detail, params: {'id': model.id.toString()});
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -454,15 +489,18 @@ class OrderListCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Order # ${model.orderId}",
-                    style: const TextStyle(
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15),
+                  Flexible(
+                    child: Text(
+                      "Order # ${model.id}",
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15),
+                    ),
                   ),
                   Text(
-                    getFormatedDate(model.orderDatetime),
+                    getFormatedDate(model.createdDate),
                     style: const TextStyle(
                         color: AppColors.offBlack,
                         fontWeight: FontWeight.normal,
@@ -490,7 +528,7 @@ class OrderListCard extends StatelessWidget {
                             color: AppColors.black),
                         children: <TextSpan>[
                           TextSpan(
-                              text: model.itemCount.toString(),
+                              text: model.cart.products.length.toString(),
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                         ],
@@ -498,7 +536,7 @@ class OrderListCard extends StatelessWidget {
                     ),
                     spacer10,
                     FutureBuilder(
-                        future: getPositionedPrice("${model.orderTotal}"),
+                        future: getPositionedPrice("${model.cart.total}"),
                         builder: (context, data) {
                           // prettyPrint("POSITION :$data");
                           return data.hasData
@@ -551,7 +589,7 @@ class OrderListCard extends StatelessWidget {
                         color: Colors.deepOrangeAccent.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10)),
                     child: Text(
-                      model.paymentMethod,
+                      model.paymentRef.type,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.deepOrangeAccent),
@@ -580,14 +618,15 @@ class OrderListCard extends StatelessWidget {
                         height: 20,
                         child: RippleButton(
                           color: getColor(
-                              model.orderStatus, controller.statusList),
+                            model.status,
+                          ),
                         ),
                       ),
                       const SizedBox(
                         width: 5,
                       ),
                       Text(
-                        model.orderStatus,
+                        model.status,
                         style: const TextStyle(
                             color: AppColors.black,
                             fontWeight: FontWeight.w600,
@@ -598,7 +637,7 @@ class OrderListCard extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       GoRouter.of(context).pushNamed(AppPages.detail,
-                          params: {'id': model.orderId.toString()});
+                          params: {'id': model.id.toString()});
                     },
                     child: SizedBox(
                       width: 80,

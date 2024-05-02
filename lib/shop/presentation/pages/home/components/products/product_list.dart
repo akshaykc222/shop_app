@@ -10,7 +10,7 @@ import 'package:shop_app/shop/presentation/themes/app_assets.dart';
 import 'package:shop_app/shop/presentation/themes/app_strings.dart';
 import 'package:shop_app/shop/presentation/widgets/delete_alert.dart';
 
-import '../../../../../data/models/product_model.dart';
+import '../../../../../data/models/new/product_model.dart';
 import '../../../../themes/app_colors.dart';
 import '../../../../utils/app_constants.dart';
 
@@ -136,7 +136,7 @@ class _ProductListState extends State<ProductList> {
                 itemCount: controller.productList.length + 1,
                 itemBuilder: (context, index) =>
                     controller.productList.length == index
-                        ? controller.currentPage < controller.lastPage
+                        ? !controller.lastPage
                             ? Shimmer.fromColors(
                                 highlightColor: Colors.grey.shade100,
                                 baseColor: Colors.grey.shade300,
@@ -152,7 +152,7 @@ class _ProductListState extends State<ProductList> {
                                       "Do you want to delete ${controller.productList[index].name} ?",
                                   onDelete: () {
                                     controller.add(DeleteProductEvent(context,
-                                        controller.productList[index].id));
+                                        controller.productList[index].id ?? 0));
                                   },
                                   onCancel: () {
                                     Navigator.pop(context);
@@ -187,7 +187,7 @@ class _ProductListTileState extends State<ProductListTile> {
 
   @override
   void initState() {
-    _notifier = ValueNotifier(widget.entity.status == 1 ? true : false);
+    _notifier = ValueNotifier(false);
     _controller = ProductBloc.get(context);
     super.initState();
   }
@@ -200,6 +200,7 @@ class _ProductListTileState extends State<ProductListTile> {
 
   @override
   Widget build(BuildContext context) {
+    // print("thumb ${widget.entity.thumbnail}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4),
       child: Stack(
@@ -227,7 +228,7 @@ class _ProductListTileState extends State<ProductListTile> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(
-                            imageUrl: widget.entity.image,
+                            imageUrl: widget.entity.thumbnail ?? "",
                             errorWidget: (n, j, q) =>
                                 Image.asset(AppAssets.errorImage),
                             placeholder: (n, j) =>
@@ -269,7 +270,7 @@ class _ProductListTileState extends State<ProductListTile> {
                             Row(
                               children: [
                                 Text(
-                                  "${(widget.entity.price ?? "")}",
+                                  "${widget.entity.quantityType.isNotEmpty ? (widget.entity.quantityType.first.price ?? "") : '0.0'}",
                                   style: const TextStyle(
                                       color: AppColors.offWhiteTextColor,
                                       decoration: TextDecoration.lineThrough,
@@ -280,7 +281,7 @@ class _ProductListTileState extends State<ProductListTile> {
                                   width: 4,
                                 ),
                                 Text(
-                                  "${((widget.entity.price ?? 0.0) - (widget.entity.discount ?? 0.0) ?? "")}",
+                                  "${widget.entity.quantityType.isNotEmpty ? widget.entity.quantityType.first.sellingPrice : '0.0'}",
                                   style: const TextStyle(
                                       color: AppColors.black,
                                       // decoration: TextDecoration.lineThrough,

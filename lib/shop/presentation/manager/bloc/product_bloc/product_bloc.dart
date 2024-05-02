@@ -10,10 +10,11 @@ import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
 import '../../../../../core/custom_exception.dart';
-import '../../../../data/models/product_adding_request.dart';
+import '../../../../data/models/new/product_model.dart';
 import '../../../../data/models/product_list_request.dart';
-import '../../../../data/models/product_model.dart';
+import '../../../../domain/entities/ProductEntity.dart';
 import '../../../../domain/entities/category_entity.dart';
+import '../../../../domain/use_cases/add_product_image_use_case.dart';
 import '../../../../domain/use_cases/add_product_request_use_case.dart';
 import '../../../../domain/use_cases/delete_product_use_case.dart';
 import '../../../../domain/use_cases/get_product_details_usecase.dart';
@@ -35,6 +36,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final AddProductUseCase addProductUseCase;
   final GetUnitUseCase getUnitUseCase;
   final DeleteProductUseCase deleteProductUseCase;
+  final ProductImageUseCase addImageUseCase;
 
   ProductBloc(
     this.productUseCase,
@@ -44,6 +46,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     this.getTagUseCase,
     this.addProductUseCase,
     this.deleteProductUseCase,
+    this.addImageUseCase,
   ) : super(const ProductInitial()) {
     on<ProductEvent>((event, emit) {});
     on<ProductInitialEvent>((event, emit) => emit(const ProductInitial()));
@@ -55,11 +58,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final data = await productUseCase.call(ProductListRequest(
         page: 1,
       ));
-      lastPage = data.products.totalPages;
+      lastPage = data.next == null;
       productList.clear();
-      productList.addAll(data.products.products);
+      productList.addAll(data.products);
 
-      emit(ProductFetched(data.products.products, data.tags));
+      emit(ProductFetched(data.products, []));
       // } on UnauthorisedException {
       //   event.onUnAuthorized();
       //   emit(ProductFetchError("UnAuthorized"));
@@ -74,14 +77,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       prettyPrint("calling fetchinf");
       try {
         currentPage = 1;
-        lastPage = 1;
+
         final data = await productUseCase.call(
             ProductListRequest(page: currentPage, search: event.searchKey));
         productList.clear();
-        lastPage = data.products.totalPages;
-        productList.addAll(data.products.products);
+        lastPage = data.next == null;
+        productList.addAll(data.products);
         productList.toSet().toList();
-        emit(ProductFetched(data.products.products, data.tags));
+        emit(ProductFetched(data.products, []));
       } on UnauthorisedException {
         event.unAuthorized();
         emit(ProductFetchError("UnAuthorized"));
@@ -111,23 +114,23 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(ProductFetching());
       try {
         final data = await getProductDetailsUseCase.call(event.id);
-        selectedTags = data.tags ?? [];
+        // selectedTags = data.tags ?? [];
         productNameController.text = data.name;
-        priceController.text = data.price.toString();
-        discountPriceController.text =
-            ((data.price ?? 0.0) - (data.discount ?? 0.0)).toString();
-        prettyPrint("product details ${data.categoryIds?.toJson().toString()}");
-        categoryController.text = data.categoryIds?.category.name ?? "";
-        selectedCategory = data.categoryIds?.category;
-        selectedUnitEntity =
-            UnitEntity(id: data.unit?.id ?? 0, unit: data.unit?.unit ?? "");
-        selectedSubCategory = data.categoryIds?.subCategory;
-        subCategoryController.text = data.categoryIds?.subCategory.name ?? "";
-        productUnitController.text = data.stock.toString();
-        unitTypeController.text = data.unit?.unit ?? "";
-        productDetailsController.text = data.description ?? "";
 
-        image = data.image;
+        // prettyPrint("product details ${data.categoryIds?.toJson().toString()}");
+        categoryController.text = data.category?.name ?? "";
+        selectedCategory = data.category;
+
+        productUnitController.text = data.stock.toString();
+
+        productDetailsController.text = data.description ?? "";
+        moreImage.value.addAll(data.images ?? []);
+        image = data.thumbnail;
+        enable = data.enable ?? true;
+        variants.addAll(data.quantityType);
+        moreImage.value.clear();
+        moreImage.value.addAll(data.images ?? []);
+        moreImage.notifyListeners();
         emit(ProductFetchedDetail(data));
       } on UnauthorisedException {
         handleUnAuthorizedError(event.context);
@@ -170,6 +173,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         emit(ProductDetailFetchError(e.toString()));
       }
     });
+    on<ChangeVariantEvent>((event, emit) {
+      variants.clear();
+      variants.addAll(event.variants);
+    });
     on<GetTagsEvent>((event, emit) async {
       emit(ProductFetching());
       try {
@@ -203,21 +210,18 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<AddProductEvent>((event, emit) async {
       emit(ProductFetching());
       try {
-        ProductAddingRequest request = ProductAddingRequest(
+        ProductEntity request = ProductEntity(
             id: event.id,
-            image: image ?? "",
-            status: 0,
             name: productNameController.text,
-            tags: getSelectedTagsInStrings(),
-            categoryId: int.parse(selectedCategory!.id),
-            subCategoryId: int.parse(selectedSubCategory!.id),
-            price: double.parse(priceController.text),
-            discount: double.parse(priceController.text) -
-                double.parse(discountPriceController.text),
-            discountType: "amount",
-            stock: int.parse(productUnitController.text),
-            unitId: selectedUnitEntity?.id ?? 0,
-            description: productDetailsController.text);
+            description: productDetailsController.text,
+            thumbnail: event.path,
+            preOrder: false,
+            isFavourite: false,
+            stock: int.tryParse(productUnitController.text) ?? 1,
+            slug: "",
+            category: selectedCategory!,
+            quantityType: variants,
+            images: moreImage.value);
         await addProductUseCase.call(request).then((value) {
           Navigator.pop(event.context);
           ScaffoldMessenger.of(event.context).showSnackBar(
@@ -238,9 +242,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<DeleteProductEvent>((event, emit) async {
       emit(ProductFetching());
       try {
-        productList.removeWhere((element) => element.id == event.id);
+        // productList.removeWhere((element) => element.id == event.id);
         // subCategoryList.removeWhere((element) => element.id == event.id);
-        await deleteProductUseCase.call(event.id);
+        await deleteProductUseCase.call(event.id).then((value) =>
+            ScaffoldMessenger.of(event.context)
+                .showSnackBar(const SnackBar(content: Text('Deleted'))));
+
         add(ProductFetchEvent(() {}, (p0) => {}, () {}));
       } on DeleteConflictException {
         emit(ProductFetchError(AppConstants.kErrorConflictMessage));
@@ -255,17 +262,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       prettyPrint("getting paginated response $currentPage");
       try {
         currentPage = currentPage + 1;
-        if (currentPage != lastPage) {
+        if (!lastPage) {
           final data = await productUseCase
               .call(ProductListRequest(page: currentPage, search: ""));
-          lastPage = data.products.totalPages;
-          for (var element in data.products.products) {
+          lastPage = data.next == null;
+          for (var element in data.products) {
             if (!productList.contains(element)) {
-              productList.addAll(data.products.products);
+              productList.add(element);
             }
           }
         } else {
-          currentPage = lastPage;
+          // currentPage = lastPage;
         }
 
         emit(ProductFetched(productList, []));
@@ -275,10 +282,23 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         emit(ProductFetchError(e.toString()));
       }
     });
+    on<UploadMoreImagesEvent>((event, emit) async {
+      emit(MoreProductImageLoading());
+      try {
+        ImageEntity entity = await addImageUseCase.call(event.entity);
+        moreImage.value.add(entity);
+        moreImage.notifyListeners();
+        print("more images ${moreImage.value.length}");
+        emit(MoreProductImageUploaded());
+      } catch (e) {
+        print(e);
+        emit(MoreProductImageError());
+      }
+    });
   }
 
   int currentPage = 1;
-  int lastPage = 1;
+  bool lastPage = false;
 
   List<TagEntity> selectedTags = [];
   String getSelectedTagsInStrings() {
@@ -291,6 +311,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     return strId;
   }
 
+  ValueNotifier<List<ImageEntity>> moreImage = ValueNotifier([]);
   changeSelectedTags(TagEntity model) {
     if (selectedTags.contains(model)) {
       selectedTags.remove(model);
@@ -328,6 +349,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   List<TagEntity> tagFetchList = [];
   List<UnitEntity> unitList = [];
+  List<QuantityVariant> variants = [];
 
   final searchCategoryController = TextEditingController();
   final productTagController = TextEditingController();
@@ -359,6 +381,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     add(RefreshDetailsEvent());
   }
 
+  bool enable = true;
   //controllers
   final productNameController = TextEditingController();
   final priceController = TextEditingController();
@@ -383,6 +406,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     image = null;
     selectedCategory = null;
     selectedTags = [];
+
+    variants = [];
+    moreImage.value.clear();
     selectedSubCategory = null;
     selectedUnitEntity = null;
   }

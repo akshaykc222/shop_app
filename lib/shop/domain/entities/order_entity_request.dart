@@ -10,6 +10,7 @@ class OrderEntityRequest {
   toJson() => {
         "page_no": pageNo,
         "q": search,
+        "region": 1,
         "statuses": status,
         "sort_by": sort ?? "desc"
       };

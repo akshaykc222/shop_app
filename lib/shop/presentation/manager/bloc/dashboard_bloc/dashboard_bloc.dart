@@ -5,7 +5,6 @@ import 'package:shop_app/core/custom_exception.dart';
 import 'package:shop_app/shop/data/models/dashboard_model.dart';
 import 'package:shop_app/shop/presentation/utils/app_constants.dart';
 
-import '../../../../../core/usecase.dart';
 import '../../../../data/models/status_request.dart';
 import '../../../../domain/use_cases/get_dash_board_use_case.dart';
 import '../../../../domain/use_cases/update_store_offline_use_case.dart';
@@ -38,7 +37,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<DashBoardGetEvent>((event, emit) async {
       emit(DashboardLoadingState());
       try {
-        model = await getDashBoardUseCase.call(NoParams());
+        model =
+            await getDashBoardUseCase.call(HomeTypes.month.name.toUpperCase());
         emit(DashboardLoadedState());
       } on UnauthorisedException {
         handleUnAuthorizedError(event.context);
@@ -51,5 +51,5 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     });
   }
   static DashboardBloc get(context) => BlocProvider.of(context);
-  DashBoardModel? model;
+  DashboardModel? model;
 }

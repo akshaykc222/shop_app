@@ -1,7 +1,8 @@
 part of 'product_bloc.dart';
 
 abstract class ProductState {
-  // final List<String>? tags;
+  // final List<String>? tags;\
+
   const ProductState();
 }
 
@@ -50,3 +51,9 @@ class TagFetchedState extends ProductState {
 class UnitFetchedState extends ProductState {
   UnitFetchedState();
 }
+
+class MoreProductImageLoading extends ProductState {}
+
+class MoreProductImageUploaded extends ProductState {}
+
+class MoreProductImageError extends ProductState {}

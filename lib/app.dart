@@ -8,6 +8,7 @@ import 'package:shop_app/shop/presentation/manager/bloc/dashboard_bloc/dashboard
 import 'package:shop_app/shop/presentation/manager/bloc/delivery_bloc/delivery_man_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/customer_bloc/customer_bloc.dart';
+import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/delivery_area_bloc/delivery_area_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/manage_store_bloc/hour_tile_cubit/cubit/store_timing_cubit.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/order_bloc/order_bloc.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/product_bloc/product_bloc.dart';
@@ -68,6 +69,9 @@ class _ShopAppState extends State<ShopApp> {
           create: (context) => sl(),
         ),
         BlocProvider<DeliveryManBloc>(
+          create: (context) => sl(),
+        ),
+        BlocProvider<DeliveryAreaBloc>(
           create: (context) => sl(),
         ),
       ],

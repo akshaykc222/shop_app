@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -41,9 +42,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       var data = await getCategory();
       if (data != null) {
         prettyPrint("data length ${data.categories.length}");
-        totalPage = data.totalPages;
-        emit(CategoryLoadedState(
-            data.categories, data.totalPages == currentPage));
+        totalPage = 1;
+        emit(CategoryLoadedState(data.categories, data.next == null));
       } else {
         emit(CategoryErrorState("something went wrong"));
       }
@@ -64,8 +64,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       if (data != null) {
         // categoryList.addAll(data.categories);
         prettyPrint("data length ${data.categories.length}");
-        emit(CategoryLoadedState(
-            data.categories, data.totalPages == currentPage));
+        emit(CategoryLoadedState(data.categories, data.next == null));
       } else {
         emit(CategoryErrorState("something went wrong"));
       }
@@ -74,11 +73,19 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoadingState());
       try {
         await addCategoryUseCase
-            .call(CategoryRequestModel(
-                name: event.name,
-                image: event.filePath,
-                parentId: event.parentId))
+            .call(CategoryModel(
+          name: event.name,
+          image: event.filePath,
+          id: '',
+          productCount: null,
+        ))
             .then((value) {
+          if (event.parentId != null) {
+            add(GetSubCategoryEvent(
+                context: event.context,
+                request: CategoryRequestModel(
+                    name: event.name, image: "", parentId: event.parentId)));
+          }
           add(GetCategoryEvent());
           GoRouter.of(event.context).pop();
         });
@@ -95,8 +102,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoadingState());
       try {
         await addCategoryUseCase.call(event.request).then((value) {
-          add(GetCategoryEvent());
+          // add(GetSubCategoryEvent(
+          //     context: event.context, request: event.request));
           categoryList.clear();
+          add(GetCategoryEvent());
+
           GoRouter.of(event.context).pop();
         });
         emit(CategoryLoadCompletedState());
@@ -111,9 +121,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<GetCategoryPaginatedEvent>((event, emit) async {
       emit(CategoryLoadingMoreState());
       // currentPage = currentPage + 1;
-      if (currentPage <= totalPage) {
+      if (!hasNext) {
         var data = await getCategory();
-        totalPage = data?.totalPages ?? 1;
+        hasNext = data?.next == null;
       } else {
         currentPage = totalPage;
       }
@@ -173,9 +183,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       try {
         await deleteCategoryUseCase.call(event.id);
         categoryList
-            .removeWhere((element) => int.parse(element.id) == event.id);
-        subCategoryList
-            .removeWhere((element) => int.parse(element.id) == event.id);
+            .removeWhere((element) => int.parse(element.id ?? "") == event.id);
+
         getCategory();
         emit(CategoryDeletedState());
       } on DeleteConflictException {
@@ -216,30 +225,31 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   static CategoryBloc get(context) => BlocProvider.of(context);
 
   Future<CategoryResponse?> getCategory({String? search}) async {
-    try {
-      prettyPrint("current page $currentPage");
-      final data =
-          await categoryUseCase.get(searchKey: search, page: currentPage);
-      for (var element in data.categories) {
-        prettyPrint(element.toString());
-        if (!categoryList.contains(element)) {
-          categoryList.add(element);
-        } else {
-          categoryList.remove(element);
-          categoryList.add(element);
-        }
+    // try {
+    prettyPrint("current page $currentPage");
+    final data =
+        await categoryUseCase.get(searchKey: search, page: currentPage);
+    for (var element in data.categories) {
+      prettyPrint(element.toString());
+      if (!categoryList.contains(element)) {
+        categoryList.add(element);
+      } else {
+        categoryList.remove(element);
+        categoryList.add(element);
       }
-      return data;
-    } on UnauthorisedException {
-      // prettyPrint("unautheruzied");
-    } catch (e) {
-      prettyPrint(e.toString());
-      return null;
     }
+    return data;
+    // } on UnauthorisedException {
+    //   // prettyPrint("unautheruzied");
+    // } catch (e) {
+    //   prettyPrint(e.toString());
+    //   return null;
+    // }
     return null;
   }
 
   int currentPage = 1;
+  bool hasNext = false;
   int currentPageSub = 1;
 
   getPaginatedResponse() {
@@ -270,14 +280,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   updateForEditing(CategoryEntity entity) {
-    selectedChoice = entity.parentId == 0 ? AppStrings.yes : AppStrings.no;
-    if (entity.parentId != 0) {
-      categoryNameController.text = entity.name ?? "";
-      changeSelectedCategory(entity);
-    } else {
-      categoryNameController.text = entity.name ?? "";
-      selectedParentCat = null;
-    }
+    categoryNameController.text = entity.name ?? "";
+    // selectedChoice = entity.parentId == 0 ? AppStrings.yes : AppStrings.no;
+    // if (entity.parentId != 0) {
+    //
+    //   changeSelectedCategoryWithSubId(entity.parentId.toString());
+    // } else {
+    //   categoryNameController.text = entity.name ?? "";
+    //   selectedParentCat = null;
+    // }
   }
 
   CategoryEntity? selectedParentCat;
@@ -286,6 +297,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     selectedParentCat = cat;
     if (cat != null) {
       categoryController.text = cat.name ?? "";
+      add(RefreshPageEvent());
+    }
+  }
+
+  changeSelectedCategoryWithSubId(String id) {
+    selectedParentCat =
+        categoryList.firstWhereOrNull((element) => element.id == id);
+    if (selectedParentCat != null) {
+      categoryController.text = selectedParentCat?.name ?? "";
       add(RefreshPageEvent());
     }
   }

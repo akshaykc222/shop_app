@@ -6,6 +6,8 @@
         android:label="One click Grocery"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyDaGKjCFg-uQoU1p9OA0vUVdUczni4f0qA"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

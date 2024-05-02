@@ -30,6 +30,7 @@ class DeliverManDataSourceImpl extends DeliveryManDataSource {
 
   @override
   Future<String> addDeliveryMan(DeliveryManAddRequest request) async {
+    print("request");
     prettyPrint((await request.toJson()).toString());
     final data = await apiProvider.post(
         "${AppRemoteRoutes.deliveryMan}/add", {},

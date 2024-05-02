@@ -25,7 +25,7 @@ PreferredSize getAppBar(BuildContext context, Widget child, {double? height}) {
           children: [
             child,
             const SizedBox(
-              height: 10,
+              height: 20,
             )
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shop_app/core/api_provider.dart';
 import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/data/models/requests/change_account_detail_model.dart';
@@ -39,8 +40,9 @@ class AuthDataSourceImpl extends AuthDataSource {
   @override
   Future<LoginResponse> login(
       {required String email, required String password, int? type}) async {
+    var token = await FirebaseMessaging.instance.getToken();
     final data = await apiProvider.post(AppRemoteRoutes.login,
-        {'email': email, 'password': password, 'user_type': type});
+        {'mobile': email, 'password': password, 'token': token});
     return LoginResponse.fromJson(data);
   }
 

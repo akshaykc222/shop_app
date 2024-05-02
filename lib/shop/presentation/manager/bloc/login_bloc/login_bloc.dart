@@ -40,20 +40,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       var response = ResponseClassify<LoginResponse>.loading();
       emit(LoginLoadingState());
       try {
-        response = ResponseClassify<LoginResponse>.completed(
-            await loginUseCase.call(
-                email: event.email,
-                password: event.password,
-                type: event.type));
+        response =
+            ResponseClassify<LoginResponse>.completed(await loginUseCase.call(
+          email: event.email,
+          password: event.password,
+        ));
         emit(LoginDataFetchedState(response.data!));
 
         GetStorage storage = GetStorage();
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(LocalStorageNames.token, response.data!.token);
         storage.write(LocalStorageNames.token, response.data!.token);
-        await prefs.setString(LocalStorageNames.userData,
-            jsonEncode(response.data!.userData.toJson()));
-        await prefs.setInt(LocalStorageNames.type, event.type);
+        await prefs.setString(
+            LocalStorageNames.userData, jsonEncode(response.data!.isStaff));
+        await prefs.setBool(
+            LocalStorageNames.type, response.data!.isDeliveryBoy);
         event.onSuccess();
       } on UnauthorisedException {
         Map<String, dynamic> data = jsonDecode(response.error ?? "{}");
@@ -113,7 +114,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   static LoginBloc get(context) => BlocProvider.of(context);
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   String image = "";
   bool showPassWord = false;

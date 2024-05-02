@@ -1,5 +1,4 @@
-import 'package:shop_app/shop/data/models/product_model.dart';
-import 'package:shop_app/shop/data/models/tag_model.dart';
+import 'new/product_model.dart';
 
 // part 'category_id.g.dart';
 
@@ -8,18 +7,18 @@ import 'package:shop_app/shop/data/models/tag_model.dart';
 
 class ProductResponse {
   ProductResponse({
-    required this.tags,
+    required this.next,
     required this.products,
   });
 
-  List<TagModel> tags;
-  Products products;
+  final String? next;
+  final List<ProductModel> products;
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) =>
       ProductResponse(
-        tags:
-            List<TagModel>.from(json["tags"].map((x) => TagModel.fromJson(x))),
-        products: Products.fromJson(json["products"]),
+        next: json['next'],
+        products: List<ProductModel>.from(
+            json['results'].map((e) => ProductModel.fromJson(e))),
       );
 }
 

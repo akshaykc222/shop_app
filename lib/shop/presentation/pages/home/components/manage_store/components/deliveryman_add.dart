@@ -14,6 +14,7 @@ import 'package:shop_app/shop/presentation/widgets/custom_app_bar.dart';
 import '../../../../../themes/app_colors.dart';
 import '../../../../../utils/app_constants.dart';
 import '../../../../../utils/select_image_and_crop.dart';
+import '../../../../../widgets/custom_switch.dart';
 import '../../../../../widgets/mandatory_text.dart';
 
 class DeliveryManAdding extends StatefulWidget {
@@ -134,6 +135,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
   ValueNotifier proofImage = ValueNotifier("");
   late ValueNotifier<bool> updatePassword;
   late DeliveryManBloc deliveryBloc;
+  List<String> _types = ["admin", "delivery_boy"];
   // String? selectedDropDown = "Passport";
   @override
   void initState() {
@@ -237,6 +239,57 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                   },
                 ),
                 spacer20,
+                const Padding(
+                  padding: EdgeInsets.only(left: 4.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: MandatoryText(title: "Staff Type"),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        child: ValueListenableBuilder(
+                            valueListenable: deliveryBloc.selectedDropDownType,
+                            builder: (context, data, child) {
+                              return DropdownButtonFormField<String>(
+                                value: deliveryBloc.selectedDropDownType.value,
+                                items: _types
+                                    .map((e) => DropdownMenuItem<String>(
+                                        value: e, child: Text(e)))
+                                    .toList(),
+                                onChanged: (String? value) {
+                                  deliveryBloc.selectedDropDownType.value =
+                                      value ?? "";
+                                },
+                              );
+                            })),
+                    Expanded(
+                        child: Column(
+                      children: [
+                        const Text(
+                          'Status : ',
+                          style: TextStyle(
+                              color: AppColors.greyText,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        ValueListenableBuilder(
+                            valueListenable: deliveryBloc.enable,
+                            builder: (context, data, child) {
+                              return CustomSwitch(
+                                value: data,
+                                onChanged: (val) {
+                                  data = val;
+                                },
+                                enableColor: AppColors.green,
+                                disableColor: AppColors.pink,
+                              );
+                            })
+                      ],
+                    ))
+                  ],
+                ),
+                spacer20,
                 CommonTextField(
                   controller: deliveryBloc.fName,
                   validator: (val) {
@@ -295,7 +348,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                                     borderSide: BorderSide(),
                                   ),
                                 ),
-                                initialCountryCode: "AE",
+                                initialCountryCode: "IN",
                                 onChanged: (phone) {
                                   // print(phone.completeNumber);
                                   deliveryBloc.completePhone.text =
@@ -319,7 +372,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                                           borderSide: BorderSide(),
                                         ),
                                       ),
-                                      initialCountryCode: data,
+                                      initialCountryCode: 'IN',
                                       onChanged: (phone) {
                                         // print(phone.completeNumber);
                                         deliveryBloc.completePhone.text =

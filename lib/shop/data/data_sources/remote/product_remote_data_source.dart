@@ -1,25 +1,24 @@
 import 'package:dio/dio.dart';
 import 'package:shop_app/core/api_provider.dart';
 import 'package:shop_app/core/pretty_printer.dart';
-import 'package:shop_app/shop/data/models/category_request_model.dart';
 import 'package:shop_app/shop/data/models/dashboard_model.dart';
 import 'package:shop_app/shop/data/models/product_listing_response.dart';
 import 'package:shop_app/shop/data/models/requests/order_status_change.dart';
 import 'package:shop_app/shop/data/models/store_timing_model.dart';
 import 'package:shop_app/shop/data/models/unit_model.dart';
+import 'package:shop_app/shop/domain/entities/ProductEntity.dart';
 import 'package:shop_app/shop/domain/entities/order_entity_request.dart';
 import 'package:shop_app/shop/domain/entities/store_timing_entity.dart';
 import 'package:shop_app/shop/domain/entities/tag_entity.dart';
 import 'package:shop_app/shop/domain/entities/unit_entity.dart';
 
 import '../../../../core/hive_service.dart';
-import '../../../presentation/utils/app_constants.dart';
 import '../../models/category_response.dart';
 import '../../models/customer_model.dart';
-import '../../models/order_detail_model.dart';
-import '../../models/order_listing_model.dart';
-import '../../models/product_adding_request.dart';
-import '../../models/product_model.dart';
+import '../../models/new/delivery_men_model.dart';
+import '../../models/new/product_model.dart';
+import '../../models/order_model_new.dart';
+import '../../models/region_model.dart';
 import '../../models/requests/customer_request_model.dart';
 import '../../models/requests/edit_order_model.dart';
 import '../../models/status_request.dart';
@@ -28,11 +27,12 @@ import '../../routes/app_remote_routes.dart';
 import '../../routes/hive_storage_name.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<DashBoardModel> getDashBoard();
+  Future<DashboardModel> getDashBoard(String type);
   Future<ProductResponse> getProducts({String? searchKey, required int page});
   Future<ProductModel> getDetailProduct(int id);
 
-  Future<String> addProducts(ProductAddingRequest request);
+  Future<String> addProducts(ProductEntity request);
+  Future<ImageEntity> addProductImages(ImageEntity entity);
 
   Future<String> deleteProducts(int id);
   Future<String> deleteCategory(int id);
@@ -43,19 +43,24 @@ abstract class ProductRemoteDataSource {
   Future<CategoryResponse> getCategories({String? searchKey, int? page});
   Future<CategoryResponse> getSubCategories(
       {String? searchKey, int? page, required int parentId});
-  Future<String> addCategory(CategoryRequestModel model);
+  Future<String> addCategory(CategoryModel model);
   Future<List<TagEntity>> getTags();
   Future<List<UnitEntity>> getUnits();
   Future<List<StoreTimingEntity>> getStoreTiming();
   Future<String> updateTiming(List<StoreTimingEntity> timings);
   Future<String> updateCategoryStatus(
       {required String id, required int status});
-  Future<OrderListModel> getOrder(OrderEntityRequest request);
-  Future<OrderDetailModel> getOrderDetail(int id);
+  Future<OrderModelNew> getOrder(OrderEntityRequest request);
+  Future<OrderDataNew> getOrderDetail(String id);
   Future<String> updateStoreOffline(OfflineStatusRequest request);
   Future<CustomerListModel> customerList(CustomerRequestModel request);
   Future<Map<String, dynamic>> changeOrderStatus(OrderStatusChange model);
   Future<String> editOrder(EditOrderDetailModel model);
+  Future<RegionModel> getRegions(int pageNumber);
+  Future<RegionData> addRegion(RegionData data, {bool? update});
+  Future<DeliveryMenModel> getDeliveryMen(int page);
+  Future<void> deleteDeliveryMen(int id);
+  Future<DeliveryMenResult> addDeliveryMen(DeliveryMenResult data);
 }
 
 class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
@@ -65,18 +70,24 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   ProductRemoteDataSourceImpl(this.apiProvider, this.hiveService);
 
   @override
-  Future<String> addProducts(ProductAddingRequest request) async {
+  Future<String> addProducts(ProductEntity request) async {
     var j = await request.toJson();
-    prettyPrint(j.toString());
-    final data = await apiProvider.post(AppRemoteRoutes.addProduct, {},
-        formBody: FormData.fromMap(await request.toJson()));
-    return data.toString();
+    print(j);
+    if (request.id == null) {
+      final data = await apiProvider.post(AppRemoteRoutes.addProduct, {},
+          formBody: FormData.fromMap(j));
+      return data.toString();
+    } else {
+      final data = await apiProvider.put(
+          "${AppRemoteRoutes.addProduct}${request.id}/", FormData.fromMap(j));
+      return data.toString();
+    }
   }
 
   @override
   Future<String> deleteProducts(int id) async {
     final data =
-        await apiProvider.delete("${AppRemoteRoutes.deleteProduct}$id");
+        await apiProvider.delete("${AppRemoteRoutes.deleteProduct}$id/");
 
     return data.toString();
   }
@@ -86,19 +97,19 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     final data = await apiProvider.get(
         "${AppRemoteRoutes.categories}?page_no=${page ?? "1"}&q=${searchKey ?? ""}");
     final categoryResp = CategoryResponse.fromJson(data);
-    hiveService.addBoxes<CategoryModel>(
-        categoryResp.categories, LocalStorageNames.categories);
+    // hiveService.addBoxes<CategoryModel>(
+    //     categoryResp.categories, LocalStorageNames.categories);
     return categoryResp;
   }
 
   @override
   Future<ProductResponse> getProducts(
       {String? searchKey, required int page}) async {
-    final data = await apiProvider.get(
-        "${AppRemoteRoutes.products}store_id=${(await getUserData()).storeId}&page_no=$page&tags&q=${searchKey ?? ""}");
+    final data = await apiProvider
+        .get("${AppRemoteRoutes.products}?page_no=$page&q=${searchKey ?? ""}");
     final products = ProductResponse.fromJson(data);
-    hiveService.addBoxes<ProductModel>(
-        products.products.products, LocalStorageNames.products);
+    // hiveService.addBoxes<ProductModel>(
+    //     products.products.products, LocalStorageNames.products);
     return products;
   }
 
@@ -118,16 +129,23 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<ProductModel> getDetailProduct(int id) async {
     final data =
-        await apiProvider.get("${AppRemoteRoutes.getDetailProduct}/$id");
+        await apiProvider.get("${AppRemoteRoutes.getDetailProduct}/$id/");
     return ProductModel.fromJson(data);
   }
 
   @override
-  Future<String> addCategory(CategoryRequestModel model) async {
+  Future<String> addCategory(CategoryModel model) async {
     prettyPrint("ADDING CAT JSON ${await model.toJson()}");
-    final data = await apiProvider.post(AppRemoteRoutes.addCategory, {},
-        formBody: FormData.fromMap(await model.toJson()));
-    return data.toString();
+    if (model.id == null || model.id == "") {
+      final data = await apiProvider.post(AppRemoteRoutes.categories, {},
+          formBody: FormData.fromMap(await model.toJson()));
+      return data.toString();
+    } else {
+      final data = await apiProvider.put(
+          "${AppRemoteRoutes.categories}${model.id}/",
+          FormData.fromMap(await model.toJson()));
+      return data.toString();
+    }
   }
 
   @override
@@ -188,27 +206,28 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<String> updateCategoryStatus(
       {required String id, required int status}) async {
-    final data = await apiProvider.post(
-        AppRemoteRoutes.updateCategoryStatus, {'id': id, 'status': status});
+    final data = await apiProvider
+        .patch("${AppRemoteRoutes.categories}$id/", {'enable': status});
+    print(data);
     return data.toString();
   }
 
   @override
-  Future<OrderListModel> getOrder(OrderEntityRequest request) async {
+  Future<OrderModelNew> getOrder(OrderEntityRequest request) async {
     prettyPrint("order request ${request.toJson()}");
-    final data =
-        await apiProvider.post(AppRemoteRoutes.orders, request.toJson());
+    final data = await apiProvider.post(
+        "${AppRemoteRoutes.orders}?status=${request.status}", {'region': 1});
 
-    final order = OrderListModel.fromJson(data);
-    hiveService.addBoxes(order.orders.orders, LocalStorageNames.orders);
-    hiveService.addBoxes(order.statuses, LocalStorageNames.status);
+    final order = OrderModelNew.fromJson(data);
+    // hiveService.addBoxes(order.orders.orders, LocalStorageNames.orders);
+    // hiveService.addBoxes(order.statuses, LocalStorageNames.status);
     return order;
   }
 
   @override
-  Future<OrderDetailModel> getOrderDetail(int id) async {
-    final data = await apiProvider.get("${AppRemoteRoutes.orders}/$id");
-    return OrderDetailModel.fromJson(data["order_details"]);
+  Future<OrderDataNew> getOrderDetail(String id) async {
+    final data = await apiProvider.get("${AppRemoteRoutes.orders}/$id/");
+    return OrderDataNew.fromJson(data);
   }
 
   @override
@@ -242,16 +261,66 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   @override
   Future<Map<String, dynamic>> changeOrderStatus(
       OrderStatusChange model) async {
-    final data = await apiProvider.post(
-        AppRemoteRoutes.changeOrderStatus, model.toJson());
+    final data = await apiProvider.patch(
+        "${AppRemoteRoutes.orders}/${model.id}/", {'status': model.status});
     return data;
   }
 
   @override
-  Future<DashBoardModel> getDashBoard() async {
-    final data = await apiProvider.get(
-      AppRemoteRoutes.dashBoard,
-    );
-    return DashBoardModel.fromJson(data);
+  Future<DashboardModel> getDashBoard(String type) async {
+    final data =
+        await apiProvider.post(AppRemoteRoutes.dashBoard, {'type': type});
+    return DashboardModel.fromJson(data);
+  }
+
+  @override
+  Future<RegionData> addRegion(RegionData data, {bool? update}) async {
+    if (data.id != null) {
+      final d = await apiProvider.put(
+          "${AppRemoteRoutes.region}${data.id}/", data.toJson());
+      return RegionData.fromJson(d);
+    }
+    final d = await apiProvider.post(AppRemoteRoutes.region, data.toJson());
+    return RegionData.fromJson(d);
+  }
+
+  @override
+  Future<RegionModel> getRegions(int pageNumber) async {
+    final data =
+        await apiProvider.get("${AppRemoteRoutes.region}?page_no=$pageNumber");
+    return RegionModel.fromJson(data);
+  }
+
+  @override
+  Future<ImageEntity> addProductImages(ImageEntity entity) async {
+    final data = await apiProvider.post(AppRemoteRoutes.productImages, {},
+        formBody: FormData.fromMap(await entity.toJson()));
+    return ImageEntity.fromJson(data);
+  }
+
+  @override
+  Future<DeliveryMenResult> addDeliveryMen(DeliveryMenResult data) async {
+    print(await data.toJson());
+    if (data.id == null) {
+      final d = await apiProvider.post(AppRemoteRoutes.deliveryMen, {},
+          formBody: FormData.fromMap(await data.toJson()));
+      return DeliveryMenResult.fromJson(d);
+    } else {
+      final d = await apiProvider.patch(AppRemoteRoutes.deliveryMen, {},
+          formBody: FormData.fromMap(await data.toJson()));
+      return DeliveryMenResult.fromJson(d);
+    }
+  }
+
+  @override
+  Future<DeliveryMenModel> getDeliveryMen(int page) async {
+    final data =
+        await apiProvider.get("${AppRemoteRoutes.deliveryMen}?page_no=$page");
+    return DeliveryMenModel.fromJson(data);
+  }
+
+  @override
+  Future<void> deleteDeliveryMen(int id) async {
+    final data = await apiProvider.delete("${AppRemoteRoutes.deliveryMen}$id");
   }
 }

@@ -1,11 +1,6 @@
 const basicData = [
-  {'genre': 'S', 'sold': 275},
-  {'genre': 'M', 'sold': 115},
-  {'genre': 'T', 'sold': 120},
-  {'genre': 'W', 'sold': 350},
-  {'genre': 'T', 'sold': 150},
-  {'genre': 'F', 'sold': 150},
-  {'genre': 'F', 'sold': 150},
+  {'date': '2023-10-04', 'revenue': 0.0},
+  {'date': '2023-10-12', 'revenue': 0.0},
 ];
 
 const complexGroupData = [

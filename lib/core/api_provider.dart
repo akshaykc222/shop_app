@@ -45,7 +45,10 @@ class ApiProvider {
     String? token = storage.read(
       LocalStorageNames.token,
     );
-    _dio.options.headers.addAll({'Authorization': 'Bearer $token'});
+    debugPrint("Adding token : $token");
+    if (token != null) {
+      _dio.options.headers.addAll({'Authorization': 'Token $token'});
+    }
   }
 
   Future<Map<String, dynamic>> get(String endPoint) async {
@@ -104,8 +107,30 @@ class ApiProvider {
     }
   }
 
-  Future<Map<String, dynamic>> put(
-      String endPoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> patch(String endPoint, Map<String, dynamic> body,
+      {FormData? formBody}) async {
+    prettyPrint("on patch call$body");
+    try {
+      prettyPrint("starting dio");
+
+      addToken();
+      // prettyPrint(_dio.options.)
+      final Response response = await _dio.patch(
+        endPoint,
+        data: formBody ?? body,
+      );
+
+      prettyPrint("getting response${response.realUri}");
+      final Map<String, dynamic> responseData = classifyResponse(response);
+      prettyPrint(responseData.toString());
+      return responseData;
+    } on DioError catch (err) {
+      prettyPrint(err.toString());
+      throw FetchDataException("internetError");
+    }
+  }
+
+  Future<Map<String, dynamic>> put(String endPoint, dynamic body) async {
     prettyPrint("on post call");
     try {
       addToken();
@@ -130,19 +155,23 @@ class ApiProvider {
   // }
 
   Map<String, dynamic> classifyResponse(Response response) {
-    print(response);
+    print("response data ${response.data}");
     // try {
-    final Map<String, dynamic> responseData =
-        response.data as Map<String, dynamic>;
+    Map<String, dynamic>? responseData;
+    try {
+      responseData = response.data as Map<String, dynamic>;
+    } catch (e) {
+      responseData = {};
+    }
+
     String errorMsg = "";
     try {
       // errorMsg=responseData["error"][""]
-      var error = responseData["errors"];
-      var allErrors = error!.map((item) => item["message"]);
+
       String errorString = "";
-      for (var i in allErrors) {
-        errorString = "$errorString$i,";
-      }
+      responseData.forEach((key, value) {
+        errorString = "$errorString$value,";
+      });
     } catch (e) {
       errorMsg = responseData.toString();
     }
@@ -150,6 +179,8 @@ class ApiProvider {
       case 200:
       case 201:
         return responseData;
+      case 204:
+        return {'status': 'deleted'};
       case 400:
         throw BadRequestException(errorMsg);
       case 404:

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shop_app/shop/data/models/login_response.dart';
 import 'package:shop_app/shop/data/models/requests/change_account_detail_model.dart';
 import 'package:shop_app/shop/presentation/manager/bloc/login_bloc/login_bloc.dart';
 import 'package:shop_app/shop/presentation/themes/app_assets.dart';
@@ -515,34 +514,32 @@ class _ProfileViewState extends State<ProfileView> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        FutureBuilder(
-                                            future: getUserData(),
-                                            builder: (context, snap) {
-                                              if (snap.hasData) {
-                                                var d =
-                                                    snap.data as UserDataShort;
-                                                bool isLeft = snap.data
-                                                        ?.currency.position ==
-                                                    "left";
-                                                return Text(
-                                                  "${isLeft ? d.currency.symbol : ""} ${state.data.totalRevenue.toStringAsFixed(2)} ${!isLeft ? d.currency.symbol : ""}",
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 15,
-                                                      color: AppColors.skyBlue),
-                                                );
-                                              } else {
-                                                return Text(
-                                                  "${state.data.totalRevenue.toStringAsFixed(2)} ",
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 15,
-                                                      color: AppColors.skyBlue),
-                                                );
-                                              }
-                                            }),
+                                        // FutureBuilder(
+                                        //     // future: getUserData(),
+                                        //     builder: (context, snap) {
+                                        //   if (snap.hasData) {
+                                        //     // var d =
+                                        //     //     snap.data as UserDataShort;
+                                        //     // bool isLeft = snap.data
+                                        //     //         ?.currency.position ==
+                                        //     //     "left";
+                                        //     return const Text(
+                                        //       "",
+                                        //       style: TextStyle(
+                                        //           fontWeight: FontWeight.w600,
+                                        //           fontSize: 15,
+                                        //           color: AppColors.skyBlue),
+                                        //     );
+                                        //   } else {
+                                        //     return Text(
+                                        //       "${state.data.totalRevenue.toStringAsFixed(2)} ",
+                                        //       style: const TextStyle(
+                                        //           fontWeight: FontWeight.w600,
+                                        //           fontSize: 15,
+                                        //           color: AppColors.skyBlue),
+                                        //     );
+                                        //   }
+                                        // }),
                                         const Text(
                                           AppStrings.revenue,
                                           style:
@@ -868,13 +865,13 @@ class _EditAccountDetailState extends State<EditAccountDetail> {
                                     Expanded(
                                         child: GestureDetector(
                                             onTap: () async {
-                                              final ImagePicker _picker =
+                                              final ImagePicker picker =
                                                   ImagePicker();
                                               // Pick an image
                                               // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                                               // Capture a photo
                                               final XFile? photo =
-                                                  await _picker.pickImage(
+                                                  await picker.pickImage(
                                                       source:
                                                           ImageSource.gallery);
                                               if (photo != null) {
