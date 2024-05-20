@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,20 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAq0-PB05DuKMGxWVtUyQGUg4outN6s7nU',
-    appId: '1:273532540521:android:fa1a099208451b5d1bf4f8',
-    messagingSenderId: '273532540521',
-    projectId: 'grocery-onclick',
-    storageBucket: 'grocery-onclick.appspot.com',
+    apiKey: 'AIzaSyBnhGR8eFD7WNSwQUxSQQwyOFPMgY_Fabc',
+    appId: '1:103357185550:android:7ab91a42fd347838bec65f',
+    messagingSenderId: '103357185550',
+    projectId: 'naturebeatz-af459',
+    storageBucket: 'naturebeatz-af459.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC41gVJZcEaV7bW_Ound1L06DAX2yqH8JU',
-    appId: '1:273532540521:ios:14b7b9a2a74bace11bf4f8',
-    messagingSenderId: '273532540521',
-    projectId: 'grocery-onclick',
-    storageBucket: 'grocery-onclick.appspot.com',
-    iosClientId: '273532540521-6vv1ivdnts2ecd0d1hq26mieqphcp8ft.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDQchHB0wfh4F6xjx2PdRlmfG3B4rbMlqA',
+    appId: '1:103357185550:ios:fd499ba4e5a6df4dbec65f',
+    messagingSenderId: '103357185550',
+    projectId: 'naturebeatz-af459',
+    storageBucket: 'naturebeatz-af459.appspot.com',
     iosBundleId: 'com.fineKube.shopApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBW35i7xpTR-jA-N-HyWmlU4DPuUeulMdc',
+    appId: '1:103357185550:web:4286d97aa49212c7bec65f',
+    messagingSenderId: '103357185550',
+    projectId: 'naturebeatz-af459',
+    authDomain: 'naturebeatz-af459.firebaseapp.com',
+    storageBucket: 'naturebeatz-af459.appspot.com',
+    measurementId: 'G-DFK3EZT2W5',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDQchHB0wfh4F6xjx2PdRlmfG3B4rbMlqA',
+    appId: '1:103357185550:ios:fbb19aaf19fc384fbec65f',
+    messagingSenderId: '103357185550',
+    projectId: 'naturebeatz-af459',
+    storageBucket: 'naturebeatz-af459.appspot.com',
+    iosBundleId: 'com.fineKube.shopAppNew',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBW35i7xpTR-jA-N-HyWmlU4DPuUeulMdc',
+    appId: '1:103357185550:web:a95663e2e0cdcb41bec65f',
+    messagingSenderId: '103357185550',
+    projectId: 'naturebeatz-af459',
+    authDomain: 'naturebeatz-af459.firebaseapp.com',
+    storageBucket: 'naturebeatz-af459.appspot.com',
+    measurementId: 'G-1W9ZMSR9BF',
+  );
+
 }

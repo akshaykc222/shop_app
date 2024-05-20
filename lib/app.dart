@@ -27,6 +27,7 @@ class ShopApp extends StatefulWidget {
 }
 
 class _ShopAppState extends State<ShopApp> {
+  double aspectRatio = 9 / 16;
   getToken() async {
     prettyPrint(await FirebaseMessaging.instance.getToken());
   }
@@ -39,54 +40,71 @@ class _ShopAppState extends State<ShopApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<BottomNavigationCubit>(
-          create: (context) => sl(),
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      double width = constraints.maxWidth;
+      double height = width / aspectRatio;
+
+      if (height > constraints.maxHeight) {
+        height = constraints.maxHeight;
+        width = height * aspectRatio;
+      }
+      return Center(
+        child: SizedBox(
+          height: height,
+          width: width,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<BottomNavigationCubit>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<ProductBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<VariantBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<OrderBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<LoginBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<CategoryBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<StoreTimingCubit>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<DashboardBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<CustomerBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<DeliveryManBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<DeliveryAreaBloc>(
+                create: (context) => sl(),
+              ),
+            ],
+            child: MaterialApp.router(
+              builder: (context, child) {
+                final MediaQueryData data = MediaQuery.of(context);
+                return MediaQuery(
+                  data: data.copyWith(
+                      textScaleFactor: data.textScaleFactor * (1)),
+                  child: child ?? const SizedBox(),
+                );
+              },
+              theme: AppTheme.getTheme(),
+              title: AppConstants.appName,
+              routerConfig: AppRouteManager.appRoutes,
+            ),
+          ),
         ),
-        BlocProvider<ProductBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<VariantBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<OrderBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<LoginBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<CategoryBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<StoreTimingCubit>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<DashboardBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<CustomerBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<DeliveryManBloc>(
-          create: (context) => sl(),
-        ),
-        BlocProvider<DeliveryAreaBloc>(
-          create: (context) => sl(),
-        ),
-      ],
-      child: MaterialApp.router(
-        builder: (context, child) {
-          final MediaQueryData data = MediaQuery.of(context);
-          return MediaQuery(
-            data: data.copyWith(textScaleFactor: data.textScaleFactor * (1)),
-            child: child ?? const SizedBox(),
-          );
-        },
-        theme: AppTheme.getTheme(),
-        title: AppConstants.appName,
-        routerConfig: AppRouteManager.appRoutes,
-      ),
-    );
+      );
+    });
   }
 }

@@ -3,9 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/shop/data/routes/app_remote_routes.dart';
@@ -22,13 +20,6 @@ import '../../../../../../data/routes/hive_storage_name.dart';
 import '../../../../../manager/bloc/order_bloc/order_bloc.dart';
 import 'edit_order.dart';
 
-@pragma('vm:entry-point')
-void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-  final SendPort? send =
-      IsolateNameServer.lookupPortByName('downloader_send_port');
-  send?.send([id, status, progress]);
-}
-
 class OrderDetails extends StatefulWidget {
   final String id;
   const OrderDetails({Key? key, required this.id}) : super(key: key);
@@ -44,6 +35,15 @@ class _OrderDetailsState extends State<OrderDetails> {
     var url = Uri.parse("tel:$phone");
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _launchURL() async {
+    String url = '${AppRemoteRoutes.baseUrl}api/v1/download_pdf/${widget.id}/';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
     } else {
       throw 'Could not launch $url';
     }
@@ -416,17 +416,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                   ),
                                   InkWell(
                                     onTap: () async {
-                                      var path =
-                                          await getApplicationDocumentsDirectory();
-
-                                      await FlutterDownloader.enqueue(
-                                        url:
-                                            "${AppRemoteRoutes.baseUrl}api/v1/download_pdf/${widget.id}/",
-                                        headers: {},
-                                        savedDir: path.path,
-                                        showNotification: true,
-                                        openFileFromNotification: true,
-                                      );
+                                      _launchURL();
                                     },
                                     child: Row(
                                       children: [
