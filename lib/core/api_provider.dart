@@ -20,12 +20,6 @@ class ApiProvider {
           return true;
         },
         followRedirects: false,
-        headers: {
-          "access-control-allow-origin": "*",
-          // "Access-Control-Allow-Origin": "*",
-          // "Access-Control-Allow-Credentials": false,
-          'Content-Type': 'application/json'
-        },
         baseUrl: AppRemoteRoutes.baseUrl,
         connectTimeout: 150000,
         receiveTimeout: 150000,
