@@ -41,30 +41,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBnhGR8eFD7WNSwQUxSQQwyOFPMgY_Fabc',
-    appId: '1:103357185550:android:7ab91a42fd347838bec65f',
-    messagingSenderId: '103357185550',
-    projectId: 'naturebeatz-af459',
-    storageBucket: 'naturebeatz-af459.appspot.com',
+    apiKey: 'AIzaSyAN7E5q-3c0Yg-sW9AhsTrU64XfsOrl9qM',
+    appId: '1:761223518670:android:1c9de6ad9677a02bda739f',
+    messagingSenderId: '761223518670',
+    projectId: 'shop-d9dbb',
+    storageBucket: 'shop-d9dbb.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDQchHB0wfh4F6xjx2PdRlmfG3B4rbMlqA',
-    appId: '1:103357185550:ios:fd499ba4e5a6df4dbec65f',
-    messagingSenderId: '103357185550',
-    projectId: 'naturebeatz-af459',
-    storageBucket: 'naturebeatz-af459.appspot.com',
+    apiKey: 'AIzaSyAmjvf3yKn9A0ovWb_6jLp9zvLKYwPSz40',
+    appId: '1:761223518670:ios:91a33d21336ae182da739f',
+    messagingSenderId: '761223518670',
+    projectId: 'shop-d9dbb',
+    storageBucket: 'shop-d9dbb.appspot.com',
     iosBundleId: 'com.fineKube.shopApp',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBW35i7xpTR-jA-N-HyWmlU4DPuUeulMdc',
-    appId: '1:103357185550:web:4286d97aa49212c7bec65f',
-    messagingSenderId: '103357185550',
-    projectId: 'naturebeatz-af459',
-    authDomain: 'naturebeatz-af459.firebaseapp.com',
-    storageBucket: 'naturebeatz-af459.appspot.com',
-    measurementId: 'G-DFK3EZT2W5',
+    apiKey: 'AIzaSyDOqeu_6sQCcWdyLqeN-oAmBbeKGzn7PT4',
+    appId: '1:761223518670:web:cb9d078d2b7777c4da739f',
+    messagingSenderId: '761223518670',
+    projectId: 'shop-d9dbb',
+    authDomain: 'shop-d9dbb.firebaseapp.com',
+    storageBucket: 'shop-d9dbb.appspot.com',
+    measurementId: 'G-4ZL7SRFFLH',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,13 +77,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBW35i7xpTR-jA-N-HyWmlU4DPuUeulMdc',
-    appId: '1:103357185550:web:a95663e2e0cdcb41bec65f',
-    messagingSenderId: '103357185550',
-    projectId: 'naturebeatz-af459',
-    authDomain: 'naturebeatz-af459.firebaseapp.com',
-    storageBucket: 'naturebeatz-af459.appspot.com',
-    measurementId: 'G-1W9ZMSR9BF',
+    apiKey: 'AIzaSyDOqeu_6sQCcWdyLqeN-oAmBbeKGzn7PT4',
+    appId: '1:761223518670:web:7d2ceb79d8156e61da739f',
+    messagingSenderId: '761223518670',
+    projectId: 'shop-d9dbb',
+    authDomain: 'shop-d9dbb.firebaseapp.com',
+    storageBucket: 'shop-d9dbb.appspot.com',
+    measurementId: 'G-JDKR8TFBY1',
   );
 
 }
