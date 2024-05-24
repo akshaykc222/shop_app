@@ -61,11 +61,11 @@ class _OrderDetailsState extends State<OrderDetails> {
     _context = context;
     controller = OrderBloc.get(context);
     controller.add(GetOrderDetailEvent(context, widget.id));
-    IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    _port.listen((dynamic data) {
-      setState(() {});
-    });
+    // IsolateNameServer.registerPortWithName(
+    //     _port.sendPort, 'downloader_send_port');
+    // _port.listen((dynamic data) {
+    //   setState(() {});
+    // });
 
     // FlutterDownloader.registerCallback(downloadCallback);
     super.initState();

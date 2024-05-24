@@ -36,7 +36,7 @@ class _NoInternetWidgetState extends State<NoInternetWidget>
   @override
   Widget build(BuildContext context) {
     return kIsWeb
-        ? SizedBox()
+        ? const SizedBox()
         : StreamBuilder<InternetConnectionStatus>(
             stream: connectionChecker.getConnectionInfo(),
             builder: (context, snapshot) {
