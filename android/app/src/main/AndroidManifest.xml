@@ -2,6 +2,15 @@
     package="com.fineKube.shop_app">
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <queries>
+        <!-- Place inside the <queries> element. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
    <application
         android:label="One click Grocery"
         android:name="${applicationName}"
@@ -41,14 +50,6 @@
        <meta-data
            android:name="firebase_inapp_messaging_auto_data_collection_enabled"
            android:value="false" />
-       <provider
-           android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
-           android:authorities="${applicationId}.flutter_downloader.provider"
-           android:exported="false"
-           android:grantUriPermissions="true">
-           <meta-data
-               android:name="android.support.FILE_PROVIDER_PATHS"
-               android:resource="@xml/provider_paths"/>
-       </provider>
+
     </application>
 </manifest>
