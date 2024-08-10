@@ -135,7 +135,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
   ValueNotifier proofImage = ValueNotifier("");
   late ValueNotifier<bool> updatePassword;
   late DeliveryManBloc deliveryBloc;
-  List<String> _types = ["admin", "delivery_boy"];
+  final List<String> _types = ["ADMIN", "DELIVERY_BOY"];
   // String? selectedDropDown = "Passport";
   @override
   void initState() {
@@ -352,7 +352,7 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                                 onChanged: (phone) {
                                   // print(phone.completeNumber);
                                   deliveryBloc.completePhone.text =
-                                      phone.completeNumber;
+                                      phone.number;
                                 },
                               );
                             })
@@ -411,6 +411,8 @@ class _DeliveryManAddingState extends State<DeliveryManAdding> {
                                             value: e, child: Text(e)))
                                         .toList(),
                                     onChanged: (String? value) {
+                                      deliveryBloc.selectedDropDown.value =
+                                          value ?? "";
                                       deliveryBloc.identityType.text =
                                           value ?? "";
                                     },

@@ -183,8 +183,8 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
                 ? ""
                 : identityImage,
             password: password.text,
-            staffType: staffType.text,
-            idType: identityType.text)));
+            staffType: selectedDropDownType.value,
+            idType: selectedDropDown.value)));
   }
 
   updateDeliveryMan(BuildContext context, int id) {
@@ -202,14 +202,14 @@ class DeliveryManBloc extends Bloc<DeliveryManEvent, DeliveryManState> {
                 ? ""
                 : identityImage,
             password: password.text,
-            idType: identityType.text)));
+            idType: selectedDropDownType.value)));
   }
 
   editValues(DeliveryManEntity entity) {
     // fName.text =entity.
   }
   ValueNotifier<String> selectedDropDown = ValueNotifier("Passport");
-  ValueNotifier<String> selectedDropDownType = ValueNotifier("delivery_boy");
+  ValueNotifier<String> selectedDropDownType = ValueNotifier("DELIVERY_BOY");
   ValueNotifier<bool> enable = ValueNotifier(false);
   final searchTextController = TextEditingController();
   String getIdentityTypeString(String type) {

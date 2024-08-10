@@ -45,7 +45,7 @@ class OrderData {
         paymentRef: PaymentModel.fromJson(json["payment_ref"]),
         cart: CartData.fromJson(json["cart"]),
         address: AddressEntity.fromJson(json["address"]),
-        createdDate: DateTime.parse(json["created_date"]),
+        createdDate: DateTime.parse(json["order"]),
       );
 
   Map<String, dynamic> toJson() => {
